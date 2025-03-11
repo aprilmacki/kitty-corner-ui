@@ -4,10 +4,22 @@
       PROFILE
     </div>
     <div class="links">
-      <button class="link" routerLink="/feed" routerLinkActive="active">Home</button>
-      <button class="link" routerLink="/users/aprilmack/profile" routerLinkActive="active">Profile</button>
-      <button class="link" routerLink="/settings" routerLinkActive="active">Settings</button>
-      <button class="link">Sign out</button>
+      <button class="link" routerLink="/feed" routerLinkActive="active">
+        <mat-icon fontIcon="home"></mat-icon>
+        <div>Home</div>
+      </button>
+      <button class="link" routerLink="/users/aprilmack/profile" routerLinkActive="active">
+        <mat-icon fontIcon="person"></mat-icon>
+        <div>Profile</div>
+      </button>
+      <button class="link" routerLink="/settings" routerLinkActive="active">
+        <mat-icon fontIcon="settings"></mat-icon>
+        <div>Settings</div>
+      </button>
+      <button class="link">
+        <mat-icon fontIcon="logout"></mat-icon>
+        <div>Sign out</div>
+      </button>
     </div>
   </nav>
 
