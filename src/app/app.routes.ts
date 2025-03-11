@@ -5,15 +5,20 @@ import {SettingsComponent} from './settings/settings.component';
 
 export const routes: Routes = [
   {
-    path: '',
-    component: FeedComponent
-  },
-  {
     path: 'users/:username/profile',
-    component: ProfileComponent
+    component: ProfileComponent,
   },
   {
     path: 'settings',
-    component: SettingsComponent
+    component: SettingsComponent,
+  },
+  {
+    path: 'feed',
+    component: FeedComponent,
+  },
+  {
+    path: '',
+    redirectTo: 'feed',
+    pathMatch: 'full'
   }
 ];
