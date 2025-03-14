@@ -1,6 +1,7 @@
 import {Component} from '@angular/core';
 import {RouterLink, RouterLinkActive, RouterOutlet} from '@angular/router';
 import {MatIcon} from '@angular/material/icon';
+import {ProfileBadgeComponent} from './profile-badge/profile-badge.component';
 
 @Component({
   selector: 'app-root',
@@ -9,7 +10,8 @@ import {MatIcon} from '@angular/material/icon';
     RouterLink,
     RouterOutlet,
     RouterLinkActive,
-    MatIcon
+    MatIcon,
+    ProfileBadgeComponent
   ],
   styleUrl: './app.component.scss'
 })

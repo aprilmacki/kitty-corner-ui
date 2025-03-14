@@ -1,0 +1,39 @@
+@import "../variables";
+
+img {
+  border-radius: 50%;
+  object-fit: cover;
+  width: 50px;
+  height: 50px;
+}
+
+.badge:hover {
+  background-color: $col-light-grey;
+  cursor: pointer;
+  transition-duration: 0.1s;
+}
+
+.badge {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+
+  padding: 5px;
+  background-color: $col-lighter-grey;
+  border-radius: 50vh;
+
+  .info {
+    display: flex;
+    flex-direction: column;
+    padding-left: 6px;
+
+    .name {
+      font-weight: bolder;
+      font-size: 1.2rem;
+      color: $col-text;
+    }
+    .username {
+      color: $col-text-grey;
+    }
+  }
+}

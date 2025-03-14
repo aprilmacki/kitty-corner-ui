@@ -7,13 +7,6 @@
   height: 100vh;
 }
 
-.left {
-  display: flex;
-  flex-direction: column;
-  border-right: solid 1px;
-  border-color: $col-light-grey;
-}
-
 .middle {
   display: flex;
   width: 800px
@@ -25,16 +18,22 @@
   border-color: $col-light-grey;
 }
 
-nav {
+.left {
+  display: flex;
+  flex-direction: column;
+  border-right: solid 1px;
+  border-color: $col-light-grey;
+  padding: 20px 20px 0 0;
+
   .links {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    padding: 0 20px 0 20px;
+    padding: 20px 20px 0 20px;
   }
 
   .link {
-    transition-duration: 0.4s;
+    transition-duration: 0.1s;
     border: none;
     background-color: transparent;
     border-radius: 4px;
@@ -42,6 +41,7 @@ nav {
     padding: 6px 30px 6px 20px;
     width: 100%;
     text-align: left;
+    color: $col-text;
 
     display: flex;
     flex-direction: row;
@@ -52,9 +52,11 @@ nav {
 
   .link:hover {
     background-color: $col-light-grey;
+    cursor: pointer;
   }
 
   .active {
     text-decoration: underline;
   }
 }
+
