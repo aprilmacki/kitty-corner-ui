@@ -1,5 +1,4 @@
 @use '@angular/material' as mat;
-@import 'variables';
 
 .all {
   display: flex;
@@ -16,14 +15,14 @@
 .right {
   display: flex;
   border-left: solid 1px;
-  border-color: $col-light-grey;
+  border-color: var(--mat-sys-outline)
 }
 
 .left {
   display: flex;
   flex-direction: column;
   border-right: solid 1px;
-  border-color: $col-light-grey;
+  border-color: var(--mat-sys-outline);
   padding: 20px 20px 0 0;
 
   .links {
@@ -39,7 +38,6 @@
       text-label-text-font: var(--mat-sys-title-large-font),
       text-label-text-size: var(--mat-sys-title-large-size),
       text-label-text-weight: var(--mat-sys-title-large-weight),
-      text-state-layer-color: var(--mat-sys-on-surface),
     ));
 
     border-radius: 4px;
