@@ -1,3 +1,4 @@
+@use '@angular/material' as mat;
 @import 'variables';
 
 .all {
@@ -33,15 +34,18 @@
   }
 
   .link {
-    transition-duration: 0.1s;
-    border: none;
-    background-color: transparent;
+    @include mat.button-overrides((
+      text-label-text-color: var(--mat-sys-on-surface),
+      text-label-text-font: var(--mat-sys-title-large-font),
+      text-label-text-size: var(--mat-sys-title-large-size),
+      text-label-text-weight: var(--mat-sys-title-large-weight),
+      text-state-layer-color: var(--mat-sys-on-surface),
+    ));
+
     border-radius: 4px;
-    font-size: 1.5rem;
     padding: 6px 30px 6px 20px;
     width: 100%;
     text-align: left;
-    color: $col-text;
 
     display: flex;
     flex-direction: row;
@@ -51,13 +55,7 @@
     white-space: nowrap;
   }
 
-  .link:hover {
-    background-color: $col-light-grey;
-    cursor: pointer;
-  }
-
   .active {
     text-decoration: underline;
   }
 }
-
