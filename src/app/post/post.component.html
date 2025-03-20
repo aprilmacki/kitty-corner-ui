@@ -1,0 +1,35 @@
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+
+<div class="post">
+  <div class="profile">
+    <img ngSrc="{{this.post.authorProfilePhotoUrl}}" height="50" width="50" alt="profile photo"/>
+  </div>
+  <div class="content">
+    <div class="user">
+      <span class="profileName">{{this.post.authorProfileName}}</span>
+      <span class="userName">&#64;{{this.post.authorUsername}}</span>
+    </div>
+    <div class="body">
+      {{ this.post.body }}
+    </div>
+    <div class="info">
+      <span class="createdAt">{{this.post.createdAt | date:'M/d/yy h:mm a'}}</span>
+      <span>&bullet;</span>
+      <span class="distance">{{this.post.distanceKm | number: '1.0-1'}} km away</span>
+    </div>
+    <div class="reactions">
+      @if (this.post.myReaction == 'like') {
+        <mat-icon>thumb_up</mat-icon>
+      } @else {
+        <mat-icon fontSet="material-symbols-outlined">thumb_up</mat-icon>
+      }
+      @if (this.post.myReaction == 'dislike') {
+        <mat-icon>thumb_down</mat-icon>
+      } @else {
+        <mat-icon fontSet="material-symbols-outlined">thumb_down</mat-icon>
+      }
+      <mat-icon fontSet="material-symbols-outlined">forum</mat-icon>
+      <mat-icon>ios_share</mat-icon>
+    </div>
+  </div>
+</div>

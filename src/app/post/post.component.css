@@ -1,0 +1,57 @@
+
+:host {
+  :hover {
+    background-color: var(--mat-sys-surface);
+  }
+}
+
+.post{
+  display: flex;
+  flex-direction: row;
+  padding: 10px;
+  border-bottom: 1px solid var(--mat-sys-outline);
+
+
+  img {
+    border-radius: 50%;
+    object-fit: cover;
+    width: 50px;
+    height: 50px;
+  }
+
+  .content {
+    padding-left: 10px;
+    width: 100%;
+    .user {
+      display: flex;
+      flex-direction: row;
+      gap: 0.5rem;
+      font: var(--mat-sys-title-medium);
+      .profileName {
+        font-weight: 500;
+      }
+      .userName {
+        color: var(--mat-sys-outline);
+      }
+    }
+    .body {
+      font: var(--mat-sys-body-large);
+      padding-top: 5px;
+    }
+    .info {
+      padding-top: 5px;
+      font: var(--mat-sys-body-large);
+      color: var(--mat-sys-outline);
+      * {
+        padding-right: 5px;
+      }
+    }
+    .reactions {
+      width: 100%;
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+    }
+  }
+}
+
