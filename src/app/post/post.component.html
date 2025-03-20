@@ -19,17 +19,29 @@
     </div>
     <div class="reactions">
       @if (this.post.myReaction == 'like') {
-        <mat-icon>thumb_up</mat-icon>
+        <button mat-icon-button>
+          <mat-icon>thumb_up</mat-icon>
+        </button>
       } @else {
-        <mat-icon fontSet="material-symbols-outlined">thumb_up</mat-icon>
+        <button mat-icon-button>
+          <mat-icon fontSet="material-symbols-outlined">thumb_up</mat-icon>
+        </button>
       }
       @if (this.post.myReaction == 'dislike') {
-        <mat-icon>thumb_down</mat-icon>
+        <button mat-icon-button>
+          <mat-icon>thumb_down</mat-icon>
+        </button>
       } @else {
-        <mat-icon fontSet="material-symbols-outlined">thumb_down</mat-icon>
+        <button mat-icon-button>
+          <mat-icon fontSet="material-symbols-outlined">thumb_down</mat-icon>
+        </button>
       }
-      <mat-icon fontSet="material-symbols-outlined">forum</mat-icon>
-      <mat-icon>ios_share</mat-icon>
+      <button mat-icon-button>
+        <mat-icon fontSet="material-symbols-outlined">forum</mat-icon>
+      </button>
+      <button mat-icon-button>
+        <mat-icon>ios_share</mat-icon>
+      </button>
     </div>
   </div>
 </div>
