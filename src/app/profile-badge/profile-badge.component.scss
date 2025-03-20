@@ -8,7 +8,7 @@ img {
 }
 
 .badge:hover {
-  background-color: $col-light-grey;
+  background-color: var(--mat-sys-surface-container-highest);
   cursor: pointer;
   transition-duration: 0.1s;
 }
@@ -19,7 +19,7 @@ img {
   align-items: center;
 
   padding: 5px;
-  background-color: $col-lighter-grey;
+  background-color: var(--mat-sys-surface-container);
   border-radius: 50vh;
 
   .info {
@@ -30,10 +30,10 @@ img {
     .name {
       font-weight: bolder;
       font-size: 1.2rem;
-      color: $col-text;
+      color: var(--mat-sys-on-surface);
     }
     .username {
-      color: $col-text-grey;
+      color: var(--mat-sys-outline);
     }
   }
 }

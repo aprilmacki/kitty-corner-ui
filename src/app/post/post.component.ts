@@ -12,7 +12,7 @@ import {MatIcon} from '@angular/material/icon';
     MatIcon
   ],
   templateUrl: './post.component.html',
-  styleUrl: './post.component.css'
+  styleUrl: './post.component.scss'
 })
 export class PostComponent {
   @Input() post!: PostModel;
