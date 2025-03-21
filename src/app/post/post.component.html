@@ -2,12 +2,12 @@
 
 <div class="post">
   <div class="profile">
-    <img ngSrc="{{this.post.authorProfilePhotoUrl}}" height="50" width="50" alt="profile photo"/>
+    <img ngSrc="{{this.post.author.profilePhotoUrl}}" height="50" width="50" alt="profile photo"/>
   </div>
   <div class="content">
     <div class="user">
-      <span class="profileName">{{this.post.authorProfileName}}</span>
-      <span class="userName">&#64;{{this.post.authorUsername}}</span>
+      <span class="profileName">{{this.post.author.profileName}}</span>
+      <span class="userName">&#64;{{this.post.author.username}}</span>
     </div>
     <div class="body">
       {{ this.post.body }}
