@@ -13,7 +13,6 @@ import {MatButton} from '@angular/material/button';
     RouterLinkActive,
     MatIcon,
     ProfileBadgeComponent,
-    MatButton
   ],
   styleUrl: './app.component.scss'
 })
