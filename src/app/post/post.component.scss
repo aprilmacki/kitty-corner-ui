@@ -1,13 +1,12 @@
 
-.post:hover {
-  background-color: var(--mat-sys-surface);
+:host:hover {
+  background-color: var(--mat-sys-surface-container-low);
 }
 
-.post{
+:host{
   display: flex;
   flex-direction: row;
   padding: 10px;
-  border-bottom: 1px solid var(--mat-sys-outline);
 
   img {
     border-radius: 50%;

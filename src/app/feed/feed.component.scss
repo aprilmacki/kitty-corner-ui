@@ -5,6 +5,11 @@
 }
 
 .top-bar {
+  position: sticky;
+  top: 0;
+  background-color: var(--mat-sys-surface);
+  z-index: 1;
+
   border-bottom: solid 1px;
   border-color: var(--mat-sys-outline);
   display: flex;
@@ -40,4 +45,8 @@
   .post-button {
     padding-right: 5px;
   }
+}
+
+.posts > :not(:last-child)  {
+  border-bottom: 1px solid var(--mat-sys-outline);
 }

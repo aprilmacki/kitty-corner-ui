@@ -1,47 +1,45 @@
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
 
-<div class="post">
-  <div class="profile">
-    <img ngSrc="{{this.post.author.profilePhotoUrl}}" height="50" width="50" alt="profile photo"/>
+<div class="profile">
+  <img ngSrc="{{this.post.author.profilePhotoUrl}}" height="50" width="50" alt="profile photo"/>
+</div>
+<div class="content">
+  <div class="user">
+    <span class="profileName">{{this.post.author.profileName}}</span>
+    <span class="userName">&#64;{{this.post.author.username}}</span>
   </div>
-  <div class="content">
-    <div class="user">
-      <span class="profileName">{{this.post.author.profileName}}</span>
-      <span class="userName">&#64;{{this.post.author.username}}</span>
-    </div>
-    <div class="body">
-      {{ this.post.body }}
-    </div>
-    <div class="info">
-      <span class="createdAt">{{this.post.createdAt | date:'M/d/yy h:mm a'}}</span>
-      <span>&bullet;</span>
-      <span class="distance">{{this.post.distanceKm | number: '1.0-1'}} km away</span>
-    </div>
-    <div class="reactions">
-      @if (this.post.myReaction == 'like') {
-        <button mat-icon-button>
-          <mat-icon>thumb_up</mat-icon>
-        </button>
-      } @else {
-        <button mat-icon-button>
-          <mat-icon fontSet="material-symbols-outlined">thumb_up</mat-icon>
-        </button>
-      }
-      @if (this.post.myReaction == 'dislike') {
-        <button mat-icon-button>
-          <mat-icon>thumb_down</mat-icon>
-        </button>
-      } @else {
-        <button mat-icon-button>
-          <mat-icon fontSet="material-symbols-outlined">thumb_down</mat-icon>
-        </button>
-      }
+  <div class="body">
+    {{ this.post.body }}
+  </div>
+  <div class="info">
+    <span class="createdAt">{{this.post.createdAt | date:'M/d/yy h:mm a'}}</span>
+    <span>&bullet;</span>
+    <span class="distance">{{this.post.distanceKm | number: '1.0-1'}} km away</span>
+  </div>
+  <div class="reactions">
+    @if (this.post.myReaction == 'like') {
       <button mat-icon-button>
-        <mat-icon fontSet="material-symbols-outlined">forum</mat-icon>
+        <mat-icon>thumb_up</mat-icon>
       </button>
+    } @else {
       <button mat-icon-button>
-        <mat-icon>ios_share</mat-icon>
+        <mat-icon fontSet="material-symbols-outlined">thumb_up</mat-icon>
       </button>
-    </div>
+    }
+    @if (this.post.myReaction == 'dislike') {
+      <button mat-icon-button>
+        <mat-icon>thumb_down</mat-icon>
+      </button>
+    } @else {
+      <button mat-icon-button>
+        <mat-icon fontSet="material-symbols-outlined">thumb_down</mat-icon>
+      </button>
+    }
+    <button mat-icon-button>
+      <mat-icon fontSet="material-symbols-outlined">forum</mat-icon>
+    </button>
+    <button mat-icon-button>
+      <mat-icon>ios_share</mat-icon>
+    </button>
   </div>
 </div>
