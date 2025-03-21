@@ -1,76 +1,72 @@
 {
-  "success": {
-    "status": 200,
-    "response": {
-      "posts": [
-        {
-          "postId": 24,
-          "username": "minathecat",
-          "body": "meow.",
-          "distanceKm": 0.4,
-          "totalLikes": 102,
-          "totalDislikes": 3,
-          "totalComments": 3,
-          "createdAtEpochSeconds": "2025-02-28T14:12-06:00",
-          "updatedAtEpochSeconds": null,
-          "myReaction": "like"
-        },
-        {
-          "postId": 23,
-          "username": "vincent_van_dough",
-          "body": "does anyone want some of my sourdough starter?",
-          "distanceKm": 2.2,
-          "totalLikes": 15,
-          "totalDislikes": 2,
-          "totalComments": 45,
-          "createdAtEpochSeconds": "2025-02-28T14:11-06:00",
-          "updatedAtEpochSeconds": null,
-          "myReaction": "like"
-        },
-        {
-          "postId": 11,
-          "username": "misato",
-          "body": "The FitnessGram™ Pacer Test is a multistage aerobic capacity test that  progressively gets more difficult as it continues. The 20 meter pacer  test will begin in 30 seconds. Line up at the start. The running speed  starts slowly, but gets faster each minute after you hear this signal.",
-          "distanceKm": 1,
-          "totalLikes": 5,
-          "totalDislikes": 1,
-          "totalComments": 1,
-          "createdAtEpochSeconds": "2025-02-28T13:45-06:00",
-          "myReaction": "dislike"
-        },
-        {
-          "postId": 7,
-          "username": "tequila_sunset",
-          "body": "has anyone seen my necktie, gun, motor carriage, or badge? i know i know.",
-          "distanceKm": 0.1,
-          "totalLikes": 45,
-          "totalDislikes": 0,
-          "totalComments": 2,
-          "createdAtEpochSeconds": "2025-02-28T13:38-06:00",
-          "updatedAtEpochSeconds": null,
-          "myReaction": null
-        },
-        {
-          "postId": 5,
-          "username": "aprilmack",
-          "body": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod  tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim  veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea  commodo consequat. Duis aute irure dolor in reprehenderit in voluptate  velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint  occaecat cupidatat non proident, sunt in culpa qui officia deserunt  mollit anim id est laborum.",
-          "distanceKm": 0,
-          "totalLikes": 2,
-          "totalDislikes": 0,
-          "totalComments": 0,
-          "createdAtEpochSeconds": "2025-02-28T13:33-06:00",
-          "updatedAtEpochSeconds": null,
-          "myReaction": null
-        }
-      ],
-      "nextCursor": 25
-    }
-  },
-  "failures": [
-    {
-      "status": 500,
-      "response": {
+  "200": {
+    "posts": [
+      {
+        "postId": 24,
+        "username": "minathecat",
+        "body": "meow.",
+        "distanceKm": 0.4,
+        "totalLikes": 102,
+        "totalDislikes": 3,
+        "totalComments": 3,
+        "createdAtEpochSeconds": "2025-02-28T14:12-06:00",
+        "updatedAtEpochSeconds": null,
+        "myReaction": "like"
+      },
+      {
+        "postId": 23,
+        "username": "vincent_van_dough",
+        "body": "does anyone want some of my sourdough starter?",
+        "distanceKm": 2.2,
+        "totalLikes": 15,
+        "totalDislikes": 2,
+        "totalComments": 45,
+        "createdAtEpochSeconds": "2025-02-28T14:11-06:00",
+        "updatedAtEpochSeconds": null,
+        "myReaction": "like"
+      },
+      {
+        "postId": 11,
+        "username": "misato",
+        "body": "The FitnessGram™ Pacer Test is a multistage aerobic capacity test that  progressively gets more difficult as it continues. The 20 meter pacer  test will begin in 30 seconds. Line up at the start. The running speed  starts slowly, but gets faster each minute after you hear this signal.",
+        "distanceKm": 1,
+        "totalLikes": 5,
+        "totalDislikes": 1,
+        "totalComments": 1,
+        "createdAtEpochSeconds": "2025-02-28T13:45-06:00",
+        "myReaction": "dislike"
+      },
+      {
+        "postId": 7,
+        "username": "tequila_sunset",
+        "body": "has anyone seen my necktie, gun, motor carriage, or badge? i know i know.",
+        "distanceKm": 0.1,
+        "totalLikes": 45,
+        "totalDislikes": 0,
+        "totalComments": 2,
+        "createdAtEpochSeconds": "2025-02-28T13:38-06:00",
+        "updatedAtEpochSeconds": null,
+        "myReaction": null
+      },
+      {
+        "postId": 5,
+        "username": "aprilmack",
+        "body": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod  tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim  veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea  commodo consequat. Duis aute irure dolor in reprehenderit in voluptate  velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint  occaecat cupidatat non proident, sunt in culpa qui officia deserunt  mollit anim id est laborum.",
+        "distanceKm": 0,
+        "totalLikes": 2,
+        "totalDislikes": 0,
+        "totalComments": 0,
+        "createdAtEpochSeconds": "2025-02-28T13:33-06:00",
+        "updatedAtEpochSeconds": null,
+        "myReaction": null
       }
-    }
-  ]
+    ],
+    "nextCursor": 25
+  },
+  "500": {
+    "title": "Internal Server Error",
+    "status": 500,
+    "detail": "Unexpected error occurred",
+    "path": "/api/posts"
+  }
 }

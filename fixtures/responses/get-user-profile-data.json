@@ -1,0 +1,48 @@
+
+{
+  "aprilmack": {
+    "username": "aprilmack",
+    "name": "April",
+    "pronouns": "she/her",
+    "age": 27,
+    "location": "Chicago, IL",
+    "joinedAtEpochSeconds": "2025-02-01T08:30-06:00",
+    "totalPosts": 1
+  },
+  "minathecat": {
+    "username": "minathecat",
+    "name": "Mina",
+    "pronouns": "she/her",
+    "age": 4,
+    "location": "Chicago, IL",
+    "joinedAtEpochSeconds": "2025-01-23T09:32-06:00",
+    "totalPosts": 154
+  },
+  "tequila_sunset": {
+    "username": "tequila_sunset",
+    "name": "Harry",
+    "pronouns": "he/him",
+    "age": 42,
+    "location": "Revachol, Le Caillou",
+    "joinedAtEpochSeconds": "2025-01-25T14:02-06:00",
+    "totalPosts": 2
+  },
+  "misato": {
+    "username": "misato",
+    "name": "Misato",
+    "pronouns": "she/her",
+    "age": 29,
+    "location": "Tokyo 3",
+    "joinedAtEpochSeconds": "2025-01-04T18:24-06:00",
+    "totalPosts": 1
+  },
+  "vincent_van_dough": {
+    "username": "vincent_van_dough",
+    "name": "Kenny",
+    "pronouns": "they/them",
+    "age": 32,
+    "location": "Chicago, IL",
+    "joinedAtEpochSeconds": "2025-01-06T14:54-06:00",
+    "totalPosts": 3
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "404": {
+    "title": "Not Found",
+    "status": 404,
+    "detail": "User not found",
+    "path": "/api/users/:username/profile"
+  }
+}
