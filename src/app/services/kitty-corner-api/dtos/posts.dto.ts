@@ -1,5 +1,5 @@
 
-export type Reaction = 'like' | 'dislike';
+export type ReactionDto = 'like' | 'dislike' | null;
 
 export interface PostDto {
   postId: number;
@@ -11,7 +11,7 @@ export interface PostDto {
   totalComments: number;
   createdAtEpochSeconds: number;
   updatedAtEpochSeconds: number | null;
-  myReaction: Reaction | null;
+  myReaction: ReactionDto | null;
 }
 
 export interface GetPostsDto {

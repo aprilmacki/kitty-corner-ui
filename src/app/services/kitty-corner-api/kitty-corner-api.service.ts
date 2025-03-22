@@ -20,6 +20,7 @@ export class KittyCornerApiService {
           return this.apiClient.getUserProfile(post.username).pipe(
             map((profile: UserProfileDto) => {
               return {
+                postId: post.postId,
                 author: {
                   profileName: profile.name,
                   username: profile.username,

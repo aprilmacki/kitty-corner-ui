@@ -17,10 +17,10 @@
     <span class="distance">{{this.post.distanceKm | number: '1.0-1'}} km away</span>
   </div>
   <div class="reactions">
-    <button mat-icon-button>
+    <button mat-icon-button (click)="handleLike()">
       <mat-icon fontSet="material-symbols-outlined" [class]="this.post.myReaction == 'like' ? 'icon-filled' : 'icon-not-filled'">thumb_up</mat-icon>
     </button>
-    <button mat-icon-button>
+    <button mat-icon-button (click)="handleDislike()">
       <mat-icon fontSet="material-symbols-outlined" [class]="this.post.myReaction == 'dislike' ? 'icon-filled' : 'icon-not-filled'">thumb_down</mat-icon>
     </button>
     <button mat-icon-button>

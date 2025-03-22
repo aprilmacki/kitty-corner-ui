@@ -1,7 +1,7 @@
-
-export type Reaction = 'like' | 'dislike';
+import {ReactionDto} from '../dtos/posts.dto';
 
 export type PostModel = {
+  postId: number;
   author: {
     profileName: string;
     username: string;
@@ -14,7 +14,7 @@ export type PostModel = {
   totalComments: number;
   createdAt: Date | null;
   updatedAt: Date | null;
-  myReaction: Reaction | null;
+  myReaction: ReactionDto | null;
 }
 
 export interface PageModel<Type> {
