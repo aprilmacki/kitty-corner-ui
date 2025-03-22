@@ -1,4 +1,11 @@
 
+.icon-filled {
+  font-variation-settings: 'FILL' 1
+}
+.icon-not-filled {
+  font-variation-settings: 'FILL' 0
+}
+
 :host:hover {
   background-color: var(--mat-sys-surface-container-low);
 }

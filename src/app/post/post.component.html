@@ -1,4 +1,4 @@
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"/>
 
 <div class="profile">
   <img ngSrc="{{this.post.author.profilePhotoUrl}}" height="50" width="50" alt="profile photo"/>
@@ -17,24 +17,12 @@
     <span class="distance">{{this.post.distanceKm | number: '1.0-1'}} km away</span>
   </div>
   <div class="reactions">
-    @if (this.post.myReaction == 'like') {
-      <button mat-icon-button>
-        <mat-icon>thumb_up</mat-icon>
-      </button>
-    } @else {
-      <button mat-icon-button>
-        <mat-icon fontSet="material-symbols-outlined">thumb_up</mat-icon>
-      </button>
-    }
-    @if (this.post.myReaction == 'dislike') {
-      <button mat-icon-button>
-        <mat-icon>thumb_down</mat-icon>
-      </button>
-    } @else {
-      <button mat-icon-button>
-        <mat-icon fontSet="material-symbols-outlined">thumb_down</mat-icon>
-      </button>
-    }
+    <button mat-icon-button>
+      <mat-icon fontSet="material-symbols-outlined" [class]="this.post.myReaction == 'like' ? 'icon-filled' : 'icon-not-filled'">thumb_up</mat-icon>
+    </button>
+    <button mat-icon-button>
+      <mat-icon fontSet="material-symbols-outlined" [class]="this.post.myReaction == 'dislike' ? 'icon-filled' : 'icon-not-filled'">thumb_down</mat-icon>
+    </button>
     <button mat-icon-button>
       <mat-icon fontSet="material-symbols-outlined">forum</mat-icon>
     </button>
