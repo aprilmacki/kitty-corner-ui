@@ -67,7 +67,7 @@ export class FeedComponent implements OnInit {
     this.kittyCornerApiService.getPosts(pageConfig).subscribe(
       {
         next: (page: PageModel<PostModel>) => {
-          if (page.items.length === 0) {
+          if (page.items.length == 0) {
             this.noMorePosts = true;
           }
           this.posts.push(...page.items);

@@ -13,25 +13,26 @@ export class KittyCornerApiClient {
   constructor(private httpClient: HttpClient) { }
 
   public getPosts(pageConfig: PageConfigModel): Observable<GetPostsDto> {
-    const params: HttpParams = new HttpParams();
+    let params: HttpParams = new HttpParams();
     if (pageConfig.startAge != null) {
-      params.set('startAge', pageConfig.startAge);
+      params = params.set('startAge', pageConfig.startAge);
     }
     if (pageConfig.endAge != null) {
-      params.set('endAge', pageConfig.endAge);
+      params = params.set('endAge', pageConfig.endAge);
     }
     if (pageConfig.radiusKm != null) {
-      params.set('radiusKm', pageConfig.radiusKm);
+      params = params.set('radiusKm', pageConfig.radiusKm);
     }
     if (pageConfig.cursor != null) {
-      params.set('cursor', pageConfig.cursor);
+      params = params.set('cursor', pageConfig.cursor);
     }
-    params.set('limit', pageConfig.limit);
+    params = params.set('limit', pageConfig.limit);
 
-    return this.httpClient.get<GetPostsDto>('/api/posts', {params});
+    return this.httpClient.get<GetPostsDto>('/api/posts', {params: params});
   }
 
   getUserProfile(username: string): Observable<UserProfileDto> {
+    // TODO: Cache these
     return this.httpClient.get<UserProfileDto>(`/api/users/${username}/profile`);
   }
 

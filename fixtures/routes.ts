@@ -1,6 +1,7 @@
 import * as express from 'express';
-import {UserProfileDto} from '../src/app/services/kitty-corner-api/dtos/user.dto';
-import {GetPostsDto, PostDto, ReactionDto} from '../src/app/services/kitty-corner-api/dtos/posts.dto';
+import {GetPostsDto} from '../src/app/services/kitty-corner-api/dtos/posts.dto';
+import * as data from './data/data';
+import {PostJson, UserProfileJson} from './data/data';
 
 export const router: express.Router = express.Router();
 
@@ -15,42 +16,73 @@ interface ErrorResponse {
   path: string
 }
 
-const postIdToReaction: Map<number, ReactionDto> = new Map();
+const POSTS: data.PostJson[] = function(){
+  const posts: data.PostJson[] = require('./data/post-data.json').posts;
+
+  const postDate: Date = new Date('2025-02-23T08:30-06:00');
+  for (let i = 0; i < 30; i++) {
+    const postId = 100 - i;
+    postDate.setMinutes(postDate.getSeconds() - 30);
+    const fillerPost: data.PostJson = {
+      postId: postId,
+      username: 'minathecat',
+      body: `meow ${postId}`,
+      distanceKm: 0,
+      totalLikes: 0,
+      totalDislikes: 0,
+      totalComments: 0,
+      createdAt: postDate.toString(),
+      updatedAt: null,
+      myReaction: null
+    };
+    posts.push(fillerPost);
+  }
+
+  posts.sort((a, b) => new Date(a.createdAt).getUTCSeconds() - new Date(b.createdAt).getUTCSeconds());
+
+  return posts;
+}();
+const POSTS_BY_ID: Map<number, data.PostJson> = function() {
+  const postsById: Map<number, data.PostJson> = new Map();
+  for (const post of POSTS) {
+    postsById.set(post.postId, post);
+  }
+  return postsById;
+}();
 
 router.get('/api/posts/', (req: express.Request, res: express.Response) => {
   setTimeout(() => {
-    const testResponses: TestResponses<GetPostsDto> = require('./responses/get-posts.json');
+    const cursor: number = Number(req.query['cursor'] ?? 0);
+    const limit: number = Number(req.query['limit'] ?? 10);
 
-    const posts: PostDto[] = (<GetPostsDto>testResponses[200]).posts;
-    posts.forEach((post: PostDto) => {
-      if (postIdToReaction.has(post.postId)) {
-        if (post.myReaction == 'like') {
-          post.totalLikes--;
-        } else if (post.myReaction == 'dislike') {
-          post.totalDislikes--;
-        }
-        post.myReaction = postIdToReaction.get(post.postId)!;
-        if (post.myReaction == 'like') {
-          post.totalLikes++;
-        } else if (post.myReaction == 'dislike') {
-          post.totalDislikes++;
-        }
+    console.log(`cursor: ${cursor}, limit: ${limit}`);
+
+    const selectedPosts: PostJson[] = [];
+    for (const post of POSTS) {
+      if (selectedPosts.length > limit) {
+        break;
       }
-    })
+      if (post.postId <= cursor || cursor === 0) {
+        selectedPosts.push(post);
+      }
+    }
 
     res.status(200);
-    res.json(testResponses[200]);
+    res.json({
+      posts: selectedPosts.map((post: data.PostJson) => data.toPostDto(post)),
+      nextCursor: selectedPosts.length == 0 ? 0 : selectedPosts[selectedPosts.length-1].postId - 1
+    } as GetPostsDto)
   }, 2000);
 });
 
 router.get('/api/users/:username/profile', (req: express.Request, res: express.Response) => {
   setTimeout(() => {
-    const testData: Map<string, UserProfileDto> = new Map(Object.entries(require('./responses/get-user-profile-data.json')));
-    const testResponses: TestResponses<UserProfileDto> = require('./responses/get-user-profile.json');
+    const testData: Map<string, UserProfileJson> = new Map(Object.entries(require('./data/user-profile-data.json')));
+    const testResponses: TestResponses<ErrorResponse> = require('./data/get-user-profile.json');
 
     if (testData.has(req.params["username"])) {
       res.status(200);
-      res.json(testData.get(req.params["username"]));
+      res.json(data.toUserProfileDto(testData.get(req.params["username"])!));
     } else {
       res.status(404);
       res.json(testResponses[404]);
@@ -60,8 +92,40 @@ router.get('/api/users/:username/profile', (req: express.Request, res: express.R
 
 router.put('/api/posts/:postId/my-reactions', (req: express.Request, res: express.Response) => {
   setTimeout(() => {
-    postIdToReaction.set(Number(req.params['postId']), req.body.type);
-    res.status(204);
+    const postId: number = Number(req.params['postId']);
+    if (POSTS_BY_ID.has(postId)) {
+      const post: PostJson = POSTS_BY_ID.get(Number(req.params["postId"]))!;
+
+      if (post.myReaction == 'like') {
+        if (req.body.type == 'dislike') {
+          post.totalDislikes++;
+          post.totalLikes--;
+        } else if (req.body.type == null) {
+          post.totalLikes--;
+        }
+      } else if (post.myReaction == 'dislike') {
+        if (req.body.type == 'like') {
+          post.totalLikes++;
+          post.totalDislikes--;
+        } else if (req.body.type == null) {
+          post.totalDislikes--;
+        }
+      } else {
+        if (req.body.type == 'like') {
+          post.totalLikes++;
+        } else if (req.body.type == 'dislike') {
+          post.totalDislikes++;
+        }
+      }
+
+      post.myReaction = req.body.type;
+
+      res.status(204);
+      res.json({});
+      return;
+    }
+
+    res.status(404);
     res.json({});
   }, 50)
 })
