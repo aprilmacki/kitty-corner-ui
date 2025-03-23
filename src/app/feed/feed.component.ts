@@ -22,15 +22,18 @@ import {MatProgressSpinner} from '@angular/material/progress-spinner';
   styleUrl: './feed.component.scss'
 })
 export class FeedComponent implements OnInit {
-  posts: PostModel[] = [];
+  private nextCursor: number = 0;
 
-  loadingStatus: LoadingStatus = 'loading';
+  posts: PostModel[] = [];
+  initialLoadingStatus: LoadingStatus = 'loading';
+  moreLoadingStatus: LoadingStatus = 'success';
+  noMorePosts: boolean = false;
 
   constructor(private kittyCornerApiService: KittyCornerApiService) {
   }
 
   ngOnInit() {
-    const pageConfig = {
+     const pageConfig = {
       startAge: null,
       endAge: null,
       radiusKm: null,
@@ -39,13 +42,42 @@ export class FeedComponent implements OnInit {
     } as PageConfigModel;
     this.kittyCornerApiService.getPosts(pageConfig).subscribe(
       {
-        next: (next: PageModel<PostModel>) => {
-          this.posts = next.items;
-          this.loadingStatus = 'success';
+        next: (page: PageModel<PostModel>) => {
+          this.posts = page.items;
+          this.nextCursor = page.nextCursor;
+          this.initialLoadingStatus = 'success';
         },
         error: (err) => {
-          this.loadingStatus = 'error';
+          console.log(err);
+          this.initialLoadingStatus = 'error';
         }
-      })
+      });
+  }
+
+  fetchNextPage() {
+    this.moreLoadingStatus = 'loading';
+
+    const pageConfig = {
+      startAge: null,
+      endAge: null,
+      radiusKm: null,
+      limit: 10,
+      cursor: this.nextCursor
+    } as PageConfigModel;
+    this.kittyCornerApiService.getPosts(pageConfig).subscribe(
+      {
+        next: (page: PageModel<PostModel>) => {
+          if (page.items.length === 0) {
+            this.noMorePosts = true;
+          }
+          this.posts.push(...page.items);
+          this.nextCursor = page.nextCursor;
+          this.moreLoadingStatus = 'success';
+        },
+        error: (err) => {
+          console.log(err);
+          this.moreLoadingStatus = 'error';
+        }
+      });
   }
 }
