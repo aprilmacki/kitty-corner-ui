@@ -29,6 +29,11 @@ export class PostComponent {
     this.kittyCornerClient.setPostReaction(this.post.postId, newReaction).subscribe({
       next: _ => {
         this.post.myReaction = newReaction;
+        if (newReaction == 'like') {
+          this.post.totalLikes++;
+        } else {
+          this.post.totalLikes--;
+        }
       },
       error: error=> {
         console.log(error);
@@ -41,6 +46,11 @@ export class PostComponent {
     this.kittyCornerClient.setPostReaction(this.post.postId, newReaction).subscribe({
       next: _ => {
         this.post.myReaction = newReaction;
+        if (newReaction == 'dislike') {
+          this.post.totalDislikes++;
+        } else {
+          this.post.totalDislikes--;
+        }
       },
       error: error=> {
         console.log(error);

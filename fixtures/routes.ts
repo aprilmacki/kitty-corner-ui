@@ -15,7 +15,6 @@ interface ErrorResponse {
   path: string
 }
 
-const TIMEOUT_MS = 200;
 const postIdToReaction: Map<number, ReactionDto> = new Map();
 
 router.get('/api/posts/', (req: express.Request, res: express.Response) => {
@@ -56,7 +55,7 @@ router.get('/api/users/:username/profile', (req: express.Request, res: express.R
       res.status(404);
       res.json(testResponses[404]);
     }
-  }, TIMEOUT_MS);
+  }, 500);
 });
 
 router.put('/api/posts/:postId/my-reactions', (req: express.Request, res: express.Response) => {
@@ -64,5 +63,5 @@ router.put('/api/posts/:postId/my-reactions', (req: express.Request, res: expres
     postIdToReaction.set(Number(req.params['postId']), req.body.type);
     res.status(204);
     res.json({});
-  }, TIMEOUT_MS)
+  }, 50)
 })
