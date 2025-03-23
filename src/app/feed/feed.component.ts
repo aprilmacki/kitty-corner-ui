@@ -5,6 +5,8 @@ import {PageConfigModel, PageModel, PostModel} from '../services/kitty-corner-ap
 import {PostComponent} from '../post/post.component';
 import {NgForOf} from '@angular/common';
 import {KittyCornerApiService} from '../services/kitty-corner-api/kitty-corner-api.service';
+import { LoadingStatus } from '../common/types';
+import {MatProgressSpinner} from '@angular/material/progress-spinner';
 
 @Component({
   selector: 'app-feed',
@@ -13,13 +15,16 @@ import {KittyCornerApiService} from '../services/kitty-corner-api/kitty-corner-a
     MatButton,
     MatIconButton,
     PostComponent,
-    NgForOf
+    NgForOf,
+    MatProgressSpinner,
   ],
   templateUrl: './feed.component.html',
   styleUrl: './feed.component.scss'
 })
 export class FeedComponent implements OnInit {
   posts: PostModel[] = [];
+
+  loadingStatus: LoadingStatus = 'loading';
 
   constructor(private kittyCornerApiService: KittyCornerApiService) {
   }
@@ -33,9 +38,14 @@ export class FeedComponent implements OnInit {
       cursor: 0
     } as PageConfigModel;
     this.kittyCornerApiService.getPosts(pageConfig).subscribe(
-      (next: PageModel<PostModel>) => {
-        this.posts = next.items;
-      }
-    )
+      {
+        next: (next: PageModel<PostModel>) => {
+          this.posts = next.items;
+          this.loadingStatus = 'success';
+        },
+        error: (err) => {
+          this.loadingStatus = 'error';
+        }
+      })
   }
 }

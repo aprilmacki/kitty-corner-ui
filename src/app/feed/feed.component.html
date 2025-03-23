@@ -16,6 +16,14 @@
   </div>
 </div>
 
-<div class="posts">
-  <app-post *ngFor="let post of posts" [post]="post"></app-post>
-</div>
+@if (this.loadingStatus == 'success') {
+  <div class="posts">
+    <app-post *ngFor="let post of posts" [post]="post"></app-post>
+  </div>
+} @else if (this.loadingStatus == 'loading') {
+  <div class="spinner">
+    <mat-spinner></mat-spinner>
+  </div>
+} @else if (this.loadingStatus == 'error') {
+  ERROR!!
+}

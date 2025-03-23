@@ -50,3 +50,11 @@
 .posts > :not(:last-child)  {
   border-bottom: 1px solid var(--mat-sys-outline);
 }
+
+.spinner {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  height: 50vh;
+}
