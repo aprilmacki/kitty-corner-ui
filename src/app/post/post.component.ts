@@ -24,16 +24,19 @@ export class PostComponent {
   constructor(private kittyCornerClient: KittyCornerApiClient) {
   }
 
-  public handleLike() {
+  public toggleLike() {
     const newReaction: ReactionDto = this.post.myReaction == 'like' ? null : 'like';
     this.kittyCornerClient.setPostReaction(this.post.postId, newReaction).subscribe({
       next: _ => {
-        this.post.myReaction = newReaction;
-        if (newReaction == 'like') {
-          this.post.totalLikes++;
-        } else {
+        if (this.post.myReaction == 'like') {
           this.post.totalLikes--;
+        } else if (this.post.myReaction == 'dislike') {
+          this.post.totalLikes++;
+          this.post.totalDislikes--;
+        } else if (this.post.myReaction == null) {
+          this.post.totalLikes++;
         }
+        this.post.myReaction = newReaction;
       },
       error: error=> {
         console.log(error);
@@ -41,16 +44,19 @@ export class PostComponent {
     });
   }
 
-  public handleDislike() {
+  public toggleDislike() {
     const newReaction: ReactionDto = this.post.myReaction == 'dislike' ? null : 'dislike';
     this.kittyCornerClient.setPostReaction(this.post.postId, newReaction).subscribe({
       next: _ => {
-        this.post.myReaction = newReaction;
-        if (newReaction == 'dislike') {
-          this.post.totalDislikes++;
-        } else {
+        if (this.post.myReaction == 'dislike') {
           this.post.totalDislikes--;
+        } else if (this.post.myReaction == 'like') {
+          this.post.totalDislikes++;
+          this.post.totalLikes--;
+        } else if (this.post.myReaction == null) {
+          this.post.totalDislikes++;
         }
+        this.post.myReaction = newReaction;
       },
       error: error=> {
         console.log(error);

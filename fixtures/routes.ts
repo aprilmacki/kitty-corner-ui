@@ -40,7 +40,7 @@ router.get('/api/posts/', (req: express.Request, res: express.Response) => {
 
     res.status(200);
     res.json(testResponses[200]);
-  }, 10000)
+  }, 2000);
 });
 
 router.get('/api/users/:username/profile', (req: express.Request, res: express.Response) => {
