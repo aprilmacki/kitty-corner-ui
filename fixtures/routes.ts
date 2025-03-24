@@ -56,6 +56,20 @@ const POSTS_BY_ID: Map<number, data.PostJson> = function() {
 
 const USERS: Map<string, data.UserProfileJson> =  new Map(Object.entries(require('./data/user-profile-data.json')));
 
+router.get('/api/v1/posts/:postId', (req: express.Request, res: express.Response) => {
+  setTimeout(() => {
+    const postId: number = Number(req.params['postId']);
+    if (!POSTS_BY_ID.has(postId)) {
+      res.status(404).send('Not Found');
+      return;
+    }
+    const post: data.PostJson = POSTS_BY_ID.get(postId)!;
+
+    res.status(200);
+    res.json(data.toPostDto(post));
+  }, 500);
+})
+
 router.get('/api/v1/posts/', (req: express.Request, res: express.Response) => {
   setTimeout(() => {
     const cursor: number = Number(req.query['cursor'] ?? 0);
@@ -89,7 +103,7 @@ router.get('/api/v1/posts/', (req: express.Request, res: express.Response) => {
       posts: selectedPosts.map((post: data.PostJson) => data.toPostDto(post)),
       nextCursor: selectedPosts.length == 0 ? 0 : selectedPosts[selectedPosts.length-1].postId - 1
     } as GetPostsDto)
-  }, 2000);
+  }, 1000);
 });
 
 router.get('/api/v1/users/:username/profile', (req: express.Request, res: express.Response) => {

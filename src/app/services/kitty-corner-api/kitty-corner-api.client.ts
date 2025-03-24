@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import {firstValueFrom, Observable,} from 'rxjs';
-import {GetPostsDto, ReactionDto} from './dtos/posts.dto';
+import {GetPostsDto, PostDto, ReactionDto} from './dtos/posts.dto';
 import {UserProfileDto} from './dtos/user.dto';
 import {PageConfigModel} from './models/post.model';
 import {HttpClient, HttpParams} from '@angular/common/http';
@@ -15,6 +15,10 @@ export class KittyCornerApiClient {
   });
 
   constructor(private httpClient: HttpClient) {
+  }
+
+  getPost(postId: number): Observable<PostDto> {
+    return this.httpClient.get<PostDto>(`/api/v1/posts/${postId}`);
   }
 
   getPosts(pageConfig: PageConfigModel): Observable<GetPostsDto> {

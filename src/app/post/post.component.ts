@@ -1,4 +1,4 @@
-import {Component, Input} from '@angular/core';
+import {booleanAttribute, Component, Input} from '@angular/core';
 import {PostModel} from '../services/kitty-corner-api/models/post.model';
 import {DatePipe, DecimalPipe, NgOptimizedImage} from '@angular/common';
 import {MatIcon} from '@angular/material/icon';
@@ -22,6 +22,7 @@ import {RouterLink} from '@angular/router';
 })
 export class PostComponent {
   @Input() post!: PostModel;
+  @Input({transform: booleanAttribute}) showCommentButton: boolean = true;
 
   constructor(private kittyCornerClient: KittyCornerApiClient) {
   }

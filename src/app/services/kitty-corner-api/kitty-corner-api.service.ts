@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import {KittyCornerApiClient} from './kitty-corner-api.client';
 import {PageModel, PageConfigModel, PostModel} from './models/post.model';
 import {concatMap, forkJoin, map, Observable, of} from 'rxjs';
-import {GetPostsDto} from './dtos/posts.dto';
+import {GetPostsDto, PostDto} from './dtos/posts.dto';
 import {UserProfileDto} from './dtos/user.dto';
 import * as util from '../../common/util';
 
@@ -11,6 +11,14 @@ import * as util from '../../common/util';
 })
 export class KittyCornerApiService {
   constructor(private apiClient: KittyCornerApiClient) { }
+
+  public getPost(postId: number): Observable<PostModel> {
+    return this.apiClient.getPost(postId).pipe(
+      concatMap((post: PostDto) => {
+        return this.buildPostModel(post);
+      })
+    );
+  }
 
   public getPosts(pageConfig: PageConfigModel): Observable<PageModel<PostModel>> {
     return this.apiClient.getPosts(pageConfig).pipe(
@@ -25,26 +33,7 @@ export class KittyCornerApiService {
         }
 
         const postsObservables: Observable<PostModel>[] = getPostsResults.posts.map(post => {
-          return this.apiClient.getUserProfileCached(post.username).pipe(
-            map((profile: UserProfileDto) => {
-              return {
-                postId: post.postId,
-                author: {
-                  profileName: profile.name,
-                  username: profile.username,
-                  profilePhotoUrl: `/assets/${profile.username}.png`
-                },
-                body: post.body,
-                distanceKm: post.distanceKm,
-                totalLikes: post.totalLikes,
-                totalDislikes: post.totalDislikes,
-                totalComments: post.totalComments,
-                createdAt: util.fromEpochSeconds(post.createdAtEpochSeconds),
-                updatedAt: post.updatedAtEpochSeconds != null ? util.fromEpochSeconds(post.updatedAtEpochSeconds) : null,
-                myReaction: post.myReaction
-              } as PostModel;
-            })
-          );
+          return this.buildPostModel(post);
         });
         return forkJoin(postsObservables).pipe(
           map((posts: PostModel[]) => {
@@ -56,5 +45,27 @@ export class KittyCornerApiService {
         );
       })
     );
+  }
+
+  private buildPostModel(post: PostDto): Observable<PostModel> {
+    return this.apiClient.getUserProfileCached(post.username).pipe(
+      map((profile: UserProfileDto) => {
+        return {
+          postId: post.postId,
+          author: {
+            profileName: profile.name,
+            username: profile.username,
+            profilePhotoUrl: `/assets/${profile.username}.png`
+          },
+          body: post.body,
+          distanceKm: post.distanceKm,
+          totalLikes: post.totalLikes,
+          totalDislikes: post.totalDislikes,
+          totalComments: post.totalComments,
+          createdAt: util.fromEpochSeconds(post.createdAtEpochSeconds),
+          updatedAt: post.updatedAtEpochSeconds != null ? util.fromEpochSeconds(post.updatedAtEpochSeconds) : null,
+          myReaction: post.myReaction
+        } as PostModel;
+      }));
   }
 }

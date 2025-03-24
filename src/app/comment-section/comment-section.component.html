@@ -6,3 +6,8 @@
   </div>
 </app-top-bar>
 
+@if (this.initialLoadingStatus === 'success') {
+  <app-post [post]="this.post!" showCommentButton="false">
+  </app-post>
+}
+
