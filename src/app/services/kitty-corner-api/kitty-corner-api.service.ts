@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import {KittyCornerApiClient} from './kitty-corner-api.client';
 import {PageModel, PageConfigModel, PostModel} from './models/post.model';
-import {concatMap, firstValueFrom, forkJoin, map, Observable, of} from 'rxjs';
+import {concatMap, forkJoin, map, Observable, of} from 'rxjs';
 import {GetPostsDto} from './dtos/posts.dto';
 import {UserProfileDto} from './dtos/user.dto';
 import * as util from '../../common/util';

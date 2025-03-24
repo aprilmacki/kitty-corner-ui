@@ -30,7 +30,7 @@
       <span>{{this.post.totalDislikes}}</span>
     </div>
     <div class="with-count">
-      <button mat-icon-button>
+      <button mat-icon-button [routerLink]="getCommentsLink()">
         <mat-icon fontSet="material-symbols-outlined">forum</mat-icon>
       </button>
       <span>{{this.post.totalComments}}</span>

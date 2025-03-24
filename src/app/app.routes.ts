@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 import {FeedComponent} from './feed/feed.component';
 import {ProfileComponent} from './profile/profile.component';
 import {SettingsComponent} from './settings/settings.component';
+import {CommentSectionComponent} from './comment-section/comment-section.component';
 
 export const routes: Routes = [
   {
@@ -13,12 +14,16 @@ export const routes: Routes = [
     component: SettingsComponent,
   },
   {
-    path: 'feed',
+    path: 'posts',
     component: FeedComponent,
   },
   {
+    path: 'posts/:postId/comments',
+    component: CommentSectionComponent
+  },
+  {
     path: '',
-    redirectTo: 'feed',
+    redirectTo: 'posts',
     pathMatch: 'full'
   }
 ];

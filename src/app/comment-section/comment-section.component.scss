@@ -1,0 +1,21 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.top-bar {
+  position: sticky;
+  top: 0;
+  background-color: var(--mat-sys-surface);
+  z-index: 1;
+
+  border-bottom: solid 1px;
+  border-color: var(--mat-sys-outline);
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+
+  padding: 0 0 0 10px;
+  height: 50px;
+}
