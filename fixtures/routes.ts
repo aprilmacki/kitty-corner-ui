@@ -16,9 +16,8 @@ interface ErrorResponse {
   path: string
 }
 
-const POSTS: data.PostJson[] = function(){
-  const posts: data.PostJson[] = require('./data/post-data.json').posts;
-
+function generatePosts() {
+  const posts: PostJson[] = [];
   const postDate: Date = new Date('2025-02-23T08:30-06:00');
   for (let i = 0; i < 30; i++) {
     const postId = 100 - i;
@@ -37,11 +36,16 @@ const POSTS: data.PostJson[] = function(){
     };
     posts.push(fillerPost);
   }
+  return posts;
+}
 
+const POSTS: data.PostJson[] = function(){
+  const posts: data.PostJson[] = require('./data/post-data.json').posts;
+  generatePosts().forEach(post => posts.push(post));
   posts.sort((a, b) => new Date(a.createdAt).getUTCSeconds() - new Date(b.createdAt).getUTCSeconds());
-
   return posts;
 }();
+
 const POSTS_BY_ID: Map<number, data.PostJson> = function() {
   const postsById: Map<number, data.PostJson> = new Map();
   for (const post of POSTS) {
@@ -50,17 +54,22 @@ const POSTS_BY_ID: Map<number, data.PostJson> = function() {
   return postsById;
 }();
 
+const USERS: Map<string, data.UserProfileJson> =  new Map(Object.entries(require('./data/user-profile-data.json')));
+
 router.get('/api/posts/', (req: express.Request, res: express.Response) => {
   setTimeout(() => {
     const cursor: number = Number(req.query['cursor'] ?? 0);
     const limit: number = Number(req.query['limit'] ?? 10);
-
-    console.log(`cursor: ${cursor}, limit: ${limit}`);
+    const startAge: number = Number(req.query['startAge'] ?? 18);
+    const endAge: number = Number(req.query['endAge']);
 
     const selectedPosts: PostJson[] = [];
     for (const post of POSTS) {
       if (selectedPosts.length > limit) {
         break;
+      }
+      if (USERS.get(post.username)!.age < startAge || USERS.get(post.username)!.age > endAge) {
+        continue;
       }
       if (post.postId <= cursor || cursor === 0) {
         selectedPosts.push(post);
@@ -77,12 +86,11 @@ router.get('/api/posts/', (req: express.Request, res: express.Response) => {
 
 router.get('/api/users/:username/profile', (req: express.Request, res: express.Response) => {
   setTimeout(() => {
-    const testData: Map<string, UserProfileJson> = new Map(Object.entries(require('./data/user-profile-data.json')));
     const testResponses: TestResponses<ErrorResponse> = require('./data/get-user-profile.json');
 
-    if (testData.has(req.params["username"])) {
+    if (USERS.has(req.params["username"])) {
       res.status(200);
-      res.json(data.toUserProfileDto(testData.get(req.params["username"])!));
+      res.json(data.toUserProfileDto(USERS.get(req.params["username"])!));
     } else {
       res.status(404);
       res.json(testResponses[404]);

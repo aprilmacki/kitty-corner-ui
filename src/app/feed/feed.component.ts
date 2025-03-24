@@ -5,8 +5,10 @@ import {PageConfigModel, PageModel, PostModel} from '../services/kitty-corner-ap
 import {PostComponent} from '../post/post.component';
 import {NgForOf} from '@angular/common';
 import {KittyCornerApiService} from '../services/kitty-corner-api/kitty-corner-api.service';
-import { LoadingStatus } from '../common/types';
+import {FeedFilterModel, LoadingStatus} from '../common/types';
 import {MatProgressSpinner} from '@angular/material/progress-spinner';
+import {MatDialog} from '@angular/material/dialog';
+import {FiltersDialogComponent} from './filters-modal/filters-dialog.component';
 
 @Component({
   selector: 'app-feed',
@@ -22,6 +24,7 @@ import {MatProgressSpinner} from '@angular/material/progress-spinner';
   styleUrl: './feed.component.scss'
 })
 export class FeedComponent implements OnInit {
+  private readonly POST_LIMIT = 10;
   private nextCursor: number = 0;
 
   posts: PostModel[] = [];
@@ -29,15 +32,45 @@ export class FeedComponent implements OnInit {
   moreLoadingStatus: LoadingStatus = 'success';
   noMorePosts: boolean = false;
 
-  constructor(private kittyCornerApiService: KittyCornerApiService) {
+  currentFilter: FeedFilterModel = {
+    startAge: 18,
+    endAge: 80,
+    distanceKm: 5
+  }
+
+  constructor(
+    private kittyCornerApiService: KittyCornerApiService,
+    private dialogService: MatDialog,
+  ) {
   }
 
   ngOnInit() {
-     const pageConfig = {
-      startAge: null,
-      endAge: null,
-      radiusKm: null,
-      limit: 10,
+    this.refreshPosts();
+  }
+
+  openFilterModal() {
+    const dialogRef = this.dialogService.open(FiltersDialogComponent, {
+      width: '50vw',
+      data: this.currentFilter
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result != null) {
+        this.currentFilter = result;
+        this.refreshPosts();
+      }
+    });
+  }
+
+  refreshPosts() {
+    this.initialLoadingStatus = 'loading';
+    this.noMorePosts = false;
+    this.moreLoadingStatus = 'success';
+    const pageConfig = {
+      startAge: this.currentFilter.startAge,
+      endAge: this.currentFilter.endAge,
+      radiusKm: this.currentFilter.distanceKm,
+      limit: this.POST_LIMIT,
       cursor: 0
     } as PageConfigModel;
     this.kittyCornerApiService.getPosts(pageConfig).subscribe(
@@ -58,10 +91,10 @@ export class FeedComponent implements OnInit {
     this.moreLoadingStatus = 'loading';
 
     const pageConfig = {
-      startAge: null,
-      endAge: null,
-      radiusKm: null,
-      limit: 10,
+      startAge: this.currentFilter.startAge,
+      endAge: this.currentFilter.endAge,
+      radiusKm: this.currentFilter.distanceKm,
+      limit: this.POST_LIMIT,
       cursor: this.nextCursor
     } as PageConfigModel;
     this.kittyCornerApiService.getPosts(pageConfig).subscribe(

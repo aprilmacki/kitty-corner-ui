@@ -1,0 +1,10 @@
+
+
+.filters {
+  display: flex;
+  flex-direction: column;
+
+  .filter-name {
+    font: var(--mat-sys-body-large);
+  }
+}
