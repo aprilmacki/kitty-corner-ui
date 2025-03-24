@@ -1,10 +1,12 @@
 
-.top-bar {
+:host {
   position: sticky;
   top: 0;
   background-color: var(--mat-sys-surface);
   z-index: 1;
+}
 
+.top-bar {
   border-bottom: solid 1px;
   border-color: var(--mat-sys-outline);
   display: flex;

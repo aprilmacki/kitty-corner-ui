@@ -19,18 +19,18 @@
 @if (this.initialLoadingStatus == 'success') {
   <div class="posts">
     <app-post *ngFor="let post of posts" [post]="post"></app-post>
-    <div class="more-button">
-      @if (this.moreLoadingStatus == 'success') {
-        <div class="vertical">
-          <button mat-stroked-button [disabled]="this.noMorePosts" (click)="fetchNextPage()">More</button>
-          @if (this.noMorePosts) {
-            No older posts
-          }
-        </div>
-      } @else if (this.moreLoadingStatus == 'loading') {
-        <mat-spinner [diameter]=40></mat-spinner>
-      }
-    </div>
+  </div>
+  <div class="more-button">
+    @if (this.moreLoadingStatus == 'success') {
+      <div class="vertical">
+        <button mat-stroked-button [disabled]="this.noMorePosts" (click)="fetchNextPage()">More</button>
+        @if (this.noMorePosts) {
+          No older posts
+        }
+      </div>
+    } @else if (this.moreLoadingStatus == 'loading') {
+      <mat-spinner [diameter]=40></mat-spinner>
+    }
   </div>
 } @else if (this.initialLoadingStatus == 'loading') {
   <div class="spinner">

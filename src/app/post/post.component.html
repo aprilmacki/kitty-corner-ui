@@ -1,19 +1,25 @@
-<div class="profile">
-  <img ngSrc="{{this.post.author.profilePhotoUrl}}" height="50" width="50" alt="profile photo"/>
-</div>
-<div class="content">
-  <div class="user">
-    <span class="profileName">{{this.post.author.profileName}}</span>
-    <span class="userName">&#64;{{this.post.author.username}}</span>
+
+<div class="post">
+  <div class="top">
+    <div class="profile">
+      <img ngSrc="{{this.post.author.profilePhotoUrl}}" height="50" width="50" alt="profile photo"/>
+    </div>
+    <div class="content">
+      <div class="user">
+        <span class="profileName">{{this.post.author.profileName}}</span>
+        <span class="userName">&#64;{{this.post.author.username}}</span>
+      </div>
+      <div class="body">
+        {{ this.post.body }}
+      </div>
+      <div class="info">
+        <span class="createdAt">{{this.post.createdAt | date:'M/d/yy h:mm a'}}</span>
+        <span>&bullet;</span>
+        <span class="distance">{{this.post.distanceKm | number: '1.0-1'}} km away</span>
+      </div>
+    </div>
   </div>
-  <div class="body">
-    {{ this.post.body }}
-  </div>
-  <div class="info">
-    <span class="createdAt">{{this.post.createdAt | date:'M/d/yy h:mm a'}}</span>
-    <span>&bullet;</span>
-    <span class="distance">{{this.post.distanceKm | number: '1.0-1'}} km away</span>
-  </div>
+
   <div class="reactions">
     <div class="with-count">
       <button mat-icon-button (click)="toggleLike()">
@@ -38,5 +44,8 @@
     <button mat-icon-button>
       <mat-icon>ios_share</mat-icon>
     </button>
+    @if (!this.showCommentButton) {
+      <div></div>
+    }
   </div>
 </div>

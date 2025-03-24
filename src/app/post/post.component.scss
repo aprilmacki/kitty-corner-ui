@@ -6,61 +6,64 @@
   font-variation-settings: 'FILL' 0
 }
 
-:host:hover {
+.post:hover {
   background-color: var(--mat-sys-surface-container-low);
 }
 
-:host{
-  display: flex;
-  flex-direction: row;
-  padding: 10px;
+.post {
+  border-bottom: 1px solid var(--mat-sys-outline);
 
-  img {
-    border-radius: 50%;
-    object-fit: cover;
-    width: 50px;
-    height: 50px;
-  }
+  .top {
+    display: flex;
+    flex-direction: row;
+    padding: 10px;
 
-  .content {
-    padding-left: 10px;
-    width: 100%;
-    .user {
-      display: flex;
-      flex-direction: row;
-      gap: 0.5rem;
-      font: var(--mat-sys-title-medium);
-      .userName {
-        font-weight: normal;
-        color: var(--mat-sys-outline);
-      }
+    img {
+      border-radius: 50%;
+      object-fit: cover;
+      width: 50px;
+      height: 50px;
     }
-    .body {
-      font: var(--mat-sys-body-large);
-      padding-top: 5px;
-    }
-    .info {
-      padding-top: 5px;
-      font: var(--mat-sys-body-large);
-      color: var(--mat-sys-outline);
-      * {
-        padding-right: 5px;
-      }
-    }
-    .reactions {
+
+    .content {
+      padding-left: 10px;
       width: 100%;
-      padding-top: 5px;
-      display: flex;
-      flex-direction: row;
-      justify-content: space-between;
-
-      .with-count {
+      .user {
         display: flex;
         flex-direction: row;
-        align-items: center;
-        gap: 5px;
+        gap: 0.5rem;
+        font: var(--mat-sys-title-medium);
+        .userName {
+          font-weight: normal;
+          color: var(--mat-sys-outline);
+        }
       }
+      .body {
+        font: var(--mat-sys-body-large);
+        padding-top: 5px;
+      }
+      .info {
+        padding-top: 5px;
+        font: var(--mat-sys-body-large);
+        color: var(--mat-sys-outline);
+        * {
+          padding-right: 5px;
+        }
+      }
+    }
+  }
+
+  .reactions {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 5px 100px 5px 60px;
+
+    .with-count {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 3px;
     }
   }
 }
-
