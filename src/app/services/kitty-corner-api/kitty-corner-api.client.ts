@@ -1,17 +1,23 @@
 import { Injectable } from '@angular/core';
-import {Observable, } from 'rxjs';
+import {firstValueFrom, Observable,} from 'rxjs';
 import {GetPostsDto, ReactionDto} from './dtos/posts.dto';
 import {UserProfileDto} from './dtos/user.dto';
 import {PageConfigModel} from './models/post.model';
 import {HttpClient, HttpParams} from '@angular/common/http';
+import {DataCache} from '../../common/data-cache';
 
 @Injectable({
   providedIn: 'root'
 })
 export class KittyCornerApiClient {
-  constructor(private httpClient: HttpClient) { }
+  private readonly userProfileCache: DataCache<string, UserProfileDto> = new DataCache((username: string) => {
+    return firstValueFrom(this.getUserProfile(username));
+  });
 
-  public getPosts(pageConfig: PageConfigModel): Observable<GetPostsDto> {
+  constructor(private httpClient: HttpClient) {
+  }
+
+  getPosts(pageConfig: PageConfigModel): Observable<GetPostsDto> {
     let params: HttpParams = new HttpParams();
     if (pageConfig.startAge != null) {
       params = params.set('startAge', pageConfig.startAge);
@@ -30,8 +36,11 @@ export class KittyCornerApiClient {
     return this.httpClient.get<GetPostsDto>('/api/v1/posts', {params: params});
   }
 
+  getUserProfileCached(username: string): Observable<UserProfileDto> {
+    return this.userProfileCache.get(username);
+  }
+
   getUserProfile(username: string): Observable<UserProfileDto> {
-    // TODO: Cache these
     return this.httpClient.get<UserProfileDto>(`/api/v1/users/${username}/profile`);
   }
 

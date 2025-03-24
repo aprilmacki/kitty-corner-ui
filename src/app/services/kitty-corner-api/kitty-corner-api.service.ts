@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import {KittyCornerApiClient} from './kitty-corner-api.client';
 import {PageModel, PageConfigModel, PostModel} from './models/post.model';
-import {concatMap, forkJoin, map, Observable, of} from 'rxjs';
+import {concatMap, firstValueFrom, forkJoin, map, Observable, of} from 'rxjs';
 import {GetPostsDto} from './dtos/posts.dto';
 import {UserProfileDto} from './dtos/user.dto';
 import * as util from '../../common/util';
@@ -25,7 +25,7 @@ export class KittyCornerApiService {
         }
 
         const postsObservables: Observable<PostModel>[] = getPostsResults.posts.map(post => {
-          return this.apiClient.getUserProfile(post.username).pipe(
+          return this.apiClient.getUserProfileCached(post.username).pipe(
             map((profile: UserProfileDto) => {
               return {
                 postId: post.postId,
