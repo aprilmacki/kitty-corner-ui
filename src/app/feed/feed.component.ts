@@ -69,7 +69,7 @@ export class FeedComponent implements OnInit {
     const pageConfig = {
       startAge: this.currentFilter.startAge,
       endAge: this.currentFilter.endAge,
-      radiusKm: this.currentFilter.distanceKm,
+      distanceKm: this.currentFilter.distanceKm,
       limit: this.POST_LIMIT,
       cursor: 0
     } as PageConfigModel;
@@ -93,7 +93,7 @@ export class FeedComponent implements OnInit {
     const pageConfig = {
       startAge: this.currentFilter.startAge,
       endAge: this.currentFilter.endAge,
-      radiusKm: this.currentFilter.distanceKm,
+      distanceKm: this.currentFilter.distanceKm,
       limit: this.POST_LIMIT,
       cursor: this.nextCursor
     } as PageConfigModel;

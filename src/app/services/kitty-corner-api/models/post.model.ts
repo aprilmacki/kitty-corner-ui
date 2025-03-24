@@ -25,7 +25,7 @@ export interface PageModel<Type> {
 export interface PageConfigModel {
   startAge: number | null;
   endAge: number | null;
-  radiusKm: number | null;
+  distanceKm: number | null;
   limit: number;
   cursor: number | null;
 }

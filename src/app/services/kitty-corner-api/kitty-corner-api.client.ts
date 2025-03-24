@@ -9,7 +9,6 @@ import {HttpClient, HttpParams} from '@angular/common/http';
   providedIn: 'root'
 })
 export class KittyCornerApiClient {
-
   constructor(private httpClient: HttpClient) { }
 
   public getPosts(pageConfig: PageConfigModel): Observable<GetPostsDto> {
@@ -20,8 +19,8 @@ export class KittyCornerApiClient {
     if (pageConfig.endAge != null) {
       params = params.set('endAge', pageConfig.endAge);
     }
-    if (pageConfig.radiusKm != null) {
-      params = params.set('radiusKm', pageConfig.radiusKm);
+    if (pageConfig.distanceKm != null) {
+      params = params.set('distanceKm', pageConfig.distanceKm);
     }
     if (pageConfig.cursor != null) {
       params = params.set('cursor', pageConfig.cursor);

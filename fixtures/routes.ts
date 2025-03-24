@@ -70,10 +70,13 @@ router.get('/api/v1/posts/', (req: express.Request, res: express.Response) => {
         break;
       }
       const userProfile: UserProfileJson = USERS.get(post.username)!
-      if (userProfile.age < startAge || userProfile.age > endAge) {
+      if (userProfile.age < startAge) {
         continue;
       }
-      if (post.distanceKm > distanceKm) {
+      if (!isNaN(endAge) && userProfile.age > endAge) {
+        continue;
+      }
+      if (!isNaN(distanceKm) && post.distanceKm > distanceKm) {
         continue;
       }
       if (post.postId <= cursor || cursor === 0) {
