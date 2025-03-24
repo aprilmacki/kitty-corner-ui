@@ -4,21 +4,7 @@
   width: 100%;
 }
 
-.top-bar {
-  position: sticky;
-  top: 0;
-  background-color: var(--mat-sys-surface);
-  z-index: 1;
-
-  border-bottom: solid 1px;
-  border-color: var(--mat-sys-outline);
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-
-  padding: 0 0 0 10px;
-  height: 50px;
-
+app-top-bar {
   mat-icon {
     flex-shrink: 0;
   }
@@ -28,13 +14,6 @@
     padding-right: 10px;
     white-space: nowrap;
     flex-shrink: 0;
-  }
-
-  .settings-button {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 4px;
   }
 
   .space {

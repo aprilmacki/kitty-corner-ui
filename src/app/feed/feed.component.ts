@@ -9,6 +9,7 @@ import {FeedFilterModel, LoadingStatus} from '../common/types';
 import {MatProgressSpinner} from '@angular/material/progress-spinner';
 import {MatDialog} from '@angular/material/dialog';
 import {FiltersDialogComponent} from './filters-modal/filters-dialog.component';
+import {TopBarComponent} from '../common/top-bar/top-bar.component';
 
 @Component({
   selector: 'app-feed',
@@ -19,6 +20,7 @@ import {FiltersDialogComponent} from './filters-modal/filters-dialog.component';
     PostComponent,
     NgForOf,
     MatProgressSpinner,
+    TopBarComponent,
   ],
   templateUrl: './feed.component.html',
   styleUrl: './feed.component.scss'

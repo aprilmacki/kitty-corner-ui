@@ -9,6 +9,10 @@ html {
   ));
 }
 
+button[mat-icon-button] {
+  line-height: 1 !important;
+}
+
 body {
   margin: 0;
 }
