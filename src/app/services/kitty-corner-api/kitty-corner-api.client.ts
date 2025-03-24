@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import {firstValueFrom, Observable,} from 'rxjs';
+import {firstValueFrom, Observable, of,} from 'rxjs';
 import {GetPostsDto, PostDto, ReactionDto} from './dtos/posts.dto';
 import {UserProfileDto} from './dtos/user.dto';
 import {PageConfigModel} from './models/post.model';
@@ -51,6 +51,12 @@ export class KittyCornerApiClient {
   setPostReaction(postId: number, reaction: ReactionDto): Observable<any> {
     return this.httpClient.put(`/api/v1/posts/${postId}/my-reactions`, {
       type: reaction
+    });
+  }
+
+  postComment(postId: number, comment: string): Observable<any> {
+    return this.httpClient.post(`/api/v1/posts/${postId}/comments`, {
+      body: comment
     });
   }
 }

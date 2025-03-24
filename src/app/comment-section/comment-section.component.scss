@@ -13,3 +13,35 @@ app-top-bar {
     font: var(--may-sys-title-large)
   }
 }
+
+.spinner {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
+form {
+  padding: 10px;
+  border-bottom: 1px solid var(--mat-sys-outline);
+
+  mat-form-field {
+    width: 100%;
+  }
+
+  .horizontal{
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: flex-end;
+  }
+
+  .comment-button {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    padding-top: 10px;
+    gap: 10px;
+  }
+}

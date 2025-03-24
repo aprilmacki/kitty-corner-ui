@@ -10,5 +10,27 @@
 @if (this.initialLoadingStatus === 'success') {
   <app-post [post]="this.post!" showCommentButton="false">
   </app-post>
-}
 
+  <form>
+    <mat-form-field subscriptSizing="dynamic" appearance="fill" (focusin)="this.leaveCommentActive = true">
+      <mat-label>Leave a comment</mat-label>
+      <textarea matInput
+                cdkTextareaAutosize
+                cdkAutosizeMinRows="0"
+                cdkAutosizeMaxRows="8"
+                [formControl]="draftComment"
+      ></textarea>
+      @if (this.leaveCommentActive) {
+        <div class="comment-button">
+          <button click-stop-propagation mat-button [disabled]="!this.leaveCommentActive" (click)="this.leaveCommentActive = false; draftComment.setValue(null)">Cancel</button>
+          <button mat-flat-button [disabled]="!this.leaveCommentActive" (click)="postComment()">Post</button>
+        </div>
+      }
+    </mat-form-field>
+  </form>
+
+} @else {
+  <div class="spinner">
+    <mat-spinner></mat-spinner>
+  </div>
+}
