@@ -56,19 +56,24 @@ const POSTS_BY_ID: Map<number, data.PostJson> = function() {
 
 const USERS: Map<string, data.UserProfileJson> =  new Map(Object.entries(require('./data/user-profile-data.json')));
 
-router.get('/api/posts/', (req: express.Request, res: express.Response) => {
+router.get('/api/v1/posts/', (req: express.Request, res: express.Response) => {
   setTimeout(() => {
     const cursor: number = Number(req.query['cursor'] ?? 0);
     const limit: number = Number(req.query['limit'] ?? 10);
     const startAge: number = Number(req.query['startAge'] ?? 18);
     const endAge: number = Number(req.query['endAge']);
+    const distanceKm: number = Number(req.query['distanceKm']);
 
     const selectedPosts: PostJson[] = [];
     for (const post of POSTS) {
       if (selectedPosts.length > limit) {
         break;
       }
-      if (USERS.get(post.username)!.age < startAge || USERS.get(post.username)!.age > endAge) {
+      const userProfile: UserProfileJson = USERS.get(post.username)!
+      if (userProfile.age < startAge || userProfile.age > endAge) {
+        continue;
+      }
+      if (post.distanceKm > distanceKm) {
         continue;
       }
       if (post.postId <= cursor || cursor === 0) {
@@ -84,7 +89,7 @@ router.get('/api/posts/', (req: express.Request, res: express.Response) => {
   }, 2000);
 });
 
-router.get('/api/users/:username/profile', (req: express.Request, res: express.Response) => {
+router.get('/api/v1/users/:username/profile', (req: express.Request, res: express.Response) => {
   setTimeout(() => {
     const testResponses: TestResponses<ErrorResponse> = require('./data/get-user-profile.json');
 
@@ -98,7 +103,7 @@ router.get('/api/users/:username/profile', (req: express.Request, res: express.R
   }, 500);
 });
 
-router.put('/api/posts/:postId/my-reactions', (req: express.Request, res: express.Response) => {
+router.put('/api/v1/posts/:postId/my-reactions', (req: express.Request, res: express.Response) => {
   setTimeout(() => {
     const postId: number = Number(req.params['postId']);
     if (POSTS_BY_ID.has(postId)) {

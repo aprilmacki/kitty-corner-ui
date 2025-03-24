@@ -28,16 +28,16 @@ export class KittyCornerApiClient {
     }
     params = params.set('limit', pageConfig.limit);
 
-    return this.httpClient.get<GetPostsDto>('/api/posts', {params: params});
+    return this.httpClient.get<GetPostsDto>('/api/v1/posts', {params: params});
   }
 
   getUserProfile(username: string): Observable<UserProfileDto> {
     // TODO: Cache these
-    return this.httpClient.get<UserProfileDto>(`/api/users/${username}/profile`);
+    return this.httpClient.get<UserProfileDto>(`/api/v1/users/${username}/profile`);
   }
 
   setPostReaction(postId: number, reaction: ReactionDto): Observable<any> {
-    return this.httpClient.put(`/api/posts/${postId}/my-reactions`, {
+    return this.httpClient.put(`/api/v1/posts/${postId}/my-reactions`, {
       type: reaction
     });
   }
