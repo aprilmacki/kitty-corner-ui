@@ -1,7 +1,8 @@
 import * as express from 'express';
 import {GetPostsDto} from '../src/app/services/kitty-corner-api/dtos/posts.dto';
 import * as data from './data/data';
-import {PostJson, UserProfileJson} from './data/data';
+import {CommentJson, PostJson, UserProfileJson} from './data/data';
+import {GetCommentsDto} from '../src/app/services/kitty-corner-api/dtos/comments.dto';
 
 export const router: express.Router = express.Router();
 
@@ -39,8 +40,14 @@ function generatePosts() {
   return posts;
 }
 
+const COMMENTS: data.CommentJson[] = function() {
+  const comments: data.CommentJson[] = require('./data/comments.json').comments;
+  comments.sort((a, b) => new Date(a.createdAt).getUTCSeconds() - new Date(b.createdAt).getUTCSeconds());
+  return comments;
+}();
+
 const POSTS: data.PostJson[] = function(){
-  const posts: data.PostJson[] = require('./data/post-data.json').posts;
+  const posts: data.PostJson[] = require('./data/posts.json').posts;
   generatePosts().forEach(post => posts.push(post));
   posts.sort((a, b) => new Date(a.createdAt).getUTCSeconds() - new Date(b.createdAt).getUTCSeconds());
   return posts;
@@ -54,7 +61,7 @@ const POSTS_BY_ID: Map<number, data.PostJson> = function() {
   return postsById;
 }();
 
-const USERS: Map<string, data.UserProfileJson> =  new Map(Object.entries(require('./data/user-profile-data.json')));
+const USERS: Map<string, data.UserProfileJson> =  new Map(Object.entries(require('./data/user-profiles.json')));
 
 router.get('/api/v1/posts/:postId', (req: express.Request, res: express.Response) => {
   setTimeout(() => {
@@ -68,7 +75,30 @@ router.get('/api/v1/posts/:postId', (req: express.Request, res: express.Response
     res.status(200);
     res.json(data.toPostDto(post));
   }, 500);
-})
+});
+
+router.get('/api/v1/posts/:postId/comments', (req: express.Request, res: express.Response) => {
+  setTimeout(() => {
+    const cursor: number = Number(req.query['cursor'] ?? 0);
+    const limit: number = Number(req.query['limit'] ?? 10);
+
+    const selectedComments: CommentJson[] = [];
+    for (const comment of COMMENTS) {
+      if (selectedComments.length > limit) {
+        break;
+      }
+      if (comment.commentId <= cursor || cursor == 0) {
+        selectedComments.push(comment);
+      }
+    }
+
+    res.status(200);
+    res.json({
+      comments: selectedComments.map(comment => data.toCommentDto(comment)),
+      nextCursor: selectedComments[selectedComments.length - 1].commentId,
+    } as GetCommentsDto);
+  }, 500);
+});
 
 router.get('/api/v1/posts/', (req: express.Request, res: express.Response) => {
   setTimeout(() => {

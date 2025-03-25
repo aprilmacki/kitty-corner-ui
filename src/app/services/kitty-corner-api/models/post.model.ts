@@ -17,12 +17,7 @@ export type PostModel = {
   myReaction: ReactionDto | null;
 }
 
-export interface PageModel<Type> {
-  items: Type[];
-  nextCursor: number;
-}
-
-export interface PageConfigModel {
+export interface PostPageConfigModel {
   startAge: number | null;
   endAge: number | null;
   distanceKm: number | null;

@@ -1,5 +1,5 @@
 <app-top-bar>
-  <div class="back-button>">
+  <div class="back-button">
     <button mat-icon-button routerLink="/posts">
       <mat-icon fontSet="material-symbols-outlined">arrow_back</mat-icon>
     </button>
@@ -28,6 +28,10 @@
       }
     </mat-form-field>
   </form>
+
+  <div class="comments">
+    <app-comment *ngFor="let comment of comments" [comment]="comment"></app-comment>
+  </div>
 
 } @else {
   <div class="spinner">

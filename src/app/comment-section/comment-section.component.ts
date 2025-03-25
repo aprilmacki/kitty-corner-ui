@@ -13,6 +13,12 @@ import {CdkTextareaAutosize} from '@angular/cdk/text-field';
 import {ClickStopPropagationDirective} from '../common/directives';
 import {FormControl, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
 import {KittyCornerApiClient} from '../services/kitty-corner-api/kitty-corner-api.client';
+import {CommentModel} from '../services/kitty-corner-api/models/comment.model';
+import {forkJoin, Observable} from 'rxjs';
+import {PageModel} from '../services/kitty-corner-api/models/common.model';
+import {CommentPageConfigModel} from '../services/kitty-corner-api/dtos/comments.dto';
+import {NgForOf} from '@angular/common';
+import {CommentComponent} from './comment/comment.component';
 
 @Component({
   selector: 'app-comment-section',
@@ -31,6 +37,8 @@ import {KittyCornerApiClient} from '../services/kitty-corner-api/kitty-corner-ap
     ClickStopPropagationDirective,
     FormsModule,
     ReactiveFormsModule,
+    NgForOf,
+    CommentComponent,
   ],
   templateUrl: './comment-section.component.html',
   styleUrl: './comment-section.component.scss'
@@ -44,21 +52,36 @@ export class CommentSectionComponent {
   post?: PostModel;
   initialLoadingStatus: LoadingStatus = 'loading';
   leaveCommentActive: boolean = false;
-
   draftComment = new FormControl('', []);
+  comments: CommentModel[] = [];
+
+  commentCursor = 0;
 
   @Input()
   set postId(postId: number) {
-    this.apiService.getPost(postId).subscribe({
-      next: (post: PostModel)=> {
-        this.post = post;
+    const getPostObs: Observable<PostModel> = this.apiService.getPost(postId);
+
+    const pageConfig: CommentPageConfigModel = {
+      limit: 20,
+      cursor: this.commentCursor
+    }
+    const getCommentsObs: Observable<PageModel<CommentModel>> = this.apiService.getComments(postId, pageConfig);
+
+    forkJoin({
+      getPost: getPostObs,
+      getComments: getCommentsObs
+    }).subscribe({
+      next: result => {
+        this.post = result.getPost;
+        this.comments.push(...result.getComments.items);
+        this.commentCursor = result.getComments.nextCursor;
         this.initialLoadingStatus = 'success';
       },
       error: (error: Error) => {
         console.log(error);
         this.initialLoadingStatus = 'error';
       }
-    })
+    });
   }
 
   postComment() {

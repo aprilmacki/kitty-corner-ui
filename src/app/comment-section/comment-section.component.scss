@@ -12,6 +12,10 @@ app-top-bar {
     text-align: center;
     font: var(--may-sys-title-large)
   }
+
+  .back-button {
+    padding: 0 5px;
+  }
 }
 
 .spinner {

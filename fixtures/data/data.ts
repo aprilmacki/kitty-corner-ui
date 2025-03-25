@@ -1,5 +1,30 @@
 import {PostDto, ReactionDto} from '../../src/app/services/kitty-corner-api/dtos/posts.dto';
 import {UserProfileDto} from '../../src/app/services/kitty-corner-api/dtos/user.dto';
+import {CommentDto} from '../../src/app/services/kitty-corner-api/dtos/comments.dto';
+
+export interface CommentJson {
+  commentId: number;
+  username: string;
+  body: string;
+  totalLikes: number;
+  totalDislikes: number;
+  createdAt: string;
+  updatedAt: string;
+  myReaction: ReactionDto | null;
+}
+
+export function toCommentDto(json: CommentJson): CommentDto {
+  return {
+    commentId: json.commentId,
+    username: json.username,
+    body: json.body,
+    totalLikes: json.totalLikes,
+    totalDislikes: json.totalDislikes,
+    createdAtEpochSeconds: new Date(json.createdAt).getTime() / 1000,
+    updatedAtEpochSeconds: new Date(json.updatedAt).getTime() / 1000,
+    myReaction: json.myReaction
+  } as CommentDto;
+}
 
 
 export interface PostJson {

@@ -1,0 +1,24 @@
+{
+  "comments": [
+    {
+      "commentId": 1,
+      "username": "aprilmack",
+      "body": "neat!",
+      "totalLikes": "12",
+      "totalDislikes": "2",
+      "createdAt": "2025-02-28T13:38-06:00",
+      "updatedAt": null,
+      "myReaction": null
+    },
+    {
+      "commentId": 1,
+      "username": "aprilmack",
+      "body": "nice one dude!",
+      "totalLikes": "12",
+      "totalDislikes": "2",
+      "createdAt": "2025-02-28T13:38-06:00",
+      "updatedAt": null,
+      "myReaction": null
+    }
+  ]
+}

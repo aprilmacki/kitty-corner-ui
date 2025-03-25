@@ -1,10 +1,13 @@
 import { Injectable } from '@angular/core';
 import {KittyCornerApiClient} from './kitty-corner-api.client';
-import {PageModel, PageConfigModel, PostModel} from './models/post.model';
+import {PostPageConfigModel, PostModel} from './models/post.model';
 import {concatMap, forkJoin, map, Observable, of} from 'rxjs';
-import {GetPostsDto, PostDto} from './dtos/posts.dto';
+import {GetPostsDto, PostDto, ReactionDto} from './dtos/posts.dto';
 import {UserProfileDto} from './dtos/user.dto';
 import * as util from '../../common/util';
+import {CommentDto, CommentPageConfigModel, GetCommentsDto} from './dtos/comments.dto';
+import {CommentModel} from './models/comment.model';
+import {PageModel} from './models/common.model';
 
 @Injectable({
   providedIn: 'root'
@@ -20,7 +23,31 @@ export class KittyCornerApiService {
     );
   }
 
-  public getPosts(pageConfig: PageConfigModel): Observable<PageModel<PostModel>> {
+  public getComments(postId: number, pageConfig: CommentPageConfigModel): Observable<PageModel<CommentModel>> {
+    return this.apiClient.getComments(postId, pageConfig).pipe(
+      concatMap((getCommentsResults: GetCommentsDto) => {
+
+        if (getCommentsResults.comments.length === 0) {
+          return of({
+            items: [],
+            nextCursor: getCommentsResults.nextCursor
+          } as PageModel<CommentModel>);
+        }
+
+        const commentObservables: Observable<CommentModel>[] = getCommentsResults.comments.map(comment => this.buildCommentModel(comment))
+        return forkJoin(commentObservables).pipe(
+          map((comments: CommentModel[]) => {
+            return {
+              items: comments,
+              nextCursor: getCommentsResults.nextCursor
+            } as PageModel<CommentModel>;
+          })
+        );
+      })
+    )
+  }
+
+  public getPosts(pageConfig: PostPageConfigModel): Observable<PageModel<PostModel>> {
     return this.apiClient.getPosts(pageConfig).pipe(
       concatMap((getPostsResults: GetPostsDto) => {
 
@@ -32,9 +59,7 @@ export class KittyCornerApiService {
           } as PageModel<PostModel>);
         }
 
-        const postsObservables: Observable<PostModel>[] = getPostsResults.posts.map(post => {
-          return this.buildPostModel(post);
-        });
+        const postsObservables: Observable<PostModel>[] = getPostsResults.posts.map(post => this.buildPostModel(post));
         return forkJoin(postsObservables).pipe(
           map((posts: PostModel[]) => {
             return {
@@ -67,5 +92,27 @@ export class KittyCornerApiService {
           myReaction: post.myReaction
         } as PostModel;
       }));
+  }
+
+  private buildCommentModel(comment: CommentDto): Observable<CommentModel> {
+    return this.apiClient.getUserProfileCached(comment.username).pipe(
+      map((profile: UserProfileDto) => {
+        return {
+          author: {
+            profileName: profile.name,
+            username: profile.username,
+            profilePhotoUrl: `/assets/${profile.username}.png`
+          },
+          commentId: comment.commentId,
+          username: comment.username,
+          body: comment.body,
+          totalLikes: comment.totalLikes,
+          totalDislikes: comment.totalDislikes,
+          createdAt: util.fromEpochSeconds(comment.createdAtEpochSeconds),
+          updatedAt: comment.updatedAtEpochSeconds != null ? util.fromEpochSeconds(comment.updatedAtEpochSeconds) : null,
+          myReaction: comment.myReaction
+        } as CommentModel;
+      })
+    )
   }
 }
