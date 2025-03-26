@@ -9,7 +9,7 @@ export interface CommentJson {
   totalLikes: number;
   totalDislikes: number;
   createdAt: string;
-  updatedAt: string;
+  updatedAt: string | null;
   myReaction: ReactionDto | null;
 }
 
@@ -21,11 +21,10 @@ export function toCommentDto(json: CommentJson): CommentDto {
     totalLikes: json.totalLikes,
     totalDislikes: json.totalDislikes,
     createdAtEpochSeconds: new Date(json.createdAt).getTime() / 1000,
-    updatedAtEpochSeconds: new Date(json.updatedAt).getTime() / 1000,
+    updatedAtEpochSeconds: json.updatedAt == null ? null : new Date(json.updatedAt).getTime() / 1000,
     myReaction: json.myReaction
   } as CommentDto;
 }
-
 
 export interface PostJson {
   postId: number;

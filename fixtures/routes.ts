@@ -1,5 +1,5 @@
 import * as express from 'express';
-import {GetPostsDto} from '../src/app/services/kitty-corner-api/dtos/posts.dto';
+import {GetPostsDto, ReactionDto} from '../src/app/services/kitty-corner-api/dtos/posts.dto';
 import * as data from './data/data';
 import {CommentJson, PostJson, UserProfileJson} from './data/data';
 import {GetCommentsDto} from '../src/app/services/kitty-corner-api/dtos/comments.dto';
@@ -40,12 +40,6 @@ function generatePosts() {
   return posts;
 }
 
-const COMMENTS: data.CommentJson[] = function() {
-  const comments: data.CommentJson[] = require('./data/comments.json').comments;
-  comments.sort((a, b) => new Date(a.createdAt).getUTCSeconds() - new Date(b.createdAt).getUTCSeconds());
-  return comments;
-}();
-
 const POSTS: data.PostJson[] = function(){
   const posts: data.PostJson[] = require('./data/posts.json').posts;
   generatePosts().forEach(post => posts.push(post));
@@ -63,6 +57,32 @@ const POSTS_BY_ID: Map<number, data.PostJson> = function() {
 
 const USERS: Map<string, data.UserProfileJson> =  new Map(Object.entries(require('./data/user-profiles.json')));
 
+let NEXT_COMMENT_ID = 0;
+const COMMENTS_BY_POST: Map<number, data.CommentJson[]> = function() {
+  const commentsByPost: Map<number, data.CommentJson[]> = new Map();
+  for (let [postId, post] of POSTS_BY_ID) {
+    const commentsForPost: data.CommentJson[] = [];
+    for (let i = 0; i < post.totalComments; i++) {
+      const commentId = NEXT_COMMENT_ID++;
+      const commentDate: Date = new Date(post.createdAt);
+      commentDate.setMinutes(commentDate.getMinutes() + 1)
+      commentsForPost.push({
+        commentId: commentId,
+        username: "minathecat",
+        body: `cool comment ${commentId}`,
+        totalLikes: 0,
+        totalDislikes: 0,
+        createdAt: commentDate.toString(),
+        updatedAt: null,
+        myReaction: null
+      });
+    }
+    commentsForPost.sort((a, b) => new Date(a.createdAt).getUTCSeconds() - new Date(b.createdAt).getUTCSeconds());
+    commentsByPost.set(postId, commentsForPost);
+  }
+  return commentsByPost;
+}();
+
 router.get('/api/v1/posts/:postId', (req: express.Request, res: express.Response) => {
   setTimeout(() => {
     const postId: number = Number(req.params['postId']);
@@ -79,11 +99,17 @@ router.get('/api/v1/posts/:postId', (req: express.Request, res: express.Response
 
 router.get('/api/v1/posts/:postId/comments', (req: express.Request, res: express.Response) => {
   setTimeout(() => {
+    const postId: number = Number(req.params['postId']);
     const cursor: number = Number(req.query['cursor'] ?? 0);
     const limit: number = Number(req.query['limit'] ?? 10);
 
+    if (!COMMENTS_BY_POST.has(postId)) {
+      res.status(404).send('Not Found');
+      return;
+    }
+
     const selectedComments: CommentJson[] = [];
-    for (const comment of COMMENTS) {
+    for (const comment of COMMENTS_BY_POST.get(postId)!) {
       if (selectedComments.length > limit) {
         break;
       }
