@@ -32,19 +32,18 @@
       </button>
       <span>{{this.post.totalDislikes}}</span>
     </div>
-    @if (this.showCommentButton) {
-      <div class="with-count">
+    <div class="with-count">
+      @if (this.showCommentButton) {
         <button mat-icon-button [routerLink]="getCommentsLink()">
           <mat-icon fontSet="material-symbols-outlined">forum</mat-icon>
         </button>
-        <span>{{this.post.totalComments}}</span>
-      </div>
-    }
+      } @else {
+        <mat-icon fontSet="material-symbols-outlined">forum</mat-icon>
+      }
+      <span>{{this.post.totalComments}}</span>
+    </div>
     <button mat-icon-button>
-      <mat-icon>ios_share</mat-icon>
+      <mat-icon fontSet="material-symbols-outlined icon-not-filled">ios_share</mat-icon>
     </button>
-    @if (!this.showCommentButton) {
-      <div></div>
-    }
   </div>
 </div>

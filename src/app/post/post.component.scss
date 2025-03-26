@@ -55,8 +55,9 @@
 
   .reactions {
     display: flex;
-    flex-direction: row;
     justify-content: space-between;
+    flex-direction: row;
+    align-items: center;
     padding: 5px 100px 5px 60px;
 
     .with-count {
@@ -64,6 +65,10 @@
       flex-direction: row;
       align-items: center;
       gap: 3px;
+    }
+
+    mat-icon {
+      color: var(--mat-sys-on-surface-variant);
     }
   }
 }
