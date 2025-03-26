@@ -1,3 +1,9 @@
+.icon-filled {
+  font-variation-settings: 'FILL' 1
+}
+.icon-not-filled {
+  font-variation-settings: 'FILL' 0
+}
 
 .comment {
   border-bottom: 1px solid var(--mat-sys-outline);

@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import {KittyCornerApiClient} from './kitty-corner-api.client';
 import {PostPageConfigModel, PostModel} from './models/post.model';
 import {concatMap, forkJoin, map, Observable, of} from 'rxjs';
-import {GetPostsDto, PostDto, ReactionDto} from './dtos/posts.dto';
+import {GetPostsDto, PostDto} from './dtos/posts.dto';
 import {UserProfileDto} from './dtos/user.dto';
 import * as util from '../../common/util';
 import {CommentDto, CommentPageConfigModel, GetCommentsDto} from './dtos/comments.dto';
@@ -34,7 +34,7 @@ export class KittyCornerApiService {
           } as PageModel<CommentModel>);
         }
 
-        const commentObservables: Observable<CommentModel>[] = getCommentsResults.comments.map(comment => this.buildCommentModel(comment))
+        const commentObservables: Observable<CommentModel>[] = getCommentsResults.comments.map(comment => this.buildCommentModel(postId, comment))
         return forkJoin(commentObservables).pipe(
           map((comments: CommentModel[]) => {
             return {
@@ -94,10 +94,11 @@ export class KittyCornerApiService {
       }));
   }
 
-  private buildCommentModel(comment: CommentDto): Observable<CommentModel> {
+  private buildCommentModel(postId: number, comment: CommentDto): Observable<CommentModel> {
     return this.apiClient.getUserProfileCached(comment.username).pipe(
       map((profile: UserProfileDto) => {
         return {
+          postId: postId,
           author: {
             profileName: profile.name,
             username: profile.username,

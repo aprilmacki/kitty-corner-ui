@@ -55,6 +55,12 @@ export class KittyCornerApiClient {
     });
   }
 
+  setCommentReaction(postId: number, commentId: number, reaction: ReactionDto): Observable<any> {
+    return this.httpClient.put(`/api/v1/posts/${postId}/comments/${commentId}/my-reactions`, {
+      type: reaction
+    });
+  }
+
   getComments(postId: number, pageConfig: CommentPageConfigModel): Observable<GetCommentsDto> {
     // TODO: Make comments API docs paginated
 

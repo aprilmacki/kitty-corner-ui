@@ -1,6 +1,7 @@
 import {ReactionDto} from '../dtos/posts.dto';
 
 export type CommentModel = {
+  postId: number,
   author: {
     profileName: string;
     username: string;

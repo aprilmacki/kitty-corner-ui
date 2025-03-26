@@ -1,8 +1,10 @@
 import * as express from 'express';
-import {GetPostsDto, ReactionDto} from '../src/app/services/kitty-corner-api/dtos/posts.dto';
+import {GetPostsDto} from '../src/app/services/kitty-corner-api/dtos/posts.dto';
 import * as data from './data/data';
 import {CommentJson, PostJson, UserProfileJson} from './data/data';
 import {GetCommentsDto} from '../src/app/services/kitty-corner-api/dtos/comments.dto';
+import * as util from 'node:util';
+import {computeLikeDislikeChange} from '../src/app/common/util';
 
 export const router: express.Router = express.Router();
 
@@ -64,8 +66,8 @@ const COMMENTS_BY_POST: Map<number, data.CommentJson[]> = function() {
     const commentsForPost: data.CommentJson[] = [];
     for (let i = 0; i < post.totalComments; i++) {
       const commentId = NEXT_COMMENT_ID++;
-      const commentDate: Date = new Date(post.createdAt);
-      commentDate.setMinutes(commentDate.getMinutes() + 1)
+      let commentDate: Date = new Date(post.createdAt);
+      commentDate.setMinutes(commentDate.getMinutes() + i)
       commentsForPost.push({
         commentId: commentId,
         username: "minathecat",
@@ -81,6 +83,14 @@ const COMMENTS_BY_POST: Map<number, data.CommentJson[]> = function() {
     commentsByPost.set(postId, commentsForPost);
   }
   return commentsByPost;
+}();
+
+const COMMENTS_BY_ID: Map<number, data.CommentJson> = function() {
+  const commentsById: Map<number, data.CommentJson> = new Map();
+  for (let [postId, comments] of COMMENTS_BY_POST) {
+    comments.forEach(comment => commentsById.set(comment.commentId, comment));
+  }
+  return commentsById;
 }();
 
 router.get('/api/v1/posts/:postId', (req: express.Request, res: express.Response) => {
@@ -124,6 +134,25 @@ router.get('/api/v1/posts/:postId/comments', (req: express.Request, res: express
       nextCursor: selectedComments[selectedComments.length - 1].commentId,
     } as GetCommentsDto);
   }, 500);
+});
+
+router.put('/api/v1/posts/:postId/comments/:commentId/my-reactions', (req: express.Request, res: express.Response) => {
+  setTimeout(() => {
+    const commentId: number = Number(req.params['commentId']);
+
+    if (!COMMENTS_BY_ID.has(commentId)) {
+      res.status(404).send('Not Found');
+      return;
+    }
+
+    const comment: CommentJson = COMMENTS_BY_ID.get(commentId)!;
+    const reactionChanges = computeLikeDislikeChange(comment.myReaction, req.body.type);
+    comment.totalLikes += reactionChanges.likeChange;
+    comment.totalDislikes += reactionChanges.dislikeChange;
+    comment.myReaction = req.body.type;
+    res.status(204);
+    res.json({});
+  });
 });
 
 router.get('/api/v1/posts/', (req: express.Request, res: express.Response) => {
@@ -181,31 +210,10 @@ router.put('/api/v1/posts/:postId/my-reactions', (req: express.Request, res: exp
     const postId: number = Number(req.params['postId']);
     if (POSTS_BY_ID.has(postId)) {
       const post: PostJson = POSTS_BY_ID.get(Number(req.params["postId"]))!;
-
-      if (post.myReaction == 'like') {
-        if (req.body.type == 'dislike') {
-          post.totalDislikes++;
-          post.totalLikes--;
-        } else if (req.body.type == null) {
-          post.totalLikes--;
-        }
-      } else if (post.myReaction == 'dislike') {
-        if (req.body.type == 'like') {
-          post.totalLikes++;
-          post.totalDislikes--;
-        } else if (req.body.type == null) {
-          post.totalDislikes--;
-        }
-      } else {
-        if (req.body.type == 'like') {
-          post.totalLikes++;
-        } else if (req.body.type == 'dislike') {
-          post.totalDislikes++;
-        }
-      }
-
+      const reactionChanges = computeLikeDislikeChange(post.myReaction, req.body.type);
+      post.totalLikes += reactionChanges.likeChange;
+      post.totalDislikes += reactionChanges.dislikeChange;
       post.myReaction = req.body.type;
-
       res.status(204);
       res.json({});
       return;

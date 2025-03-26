@@ -20,13 +20,13 @@
 
 <div class="reactions">
   <div class="with-count">
-    <button mat-icon-button (click)="toggleLike()">
+    <button mat-icon-button (click)="toggle('like')">
       <mat-icon fontSet="material-symbols-outlined" [class]="this.post.myReaction == 'like' ? 'icon-filled' : 'icon-not-filled'">thumb_up</mat-icon>
     </button>
     <span>{{this.post.totalLikes}}</span>
   </div>
   <div class="with-count">
-    <button mat-icon-button (click)="toggleDislike()">
+    <button mat-icon-button (click)="toggle('dislike')">
       <mat-icon fontSet="material-symbols-outlined" [class]="this.post.myReaction == 'dislike' ? 'icon-filled' : 'icon-not-filled'">thumb_down</mat-icon>
     </button>
     <span>{{this.post.totalDislikes}}</span>
