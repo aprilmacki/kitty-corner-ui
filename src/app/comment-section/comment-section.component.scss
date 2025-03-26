@@ -4,12 +4,9 @@
   width: 100%;
 }
 
-app-post {
+.post {
+  border-bottom: 1px solid var(--mat-sys-outline);
   background-color: var(--mat-sys-surface-container);
-}
-
-app-post:hover {
-  background-color: var(--mat-sys-surface-container) !important;
 }
 
 app-top-bar {

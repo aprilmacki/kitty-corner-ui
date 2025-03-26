@@ -8,8 +8,10 @@
 </app-top-bar>
 
 @if (this.initialLoadingStatus === 'success') {
-  <app-post [post]="this.post!" showCommentButton="false">
-  </app-post>
+  <div class="post">
+    <app-post [post]="this.post!" showCommentButton="false">
+    </app-post>
+  </div>
 
   <form>
     <mat-form-field subscriptSizing="dynamic" appearance="fill" (focusin)="this.leaveCommentActive = true">

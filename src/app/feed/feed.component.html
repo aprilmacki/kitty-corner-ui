@@ -17,8 +17,8 @@
 </app-top-bar>
 
 @if (this.initialLoadingStatus == 'success') {
-  <div class="posts">
-    <app-post *ngFor="let post of posts" [post]="post"></app-post>
+  <div class="post" *ngFor="let post of posts">
+    <app-post [post]="post"></app-post>
   </div>
   <div class="more-button">
     @if (this.moreLoadingStatus == 'success') {

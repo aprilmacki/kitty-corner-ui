@@ -36,6 +36,13 @@ app-top-bar {
   height: 100%;
 }
 
+.post {
+  border-bottom: 1px solid var(--mat-sys-outline);
+}
+.post:hover {
+  background-color: var(--mat-sys-surface-container-low);
+}
+
 .more-button {
   padding-top: 10px;
   padding-bottom: 50px;
