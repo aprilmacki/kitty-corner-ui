@@ -4,6 +4,14 @@
   width: 100%;
 }
 
+app-post {
+  background-color: var(--mat-sys-surface-container);
+}
+
+app-post:hover {
+  background-color: var(--mat-sys-surface-container) !important;
+}
+
 app-top-bar {
   .title {
     position: absolute;
