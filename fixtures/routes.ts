@@ -93,66 +93,23 @@ const COMMENTS_BY_ID: Map<number, data.CommentJson> = function() {
   return commentsById;
 }();
 
-router.get('/api/v1/posts/:postId', (req: express.Request, res: express.Response) => {
-  setTimeout(() => {
-    const postId: number = Number(req.params['postId']);
-    if (!POSTS_BY_ID.has(postId)) {
-      res.status(404).send('Not Found');
-      return;
-    }
-    const post: data.PostJson = POSTS_BY_ID.get(postId)!;
+///////
+// Router endpoints
+///////
 
-    res.status(200);
-    res.json(data.toPostDto(post));
+
+router.get('/api/v1/users/:username/profile', (req: express.Request, res: express.Response) => {
+  setTimeout(() => {
+    const testResponses: TestResponses<ErrorResponse> = require('./data/get-user-profile.json');
+
+    if (USERS.has(req.params["username"])) {
+      res.status(200);
+      res.json(data.toUserProfileDto(USERS.get(req.params["username"])!));
+    } else {
+      res.status(404);
+      res.json(testResponses[404]);
+    }
   }, 500);
-});
-
-router.get('/api/v1/posts/:postId/comments', (req: express.Request, res: express.Response) => {
-  setTimeout(() => {
-    const postId: number = Number(req.params['postId']);
-    const cursor: number = Number(req.query['cursor'] ?? 0);
-    const limit: number = Number(req.query['limit'] ?? 10);
-
-    if (!COMMENTS_BY_POST.has(postId)) {
-      res.status(404).send('Not Found');
-      return;
-    }
-
-    const selectedComments: CommentJson[] = [];
-    for (const comment of COMMENTS_BY_POST.get(postId)!) {
-      if (selectedComments.length > limit) {
-        break;
-      }
-      if (comment.commentId <= cursor || cursor == 0) {
-        selectedComments.push(comment);
-      }
-    }
-
-    res.status(200);
-    res.json({
-      comments: selectedComments.map(comment => data.toCommentDto(comment)),
-      nextCursor: selectedComments[selectedComments.length - 1].commentId,
-    } as GetCommentsDto);
-  }, 500);
-});
-
-router.put('/api/v1/posts/:postId/comments/:commentId/my-reactions', (req: express.Request, res: express.Response) => {
-  setTimeout(() => {
-    const commentId: number = Number(req.params['commentId']);
-
-    if (!COMMENTS_BY_ID.has(commentId)) {
-      res.status(404).send('Not Found');
-      return;
-    }
-
-    const comment: CommentJson = COMMENTS_BY_ID.get(commentId)!;
-    const reactionChanges = computeLikeDislikeChange(comment.myReaction, req.body.type);
-    comment.totalLikes += reactionChanges.likeChange;
-    comment.totalDislikes += reactionChanges.dislikeChange;
-    comment.myReaction = req.body.type;
-    res.status(204);
-    res.json({});
-  });
 });
 
 router.get('/api/v1/posts/', (req: express.Request, res: express.Response) => {
@@ -191,19 +148,20 @@ router.get('/api/v1/posts/', (req: express.Request, res: express.Response) => {
   }, 1000);
 });
 
-router.get('/api/v1/users/:username/profile', (req: express.Request, res: express.Response) => {
+router.get('/api/v1/posts/:postId', (req: express.Request, res: express.Response) => {
   setTimeout(() => {
-    const testResponses: TestResponses<ErrorResponse> = require('./data/get-user-profile.json');
-
-    if (USERS.has(req.params["username"])) {
-      res.status(200);
-      res.json(data.toUserProfileDto(USERS.get(req.params["username"])!));
-    } else {
-      res.status(404);
-      res.json(testResponses[404]);
+    const postId: number = Number(req.params['postId']);
+    if (!POSTS_BY_ID.has(postId)) {
+      res.status(404).send('Not Found');
+      return;
     }
+    const post: data.PostJson = POSTS_BY_ID.get(postId)!;
+
+    res.status(200);
+    res.json(data.toPostDto(post));
   }, 500);
 });
+
 
 router.put('/api/v1/posts/:postId/my-reactions', (req: express.Request, res: express.Response) => {
   setTimeout(() => {
@@ -222,4 +180,75 @@ router.put('/api/v1/posts/:postId/my-reactions', (req: express.Request, res: exp
     res.status(404);
     res.json({});
   }, 50)
-})
+});
+
+router.get('/api/v1/posts/:postId/comments', (req: express.Request, res: express.Response) => {
+  setTimeout(() => {
+    const postId: number = Number(req.params['postId']);
+    const cursor: number = Number(req.query['cursor'] ?? 0);
+    const limit: number = Number(req.query['limit'] ?? 10);
+
+    if (!COMMENTS_BY_POST.has(postId)) {
+      res.status(404).send('Not Found');
+      return;
+    }
+
+    const selectedComments: CommentJson[] = [];
+    for (const comment of COMMENTS_BY_POST.get(postId)!) {
+      if (selectedComments.length > limit) {
+        break;
+      }
+      if (comment.commentId <= cursor || cursor == 0) {
+        selectedComments.push(comment);
+      }
+    }
+
+    res.status(200);
+    res.json({
+      comments: selectedComments.map(comment => data.toCommentDto(comment)),
+      nextCursor: selectedComments[selectedComments.length - 1].commentId,
+    } as GetCommentsDto);
+  }, 500);
+});
+
+router.post('/api/v1/posts/:postId/comments', (req: express.Request, res: express.Response) => {
+  setTimeout(() => {
+    const postId: number = Number(req.params['postId']);
+    const comment: CommentJson = {
+      commentId: NEXT_COMMENT_ID++,
+      username: 'aprilmack',
+      body: req.body.body,
+      totalLikes: 0,
+      totalDislikes: 0,
+      createdAt: new Date().toString(),
+      updatedAt: null,
+      myReaction: null
+    };
+
+    const comments = COMMENTS_BY_POST.get(postId)!;
+    comments.push(comment);
+    COMMENTS_BY_ID.set(comment.commentId, comment);
+
+    res.status(200);
+    res.json(data.toCommentDto(comment));
+  }, 500);
+});
+
+router.put('/api/v1/posts/:postId/comments/:commentId/my-reactions', (req: express.Request, res: express.Response) => {
+  setTimeout(() => {
+    const commentId: number = Number(req.params['commentId']);
+
+    if (!COMMENTS_BY_ID.has(commentId)) {
+      res.status(404).send('Not Found');
+      return;
+    }
+
+    const comment: CommentJson = COMMENTS_BY_ID.get(commentId)!;
+    const reactionChanges = computeLikeDislikeChange(comment.myReaction, req.body.type);
+    comment.totalLikes += reactionChanges.likeChange;
+    comment.totalDislikes += reactionChanges.dislikeChange;
+    comment.myReaction = req.body.type;
+    res.status(204);
+    res.json({});
+  });
+});

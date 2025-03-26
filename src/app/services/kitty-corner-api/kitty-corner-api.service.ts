@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import {KittyCornerApiClient} from './kitty-corner-api.client';
-import {PostPageConfigModel, PostModel} from './models/post.model';
+import {PostPageConfigModel, PostModel, toPostModel} from './models/post.model';
 import {concatMap, forkJoin, map, Observable, of} from 'rxjs';
 import {GetPostsDto, PostDto} from './dtos/posts.dto';
 import {UserProfileDto} from './dtos/user.dto';
@@ -19,6 +19,31 @@ export class KittyCornerApiService {
     return this.apiClient.getPost(postId).pipe(
       concatMap((post: PostDto) => {
         return this.buildPostModel(post);
+      })
+    );
+  }
+
+  public getPosts(pageConfig: PostPageConfigModel): Observable<PageModel<PostModel>> {
+    return this.apiClient.getPosts(pageConfig).pipe(
+      concatMap((getPostsResults: GetPostsDto) => {
+
+        // This is necessary otherwise we stuck waiting for no observables
+        if (getPostsResults.posts.length === 0) {
+          return of({
+            items: [],
+            nextCursor: getPostsResults.nextCursor
+          } as PageModel<PostModel>);
+        }
+
+        const postsObservables: Observable<PostModel>[] = getPostsResults.posts.map(post => this.buildPostModel(post));
+        return forkJoin(postsObservables).pipe(
+          map((posts: PostModel[]) => {
+            return {
+              items: posts,
+              nextCursor: getPostsResults.nextCursor
+            } as PageModel<PostModel>;
+          })
+        );
       })
     );
   }
@@ -47,51 +72,17 @@ export class KittyCornerApiService {
     )
   }
 
-  public getPosts(pageConfig: PostPageConfigModel): Observable<PageModel<PostModel>> {
-    return this.apiClient.getPosts(pageConfig).pipe(
-      concatMap((getPostsResults: GetPostsDto) => {
-
-        // This is necessary otherwise we stuck waiting for no observables
-        if (getPostsResults.posts.length === 0) {
-          return of({
-            items: [],
-            nextCursor: getPostsResults.nextCursor
-          } as PageModel<PostModel>);
-        }
-
-        const postsObservables: Observable<PostModel>[] = getPostsResults.posts.map(post => this.buildPostModel(post));
-        return forkJoin(postsObservables).pipe(
-          map((posts: PostModel[]) => {
-            return {
-              items: posts,
-              nextCursor: getPostsResults.nextCursor
-            } as PageModel<PostModel>;
-          })
-        );
+  postComment(postId: number, comment: string): Observable<CommentModel> {
+    return this.apiClient.postComment(postId, comment).pipe(
+      concatMap((commentDto: CommentDto) => {
+        return this.buildCommentModel(postId, commentDto);
       })
     );
   }
 
   private buildPostModel(post: PostDto): Observable<PostModel> {
     return this.apiClient.getUserProfileCached(post.username).pipe(
-      map((profile: UserProfileDto) => {
-        return {
-          postId: post.postId,
-          author: {
-            profileName: profile.name,
-            username: profile.username,
-            profilePhotoUrl: `/assets/${profile.username}.png`
-          },
-          body: post.body,
-          distanceKm: post.distanceKm,
-          totalLikes: post.totalLikes,
-          totalDislikes: post.totalDislikes,
-          totalComments: post.totalComments,
-          createdAt: util.fromEpochSeconds(post.createdAtEpochSeconds),
-          updatedAt: post.updatedAtEpochSeconds != null ? util.fromEpochSeconds(post.updatedAtEpochSeconds) : null,
-          myReaction: post.myReaction
-        } as PostModel;
-      }));
+      map((profile: UserProfileDto) => toPostModel(post, profile)));
   }
 
   private buildCommentModel(postId: number, comment: CommentDto): Observable<CommentModel> {
@@ -114,6 +105,6 @@ export class KittyCornerApiService {
           myReaction: comment.myReaction
         } as CommentModel;
       })
-    )
+    );
   }
 }

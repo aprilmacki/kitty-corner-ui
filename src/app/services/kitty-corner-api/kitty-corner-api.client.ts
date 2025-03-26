@@ -5,7 +5,7 @@ import {UserProfileDto} from './dtos/user.dto';
 import {PostPageConfigModel} from './models/post.model';
 import {HttpClient, HttpParams} from '@angular/common/http';
 import {DataCache} from '../../common/data-cache';
-import {CommentPageConfigModel, GetCommentsDto} from './dtos/comments.dto';
+import {CommentDto, CommentPageConfigModel, GetCommentsDto} from './dtos/comments.dto';
 
 @Injectable({
   providedIn: 'root'
@@ -73,8 +73,8 @@ export class KittyCornerApiClient {
     return this.httpClient.get<GetCommentsDto>(`/api/v1/posts/${postId}/comments`, {params: params});
   }
 
-  postComment(postId: number, comment: string): Observable<any> {
-    return this.httpClient.post(`/api/v1/posts/${postId}/comments`, {
+  postComment(postId: number, comment: string): Observable<CommentDto> {
+    return this.httpClient.post<CommentDto>(`/api/v1/posts/${postId}/comments`, {
       body: comment
     });
   }
