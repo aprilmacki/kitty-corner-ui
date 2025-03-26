@@ -9,6 +9,15 @@
   background-color: var(--mat-sys-surface-container);
 }
 
+.comments {
+  display: flex;
+  flex-direction: column;
+}
+
+.comments > :not(:last-child) {
+  border-bottom: 1px solid var(--mat-sys-outline);
+}
+
 app-top-bar {
   .title {
     position: absolute;

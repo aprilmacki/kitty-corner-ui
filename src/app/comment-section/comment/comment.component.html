@@ -1,35 +1,32 @@
-
-<div class="comment">
-  <div class="top">
-    <div class="profile">
-      <img ngSrc="{{this.comment.author.profilePhotoUrl}}" height="50" width="50" alt="profile photo"/>
+<div class="top">
+  <div class="profile">
+    <img ngSrc="{{this.comment.author.profilePhotoUrl}}" height="50" width="50" alt="profile photo"/>
+  </div>
+  <div class="content">
+    <div class="user">
+      <span class="profileName">{{this.comment.author.profileName}}</span>
+      <span class="userName">&#64;{{this.comment.author.username}}</span>
     </div>
-    <div class="content">
-      <div class="user">
-        <span class="profileName">{{this.comment.author.profileName}}</span>
-        <span class="userName">&#64;{{this.comment.author.username}}</span>
-      </div>
-      <div class="body">
-        {{ this.comment.body }}
-      </div>
-      <div class="info">
-        <span class="createdAt">{{this.comment.createdAt | date:'M/d/yy h:mm a'}}</span>
-      </div>
+    <div class="body">
+      {{ this.comment.body }}
+    </div>
+    <div class="info">
+      <span class="createdAt">{{this.comment.createdAt | date:'M/d/yy h:mm a'}}</span>
     </div>
   </div>
+</div>
 
-  <div class="reactions">
-    <div class="with-count">
-      <button mat-icon-button (click)="toggle('like')">
-        <mat-icon fontSet="material-symbols-outlined" [class]="this.comment.myReaction == 'like' ? 'icon-filled' : 'icon-not-filled'">thumb_up</mat-icon>
-      </button>
-      <span>{{this.comment.totalLikes}}</span>
-    </div>
-    <div class="with-count">
-      <button mat-icon-button (click)="toggle('dislike')">
-        <mat-icon fontSet="material-symbols-outlined" [class]="this.comment.myReaction == 'dislike' ? 'icon-filled' : 'icon-not-filled'">thumb_down</mat-icon>
-      </button>
-      <span>{{this.comment.totalDislikes}}</span>
-    </div>
+<div class="reactions">
+  <div class="with-count">
+    <button mat-icon-button (click)="toggle('like')">
+      <mat-icon fontSet="material-symbols-outlined" [class]="this.comment.myReaction == 'like' ? 'icon-filled' : 'icon-not-filled'">thumb_up</mat-icon>
+    </button>
+    <span>{{this.comment.totalLikes}}</span>
+  </div>
+  <div class="with-count">
+    <button mat-icon-button (click)="toggle('dislike')">
+      <mat-icon fontSet="material-symbols-outlined" [class]="this.comment.myReaction == 'dislike' ? 'icon-filled' : 'icon-not-filled'">thumb_down</mat-icon>
+    </button>
+    <span>{{this.comment.totalDislikes}}</span>
   </div>
 </div>
