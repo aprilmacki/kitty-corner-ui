@@ -25,7 +25,7 @@
       @if (this.leaveCommentActive) {
         <div class="comment-button">
           <button click-stop-propagation mat-button [disabled]="!this.leaveCommentActive" (click)="this.leaveCommentActive = false; draftComment.setValue(null)">Cancel</button>
-          <button mat-flat-button [disabled]="!this.leaveCommentActive" (click)="postComment()">Post</button>
+          <button click-stop-propagation mat-flat-button [disabled]="!this.leaveCommentActive || draftComment.value == null || draftComment.value == ''" (click)="postComment()">Post</button>
         </div>
       }
     </mat-form-field>

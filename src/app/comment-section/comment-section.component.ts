@@ -98,5 +98,7 @@ export class CommentSectionComponent implements OnInit {
       })
     }
     this.draftComment.setValue('');
+    this.post!.totalComments++;
+    this.leaveCommentActive = false;
   }
 }

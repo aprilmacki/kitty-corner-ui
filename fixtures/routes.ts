@@ -3,7 +3,6 @@ import {GetPostsDto} from '../src/app/services/kitty-corner-api/dtos/posts.dto';
 import * as data from './data/data';
 import {CommentJson, PostJson, UserProfileJson} from './data/data';
 import {GetCommentsDto} from '../src/app/services/kitty-corner-api/dtos/comments.dto';
-import * as util from 'node:util';
 import {computeLikeDislikeChange} from '../src/app/common/util';
 
 export const router: express.Router = express.Router();
@@ -225,9 +224,12 @@ router.post('/api/v1/posts/:postId/comments', (req: express.Request, res: expres
       myReaction: null
     };
 
-    const comments = COMMENTS_BY_POST.get(postId)!;
-    comments.push(comment);
+    const commentsForPost = COMMENTS_BY_POST.get(postId)!;
+    commentsForPost.push(comment);
     COMMENTS_BY_ID.set(comment.commentId, comment);
+
+    const post = POSTS_BY_ID.get(postId)!;
+    post.totalComments++;
 
     res.status(200);
     res.json(data.toCommentDto(comment));
