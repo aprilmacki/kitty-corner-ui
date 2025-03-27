@@ -105,7 +105,6 @@ export class FeedComponent implements OnInit {
 
   fetchNextPage() {
     this.moreLoadingStatus = 'loading';
-
     const pageConfig = {
       startAge: this.currentFilter.startAge,
       endAge: this.currentFilter.endAge,

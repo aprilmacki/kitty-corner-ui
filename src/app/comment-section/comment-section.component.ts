@@ -5,21 +5,19 @@ import {TopBarComponent} from '../common/top-bar/top-bar.component';
 import {RouterLink} from '@angular/router';
 import {LoadingStatus} from '../common/types';
 import {KittyCornerApiService} from '../services/kitty-corner-api/kitty-corner-api.service';
-import {PostModel} from '../services/kitty-corner-api/models/post.model';
+import {PostModel, PostPageConfigModel} from '../services/kitty-corner-api/models/post.model';
 import {PostComponent} from '../post/post.component';
 import {MatFormField, MatInput, MatLabel} from '@angular/material/input';
 import {MatProgressSpinner} from '@angular/material/progress-spinner';
 import {CdkTextareaAutosize} from '@angular/cdk/text-field';
 import {ClickStopPropagationDirective} from '../common/directives';
-import {FormControl, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
-import {KittyCornerApiClient} from '../services/kitty-corner-api/kitty-corner-api.client';
+import {FormControl, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {CommentModel} from '../services/kitty-corner-api/models/comment.model';
 import {forkJoin, Observable} from 'rxjs';
 import {PageModel} from '../services/kitty-corner-api/models/common.model';
 import {CommentPageConfigModel} from '../services/kitty-corner-api/dtos/comments.dto';
 import {NgForOf} from '@angular/common';
 import {CommentComponent} from './comment/comment.component';
-import {PostDto} from '../services/kitty-corner-api/dtos/posts.dto';
 
 @Component({
   selector: 'app-comment-section',
@@ -45,17 +43,20 @@ import {PostDto} from '../services/kitty-corner-api/dtos/posts.dto';
   styleUrl: './comment-section.component.scss'
 })
 export class CommentSectionComponent implements OnInit {
+  private readonly COMMENT_LIMIT = 20;
+
   private readonly apiService = inject(KittyCornerApiService);
 
   @ViewChild('textArea') textArea: ElementRef | null = null;
 
   post?: PostModel;
   initialLoadingStatus: LoadingStatus = 'loading';
+  moreLoadingStatus: LoadingStatus = 'success';
   leaveCommentActive: boolean = false;
   draftComment = new FormControl('', []);
   comments: CommentModel[] = [];
-
-  commentCursor = 0;
+  noMoreComments: boolean = false;
+  nextCursor = 0;
 
   @Input()
   postId!: number;
@@ -64,8 +65,8 @@ export class CommentSectionComponent implements OnInit {
     const getPostObs: Observable<PostModel> = this.apiService.getPost(this.postId);
 
     const pageConfig: CommentPageConfigModel = {
-      limit: 20,
-      cursor: this.commentCursor
+      limit: this.COMMENT_LIMIT,
+      cursor: this.nextCursor
     }
     const getCommentsObs: Observable<PageModel<CommentModel>> = this.apiService.getComments(this.postId, pageConfig);
 
@@ -76,7 +77,7 @@ export class CommentSectionComponent implements OnInit {
       next: result => {
         this.post = result.getPost;
         this.comments.push(...result.getComments.items);
-        this.commentCursor = result.getComments.nextCursor;
+        this.nextCursor = result.getComments.nextCursor;
         this.initialLoadingStatus = 'success';
       },
       error: (error: Error) => {
@@ -89,7 +90,7 @@ export class CommentSectionComponent implements OnInit {
   postComment() {
     if (this.draftComment.value != null && this.draftComment.value.length > 0) {
       this.apiService.postComment(this.postId, this.draftComment.value!).subscribe({
-        next: (comment: CommentModel)=> {
+        next: (comment: CommentModel) => {
           this.comments.push(comment);
         },
         error: (error: Error) => {
@@ -100,5 +101,27 @@ export class CommentSectionComponent implements OnInit {
     this.draftComment.setValue('');
     this.post!.totalComments++;
     this.leaveCommentActive = false;
+  }
+
+  fetchNextPageOfComments() {
+    this.moreLoadingStatus = 'loading';
+    const pageConfig = {
+      limit: this.COMMENT_LIMIT,
+      cursor: this.nextCursor
+    } as CommentPageConfigModel;
+    this.apiService.getComments(this.postId, pageConfig).subscribe({
+      next: (page: PageModel<CommentModel>) => {
+        if (page.items.length == 0) {
+          this.noMoreComments = true;
+        }
+        this.comments.push(...page.items);
+        this.nextCursor = page.nextCursor;
+        this.moreLoadingStatus = 'success';
+      },
+      error: (err) => {
+        console.log(err);
+        this.moreLoadingStatus = 'error';
+      }
+    });
   }
 }

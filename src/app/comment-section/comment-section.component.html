@@ -35,6 +35,16 @@
     <app-comment *ngFor="let comment of comments" [comment]="comment"></app-comment>
   </div>
 
+  <div class="more-button">
+    @if (this.noMoreComments) {
+      No more comments
+    } @else if (this.moreLoadingStatus == 'success') {
+      <button mat-stroked-button (click)="fetchNextPageOfComments()">More</button>
+    } @else if (this.moreLoadingStatus == 'loading') {
+      <mat-spinner [diameter]=40></mat-spinner>
+    }
+  </div>
+
 } @else {
   <div class="spinner">
     <mat-spinner></mat-spinner>

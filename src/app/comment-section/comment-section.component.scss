@@ -14,7 +14,7 @@
   flex-direction: column;
 }
 
-.comments > :not(:last-child) {
+.comments > * {
   border-bottom: 1px solid var(--mat-sys-outline);
 }
 
@@ -62,4 +62,14 @@ form {
     padding-top: 10px;
     gap: 10px;
   }
+}
+
+
+.more-button {
+  padding-top: 10px;
+  padding-bottom: 10px;
+
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
 }

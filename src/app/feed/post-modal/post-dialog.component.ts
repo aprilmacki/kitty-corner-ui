@@ -1,5 +1,5 @@
 import {Component, inject} from '@angular/core';
-import {MatDialogActions, MatDialogContent, MatDialogRef, MatDialogTitle} from '@angular/material/dialog';
+import {MatDialogActions, MatDialogContent, MatDialogRef} from '@angular/material/dialog';
 import {MatButton} from '@angular/material/button';
 import {CdkTextareaAutosize} from '@angular/cdk/text-field';
 import {FormControl, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
@@ -8,7 +8,6 @@ import {MatError, MatFormField, MatHint, MatInput, MatLabel} from '@angular/mate
 @Component({
   selector: 'app-post-modal',
   imports: [
-    MatDialogTitle,
     MatDialogActions,
     MatDialogContent,
     MatButton,

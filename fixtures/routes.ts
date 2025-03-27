@@ -197,7 +197,7 @@ router.get('/api/v1/posts/:postId/comments', (req: express.Request, res: express
       if (selectedComments.length > limit) {
         break;
       }
-      if (comment.commentId <= cursor || cursor == 0) {
+      if (comment.commentId >= cursor || cursor == 0) {
         selectedComments.push(comment);
       }
     }
@@ -205,7 +205,7 @@ router.get('/api/v1/posts/:postId/comments', (req: express.Request, res: express
     res.status(200);
     res.json({
       comments: selectedComments.map(comment => data.toCommentDto(comment)),
-      nextCursor: selectedComments[selectedComments.length - 1].commentId,
+      nextCursor: selectedComments.length == 0 ? 0 : selectedComments[selectedComments.length - 1].commentId + 1,
     } as GetCommentsDto);
   }, 500);
 });
