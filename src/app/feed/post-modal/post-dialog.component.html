@@ -1,0 +1,22 @@
+<mat-dialog-content>
+  <form>
+    <mat-form-field subscriptSizing="dynamic" appearance="fill">
+      <mat-label>Say something!</mat-label>
+      <textarea matInput
+                cdkTextareaAutosize
+                cdkAutosizeMinRows="10"
+                cdkAutosizeMaxRows="20"
+                [formControl]="draftPost"
+      ></textarea>
+      <mat-hint align="end">{{draftPost.value?.length ?? 0}} / 512</mat-hint>
+      @if (draftPost.hasError('maxlength')) {
+        <mat-error>Max character limit exceeded!</mat-error>
+      }
+    </mat-form-field>
+  </form>
+
+  <mat-dialog-actions align="end">
+    <button mat-button (click)="closeDialog()">Cancel</button>
+    <button mat-stroked-button [disabled]="!draftPost.valid || draftPost.value?.length == 0">Post</button>
+  </mat-dialog-actions>
+</mat-dialog-content>

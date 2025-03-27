@@ -11,6 +11,7 @@ import {MatDialog} from '@angular/material/dialog';
 import {FiltersDialogComponent} from './filters-modal/filters-dialog.component';
 import {TopBarComponent} from '../common/top-bar/top-bar.component';
 import {PageModel} from '../services/kitty-corner-api/models/common.model';
+import {PostDialogComponent} from './post-modal/post-dialog.component';
 
 @Component({
   selector: 'app-feed',
@@ -61,6 +62,18 @@ export class FeedComponent implements OnInit {
       if (result != null) {
         this.currentFilter = result;
         this.refreshPosts();
+      }
+    });
+  }
+
+  openPostModal() {
+    const dialogRef = this.dialogService.open(PostDialogComponent, {
+      width: '50vw'
+    });
+
+    dialogRef.afterClosed().subscribe((result: PostModel) => {
+      if (result != null) {
+        this.posts.unshift(result);
       }
     });
   }
