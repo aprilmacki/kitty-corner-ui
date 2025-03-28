@@ -12,6 +12,8 @@ import {FiltersDialogComponent} from './filters-modal/filters-dialog.component';
 import {TopBarComponent} from '../common/top-bar/top-bar.component';
 import {PageModel} from '../services/kitty-corner-api/models/common.model';
 import {PostDialogComponent} from './post-modal/post-dialog.component';
+import {Observable} from 'rxjs';
+import {HttpErrorResponse} from '@angular/common/http';
 
 @Component({
   selector: 'app-feed',
@@ -71,10 +73,16 @@ export class FeedComponent implements OnInit {
       width: '50vw'
     });
 
-    dialogRef.afterClosed().subscribe((result: PostModel) => {
-      if (result != null) {
-        this.posts.unshift(result);
-      }
+    dialogRef.afterClosed().subscribe((result: Observable<PostModel>) => {
+      result.subscribe({
+        next: (post: PostModel) => {
+          console.log(`new post: ${JSON.stringify(post)}`);
+          this.posts.unshift(post);
+        },
+        error: (error: HttpErrorResponse) => {
+          console.error(error);
+        }
+      });
     });
   }
 

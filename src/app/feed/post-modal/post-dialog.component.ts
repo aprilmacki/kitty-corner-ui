@@ -1,9 +1,13 @@
-import {Component, inject} from '@angular/core';
-import {MatDialogActions, MatDialogContent, MatDialogRef} from '@angular/material/dialog';
+import {Component, inject, model, ModelSignal} from '@angular/core';
+import {MatDialogActions, MatDialogClose, MatDialogContent, MatDialogRef} from '@angular/material/dialog';
 import {MatButton} from '@angular/material/button';
 import {CdkTextareaAutosize} from '@angular/cdk/text-field';
 import {FormControl, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
 import {MatError, MatFormField, MatHint, MatInput, MatLabel} from '@angular/material/input';
+import {KittyCornerApiService} from '../../services/kitty-corner-api/kitty-corner-api.service';
+import {PostModel} from '../../services/kitty-corner-api/models/post.model';
+import {HttpErrorResponse} from '@angular/common/http';
+import {Observable} from 'rxjs';
 
 @Component({
   selector: 'app-post-modal',
@@ -25,6 +29,7 @@ import {MatError, MatFormField, MatHint, MatInput, MatLabel} from '@angular/mate
   styleUrl: './post-dialog.component.scss'
 })
 export class PostDialogComponent {
+  private apiService = inject(KittyCornerApiService);
   readonly dialogRef = inject(MatDialogRef<PostDialogComponent>);
 
   draftPost = new FormControl('', [Validators.maxLength(512)]);
@@ -33,5 +38,8 @@ export class PostDialogComponent {
     this.dialogRef.close();
   }
 
-  protected readonly JSON = JSON;
+  createPost(): void {
+    const createObs: Observable<PostModel> = this.apiService.createPost(this.draftPost.value!);
+    this.dialogRef.close(createObs);
+  }
 }

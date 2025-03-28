@@ -41,6 +41,13 @@ export class KittyCornerApiClient {
     return this.httpClient.get<GetPostsDto>('/api/v1/posts', {params: params});
   }
 
+  createPost(body: string): Observable<PostDto> {
+    // TODO: Add create post, delete post, edit post endpoints
+    return this.httpClient.post<PostDto>(`/api/v1/posts`, {
+      body: body
+    });
+  }
+
   getUserProfileCached(username: string): Observable<UserProfileDto> {
     return this.userProfileCache.get(username);
   }

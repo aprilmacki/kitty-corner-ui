@@ -1,5 +1,5 @@
 import * as express from 'express';
-import {GetPostsDto} from '../src/app/services/kitty-corner-api/dtos/posts.dto';
+import {GetPostsDto, ReactionDto} from '../src/app/services/kitty-corner-api/dtos/posts.dto';
 import * as data from './data/data';
 import {CommentJson, PostJson, UserProfileJson} from './data/data';
 import {GetCommentsDto} from '../src/app/services/kitty-corner-api/dtos/comments.dto';
@@ -41,6 +41,7 @@ function generatePosts() {
   return posts;
 }
 
+let NEXT_POST_ID: number = 200;
 const POSTS: data.PostJson[] = function(){
   const posts: data.PostJson[] = require('./data/posts.json').posts;
   generatePosts().forEach(post => posts.push(post));
@@ -158,6 +159,29 @@ router.get('/api/v1/posts/:postId', (req: express.Request, res: express.Response
 
     res.status(200);
     res.json(data.toPostDto(post));
+  }, 500);
+});
+
+router.post('/api/v1/posts', (req: express.Request, res: express.Response) => {
+  setTimeout(() => {
+    const newPost: PostJson = {
+      postId: NEXT_POST_ID++,
+      username: 'aprilmack',
+      body: req.body.body,
+      distanceKm: 0,
+      totalLikes: 0,
+      totalDislikes: 0,
+      totalComments: 0,
+      createdAt: new Date().toString(),
+      updatedAt: null,
+      myReaction: null
+    };
+
+    POSTS_BY_ID.set(newPost.postId, newPost);
+    POSTS.unshift(newPost);
+
+    res.status(200);
+    res.json(data.toPostDto(newPost));
   }, 500);
 });
 

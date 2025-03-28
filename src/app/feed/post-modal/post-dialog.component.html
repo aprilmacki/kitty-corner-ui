@@ -17,6 +17,6 @@
 
   <mat-dialog-actions align="end">
     <button mat-button (click)="closeDialog()">Cancel</button>
-    <button mat-stroked-button [disabled]="!draftPost.valid || draftPost.value?.length == 0">Post</button>
+    <button mat-stroked-button [disabled]="!draftPost.valid || draftPost.value?.length == 0" (click)="createPost()">Post</button>
   </mat-dialog-actions>
 </mat-dialog-content>

@@ -48,6 +48,12 @@ export class KittyCornerApiService {
     );
   }
 
+  public createPost(body: string): Observable<PostModel> {
+    return this.apiClient.createPost(body).pipe(
+     concatMap((post: PostDto) => this.buildPostModel(post))
+    );
+  }
+
   public getComments(postId: number, pageConfig: CommentPageConfigModel): Observable<PageModel<CommentModel>> {
     return this.apiClient.getComments(postId, pageConfig).pipe(
       concatMap((getCommentsResults: GetCommentsDto) => {
