@@ -79,6 +79,9 @@ export class CommentSectionComponent implements OnInit {
         this.post = result.getPost;
         this.updateComments(result.getComments.items);
         this.nextCursor = result.getComments.nextCursor;
+        if (result.getComments.items.length < this.COMMENT_LIMIT) {
+          this.noMoreComments = true;
+        }
         this.initialLoadingStatus = 'success';
       },
       error: (error: Error) => {
@@ -112,7 +115,7 @@ export class CommentSectionComponent implements OnInit {
     } as CommentPageConfigModel;
     this.apiService.getComments(this.postId, pageConfig).subscribe({
       next: (page: PageModel<CommentModel>) => {
-        if (page.items.length == 0) {
+        if (page.items.length < this.COMMENT_LIMIT) {
           this.noMoreComments = true;
         }
         this.updateComments(page.items);
