@@ -1,5 +1,5 @@
 import * as express from 'express';
-import {GetPostsDto, ReactionDto} from '../src/app/services/kitty-corner-api/dtos/posts.dto';
+import {GetPostsDto} from '../src/app/services/kitty-corner-api/dtos/posts.dto';
 import * as data from './data/data';
 import {CommentJson, PostJson, UserProfileJson} from './data/data';
 import {GetCommentsDto} from '../src/app/services/kitty-corner-api/dtos/comments.dto';
@@ -97,7 +97,6 @@ const COMMENTS_BY_ID: Map<number, data.CommentJson> = function() {
 // Router endpoints
 ///////
 
-
 router.get('/api/v1/users/:username/profile', (req: express.Request, res: express.Response) => {
   setTimeout(() => {
     const testResponses: TestResponses<ErrorResponse> = require('./data/get-user-profile.json');
@@ -179,6 +178,7 @@ router.post('/api/v1/posts', (req: express.Request, res: express.Response) => {
 
     POSTS_BY_ID.set(newPost.postId, newPost);
     POSTS.unshift(newPost);
+    COMMENTS_BY_POST.set(newPost.postId, []);
 
     res.status(200);
     res.json(data.toPostDto(newPost));
