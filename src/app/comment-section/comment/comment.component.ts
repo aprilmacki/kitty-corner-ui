@@ -1,4 +1,4 @@
-import {Component, inject, Input} from '@angular/core';
+import {Component, inject, input, Input} from '@angular/core';
 import {CommentModel} from '../../services/kitty-corner-api/models/comment.model';
 import {DatePipe, DecimalPipe, NgOptimizedImage} from '@angular/common';
 import {MatIconButton} from '@angular/material/button';
@@ -19,17 +19,17 @@ import {computeLikeDislikeChange} from '../../common/util';
   styleUrl: './comment.component.scss'
 })
 export class CommentComponent {
-  @Input() comment!: CommentModel;
+  comment = input.required<CommentModel>();
   private kittyCornerClient = inject(KittyCornerApiClient);
 
   public toggle(reaction: ReactionDto) {
-    const newReaction: ReactionDto = this.comment.myReaction == reaction ? null : reaction;
-    this.kittyCornerClient.setCommentReaction(this.comment.postId, this.comment.commentId, newReaction).subscribe({
+    const newReaction: ReactionDto = this.comment().myReaction == reaction ? null : reaction;
+    this.kittyCornerClient.setCommentReaction(this.comment().postId, this.comment().commentId, newReaction).subscribe({
       next: _ => {
-        const changes = computeLikeDislikeChange(this.comment.myReaction, newReaction);
-        this.comment.totalLikes += changes.likeChange;
-        this.comment.totalDislikes += changes.dislikeChange;
-        this.comment.myReaction = newReaction;
+        const changes = computeLikeDislikeChange(this.comment().myReaction, newReaction);
+        this.comment().totalLikes += changes.likeChange;
+        this.comment().totalDislikes += changes.dislikeChange;
+        this.comment().myReaction = newReaction;
       },
       error: error=> {
         console.log(error);

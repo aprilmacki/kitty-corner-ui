@@ -1,19 +1,19 @@
 <div class="top">
   <div class="profile">
-    <img ngSrc="{{this.post.author.profilePhotoUrl}}" height="50" width="50" alt="profile photo"/>
+    <img ngSrc="{{this.post().author.profilePhotoUrl}}" height="50" width="50" alt="profile photo"/>
   </div>
   <div class="content">
     <div class="user">
-      <span class="profileName">{{this.post.author.profileName}}</span>
-      <span class="userName">&#64;{{this.post.author.username}}</span>
+      <span class="profileName">{{this.post().author.profileName}}</span>
+      <span class="userName">&#64;{{this.post().author.username}}</span>
     </div>
     <div class="body">
-      {{ this.post.body }}
+      {{ this.post().body }}
     </div>
     <div class="info">
-      <span class="createdAt">{{this.post.createdAt | date:'M/d/yy h:mm a'}}</span>
+      <span class="createdAt">{{this.post().createdAt | date:'M/d/yy h:mm a'}}</span>
       <span>&bullet;</span>
-      <span class="distance">{{this.post.distanceKm | number: '1.0-1'}} km away</span>
+      <span class="distance">{{this.post().distanceKm | number: '1.0-1'}} km away</span>
     </div>
   </div>
 </div>
@@ -21,25 +21,25 @@
 <div class="reactions">
   <div class="with-count">
     <button mat-icon-button (click)="toggle('like')">
-      <mat-icon fontSet="material-symbols-outlined" [class]="this.post.myReaction == 'like' ? 'icon-filled' : 'icon-not-filled'">thumb_up</mat-icon>
+      <mat-icon fontSet="material-symbols-outlined" [class]="this.post().myReaction == 'like' ? 'icon-filled' : 'icon-not-filled'">thumb_up</mat-icon>
     </button>
-    <span>{{this.post.totalLikes}}</span>
+    <span>{{this.post().totalLikes}}</span>
   </div>
   <div class="with-count">
     <button mat-icon-button (click)="toggle('dislike')">
-      <mat-icon fontSet="material-symbols-outlined" [class]="this.post.myReaction == 'dislike' ? 'icon-filled' : 'icon-not-filled'">thumb_down</mat-icon>
+      <mat-icon fontSet="material-symbols-outlined" [class]="this.post().myReaction == 'dislike' ? 'icon-filled' : 'icon-not-filled'">thumb_down</mat-icon>
     </button>
-    <span>{{this.post.totalDislikes}}</span>
+    <span>{{this.post().totalDislikes}}</span>
   </div>
   <div class="with-count">
-    @if (this.showCommentButton) {
+    @if (this.showCommentButton()) {
       <button mat-icon-button [routerLink]="getCommentsLink()">
         <mat-icon fontSet="material-symbols-outlined">forum</mat-icon>
       </button>
     } @else {
       <mat-icon fontSet="material-symbols-outlined">forum</mat-icon>
     }
-    <span>{{this.post.totalComments}}</span>
+    <span>{{this.post().totalComments}}</span>
   </div>
   <button mat-icon-button>
     <mat-icon fontSet="material-symbols-outlined icon-not-filled">ios_share</mat-icon>

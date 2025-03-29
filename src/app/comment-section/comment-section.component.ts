@@ -1,4 +1,4 @@
-import {Component, ElementRef, inject, Input, OnInit, ViewChild} from '@angular/core';
+import {Component, ElementRef, inject, input, Input, OnInit, ViewChild} from '@angular/core';
 import {MatIcon} from '@angular/material/icon';
 import {MatButton, MatIconButton} from '@angular/material/button';
 import {TopBarComponent} from '../common/top-bar/top-bar.component';
@@ -59,17 +59,16 @@ export class CommentSectionComponent implements OnInit {
   noMoreComments: boolean = false;
   nextCursor = 0;
 
-  @Input()
-  postId!: number;
+  postId = input.required<number>();
 
   ngOnInit() {
-    const getPostObs: Observable<PostModel> = this.apiService.getPost(this.postId);
+    const getPostObs: Observable<PostModel> = this.apiService.getPost(this.postId());
 
     const pageConfig: CommentPageConfigModel = {
       limit: this.COMMENT_LIMIT,
       cursor: this.nextCursor
     }
-    const getCommentsObs: Observable<PageModel<CommentModel>> = this.apiService.getComments(this.postId, pageConfig);
+    const getCommentsObs: Observable<PageModel<CommentModel>> = this.apiService.getComments(this.postId(), pageConfig);
 
     forkJoin({
       getPost: getPostObs,
@@ -93,7 +92,7 @@ export class CommentSectionComponent implements OnInit {
 
   postComment() {
     if (this.draftComment.value != null && this.draftComment.value.length > 0) {
-      this.apiService.postComment(this.postId, this.draftComment.value!).subscribe({
+      this.apiService.postComment(this.postId(), this.draftComment.value!).subscribe({
         next: (comment: CommentModel) => {
           this.updateComments([comment]);
         },
@@ -113,7 +112,7 @@ export class CommentSectionComponent implements OnInit {
       limit: this.COMMENT_LIMIT,
       cursor: this.nextCursor
     } as CommentPageConfigModel;
-    this.apiService.getComments(this.postId, pageConfig).subscribe({
+    this.apiService.getComments(this.postId(), pageConfig).subscribe({
       next: (page: PageModel<CommentModel>) => {
         if (page.items.length < this.COMMENT_LIMIT) {
           this.noMoreComments = true;

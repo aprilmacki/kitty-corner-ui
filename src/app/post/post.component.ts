@@ -1,4 +1,4 @@
-import {booleanAttribute, Component, Input} from '@angular/core';
+import {booleanAttribute, Component, input, Input} from '@angular/core';
 import {PostModel} from '../services/kitty-corner-api/models/post.model';
 import {DatePipe, DecimalPipe, NgOptimizedImage} from '@angular/common';
 import {MatIcon} from '@angular/material/icon';
@@ -22,20 +22,20 @@ import {computeLikeDislikeChange} from '../common/util';
   styleUrl: './post.component.scss'
 })
 export class PostComponent {
-  @Input() post!: PostModel;
-  @Input({transform: booleanAttribute}) showCommentButton: boolean = true;
+  post = input.required<PostModel>();
+  showCommentButton = input<boolean>(true);
 
   constructor(private kittyCornerClient: KittyCornerApiClient) {
   }
 
   public toggle(reaction: ReactionDto) {
-    const newReaction: ReactionDto = this.post.myReaction == reaction ? null : reaction;
-    this.kittyCornerClient.setPostReaction(this.post.postId, newReaction).subscribe({
+    const newReaction: ReactionDto = this.post().myReaction == reaction ? null : reaction;
+    this.kittyCornerClient.setPostReaction(this.post().postId, newReaction).subscribe({
       next: _ => {
-        const changes = computeLikeDislikeChange(this.post.myReaction, newReaction);
-        this.post.totalLikes += changes.likeChange;
-        this.post.totalDislikes += changes.dislikeChange;
-        this.post.myReaction = newReaction;
+        const changes = computeLikeDislikeChange(this.post().myReaction, newReaction);
+        this.post().totalLikes += changes.likeChange;
+        this.post().totalDislikes += changes.dislikeChange;
+        this.post().myReaction = newReaction;
       },
       error: error=> {
         console.log(error);
@@ -44,6 +44,6 @@ export class PostComponent {
   }
 
   public getCommentsLink(): string {
-    return `/posts/${this.post.postId}/comments`;
+    return `/posts/${this.post().postId}/comments`;
   }
 }
