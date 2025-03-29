@@ -32,7 +32,7 @@
   </form>
 
   <div class="comments">
-    <app-comment *ngFor="let comment of comments" [comment]="comment"></app-comment>
+    <app-comment *ngFor="let comment of sortedComments" [comment]="comment"></app-comment>
   </div>
 
   <div class="more-button">

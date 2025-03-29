@@ -54,7 +54,8 @@ export class CommentSectionComponent implements OnInit {
   moreLoadingStatus: LoadingStatus = 'success';
   leaveCommentActive: boolean = false;
   draftComment = new FormControl('', []);
-  comments: CommentModel[] = [];
+  sortedComments: CommentModel[] = [];
+  commentsById: Map<number, CommentModel> = new Map();
   noMoreComments: boolean = false;
   nextCursor = 0;
 
@@ -76,7 +77,7 @@ export class CommentSectionComponent implements OnInit {
     }).subscribe({
       next: result => {
         this.post = result.getPost;
-        this.comments.push(...result.getComments.items);
+        this.updateComments(result.getComments.items);
         this.nextCursor = result.getComments.nextCursor;
         this.initialLoadingStatus = 'success';
       },
@@ -91,7 +92,7 @@ export class CommentSectionComponent implements OnInit {
     if (this.draftComment.value != null && this.draftComment.value.length > 0) {
       this.apiService.postComment(this.postId, this.draftComment.value!).subscribe({
         next: (comment: CommentModel) => {
-          this.comments.push(comment);
+          this.updateComments([comment]);
         },
         error: (error: Error) => {
           console.log(error);
@@ -114,7 +115,7 @@ export class CommentSectionComponent implements OnInit {
         if (page.items.length == 0) {
           this.noMoreComments = true;
         }
-        this.comments.push(...page.items);
+        this.updateComments(page.items);
         this.nextCursor = page.nextCursor;
         this.moreLoadingStatus = 'success';
       },
@@ -123,5 +124,11 @@ export class CommentSectionComponent implements OnInit {
         this.moreLoadingStatus = 'error';
       }
     });
+  }
+
+  updateComments(newComments: CommentModel[]) {
+    newComments.forEach(newComment => this.commentsById.set(newComment.commentId, newComment));
+    this.sortedComments = Array.from(this.commentsById.values())
+      .sort((a, b) => a.commentId - b.commentId);
   }
 }
