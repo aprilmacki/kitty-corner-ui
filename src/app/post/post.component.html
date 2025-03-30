@@ -1,7 +1,9 @@
 <div class="top">
-  <div>
-    <img ngSrc="{{this.post().author.profilePhotoUrl}}" height="50" width="50" alt="profile photo"/>
-  </div>
+  @if (this.showPhoto()) {
+    <div>
+      <img ngSrc="{{this.post().author.profilePhotoUrl}}" height="50" width="50" alt="profile photo"/>
+    </div>
+  }
   <div class="content">
     <div class="user">
       <span class="profileName">{{this.post().author.profileName}}</span>

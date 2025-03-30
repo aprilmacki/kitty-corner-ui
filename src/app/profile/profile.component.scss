@@ -71,12 +71,12 @@ app-top-bar {
   }
 }
 
-.comments {
+.posts {
   display: flex;
   flex-direction: column;
 }
 
-.comments > * {
+.posts > * {
   border-bottom: 1px solid var(--mat-sys-outline);
 }
 

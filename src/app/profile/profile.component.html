@@ -34,8 +34,8 @@
     </div>
   </div>
 
-  <div class="comments">
-    <app-post *ngFor="let post of this.posts()" [post]="post"></app-post>
+  <div class="posts">
+    <app-post *ngFor="let post of this.posts()" [post]="post" [showPhoto]="false"></app-post>
   </div>
 
   <div class="more-button">
@@ -47,8 +47,10 @@
       <mat-spinner [diameter]=40></mat-spinner>
     }
   </div>
-} @else if (this.initialLoadingStatus() == 'loading') {
+} @else if (this.initialLoadingStatus() === 'loading') {
   <div class="spinner">
     <mat-spinner></mat-spinner>
   </div>
+} @else if (this.initialLoadingStatus() === 'error') {
+  ERROR!
 }

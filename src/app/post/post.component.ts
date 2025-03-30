@@ -24,6 +24,7 @@ import {computeLikeDislikeChange} from '../common/util';
 export class PostComponent {
   post = input.required<PostModel>();
   showCommentButton = input<boolean>(true);
+  showPhoto = input<boolean>(true);
 
   constructor(private kittyCornerClient: KittyCornerApiClient) {
   }
