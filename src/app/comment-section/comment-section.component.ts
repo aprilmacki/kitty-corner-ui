@@ -1,11 +1,11 @@
-import {Component, ElementRef, inject, input, Input, OnInit, ViewChild} from '@angular/core';
+import {Component, ElementRef, inject, input, Input, OnInit, signal, ViewChild} from '@angular/core';
 import {MatIcon} from '@angular/material/icon';
 import {MatButton, MatIconButton} from '@angular/material/button';
 import {TopBarComponent} from '../common/top-bar/top-bar.component';
 import {RouterLink} from '@angular/router';
 import {LoadingStatus} from '../common/types';
 import {KittyCornerApiService} from '../services/kitty-corner-api/kitty-corner-api.service';
-import {PostModel, PostPageConfigModel} from '../services/kitty-corner-api/models/post.model';
+import {PostModel} from '../services/kitty-corner-api/models/post.model';
 import {PostComponent} from '../post/post.component';
 import {MatFormField, MatInput, MatLabel} from '@angular/material/input';
 import {MatProgressSpinner} from '@angular/material/progress-spinner';
@@ -44,22 +44,21 @@ import {CommentComponent} from './comment/comment.component';
 })
 export class CommentSectionComponent implements OnInit {
   private readonly COMMENT_LIMIT = 20;
-
   private readonly apiService = inject(KittyCornerApiService);
+  private nextCursor = 0;
+  private commentsById: Map<number, CommentModel> = new Map();
+
+  postId = input.required<number>();
 
   @ViewChild('textArea') textArea: ElementRef | null = null;
 
-  post?: PostModel;
-  initialLoadingStatus: LoadingStatus = 'loading';
-  moreLoadingStatus: LoadingStatus = 'success';
-  leaveCommentActive: boolean = false;
-  draftComment = new FormControl('', []);
-  sortedComments: CommentModel[] = [];
-  commentsById: Map<number, CommentModel> = new Map();
-  noMoreComments: boolean = false;
-  nextCursor = 0;
-
-  postId = input.required<number>();
+  post = signal<PostModel | null>(null);
+  initialLoadingStatus = signal<LoadingStatus>('loading');
+  moreLoadingStatus = signal<LoadingStatus>('success');
+  leaveCommentActive = signal<boolean>(false);
+  noMoreComments = signal<boolean>(false);
+  sortedComments = signal<CommentModel[]>([]);
+  draftComment = new FormControl('', []); // This should probably be a signal too?
 
   ngOnInit() {
     const getPostObs: Observable<PostModel> = this.apiService.getPost(this.postId());
@@ -75,17 +74,17 @@ export class CommentSectionComponent implements OnInit {
       getComments: getCommentsObs
     }).subscribe({
       next: result => {
-        this.post = result.getPost;
+        this.post.set(result.getPost);
         this.updateComments(result.getComments.items);
         this.nextCursor = result.getComments.nextCursor;
         if (result.getComments.items.length < this.COMMENT_LIMIT) {
-          this.noMoreComments = true;
+          this.noMoreComments.set(true);
         }
-        this.initialLoadingStatus = 'success';
+        this.initialLoadingStatus.set('success');
       },
       error: (error: Error) => {
         console.log(error);
-        this.initialLoadingStatus = 'error';
+        this.initialLoadingStatus.set('error');
       }
     });
   }
@@ -102,12 +101,18 @@ export class CommentSectionComponent implements OnInit {
       })
     }
     this.draftComment.setValue('');
-    this.post!.totalComments++;
-    this.leaveCommentActive = false;
+    this.post.update(post => {
+      const newPost = {
+        ...post!
+      };
+      newPost.totalComments++;
+      return newPost;
+    })
+    this.leaveCommentActive.set(false);
   }
 
   fetchNextPageOfComments() {
-    this.moreLoadingStatus = 'loading';
+    this.moreLoadingStatus.set('loading');
     const pageConfig = {
       limit: this.COMMENT_LIMIT,
       cursor: this.nextCursor
@@ -115,22 +120,21 @@ export class CommentSectionComponent implements OnInit {
     this.apiService.getComments(this.postId(), pageConfig).subscribe({
       next: (page: PageModel<CommentModel>) => {
         if (page.items.length < this.COMMENT_LIMIT) {
-          this.noMoreComments = true;
+          this.noMoreComments.set(true);
         }
         this.updateComments(page.items);
         this.nextCursor = page.nextCursor;
-        this.moreLoadingStatus = 'success';
+        this.moreLoadingStatus.set('success');
       },
       error: (err) => {
         console.log(err);
-        this.moreLoadingStatus = 'error';
+        this.moreLoadingStatus.set('error');
       }
     });
   }
 
-  updateComments(newComments: CommentModel[]) {
+  private updateComments(newComments: CommentModel[]) {
     newComments.forEach(newComment => this.commentsById.set(newComment.commentId, newComment));
-    this.sortedComments = Array.from(this.commentsById.values())
-      .sort((a, b) => a.commentId - b.commentId);
+    this.sortedComments.set(Array.from(this.commentsById.values()).sort((a, b) => a.commentId - b.commentId));
   }
 }

@@ -2,21 +2,20 @@
 
 <mat-dialog-content>
   <div class="filters">
-    <div class="filter-name">Age range: <strong>{{this.newFilters.startAge}}</strong> to <strong>{{toEndAgeLabel(this.newFilters.endAge)}}</strong></div>
+    <div class="filter-name">Age range: <strong>{{newStartAge()}}</strong> to <strong>{{toEndAgeLabel(newEndAge())}}</strong></div>
     <mat-slider min="18" max="{{MAX_AGE}}" step="1" showTickMarks="true">
-      <input matSliderStartThumb [(ngModel)]="newFilters.startAge">
-      <input matSliderEndThumb [(ngModel)]="newFilters.endAge">
+      <input matSliderStartThumb [(ngModel)]="newStartAge">
+      <input matSliderEndThumb [(ngModel)]="newEndAge">
     </mat-slider>
 
-    <div class="filter-name">Maximum distance: <strong>{{this.newFilters.distanceKm}} km</strong></div>
+    <div class="filter-name">Maximum distance: <strong>{{newDistanceKm()}} km</strong></div>
     <mat-slider min="1" max="50" step="1" showTickMarks="true">
-      <input matSliderThumb [(ngModel)]="newFilters.distanceKm">
+      <input matSliderThumb [(ngModel)]="newDistanceKm">
     </mat-slider>
   </div>
 
   <mat-dialog-actions>
     <button mat-button (click)="closeDialog()">Cancel</button>
-    <button mat-stroked-button [mat-dialog-close]="newFilters" cdkFocusInitial>Ok</button>
+    <button mat-stroked-button [mat-dialog-close]="newFilters()" cdkFocusInitial>Ok</button>
   </mat-dialog-actions>
-
 </mat-dialog-content>

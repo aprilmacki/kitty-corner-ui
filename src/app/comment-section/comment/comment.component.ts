@@ -19,8 +19,9 @@ import {computeLikeDislikeChange} from '../../common/util';
   styleUrl: './comment.component.scss'
 })
 export class CommentComponent {
-  comment = input.required<CommentModel>();
   private kittyCornerClient = inject(KittyCornerApiClient);
+
+  comment = input.required<CommentModel>();
 
   public toggle(reaction: ReactionDto) {
     const newReaction: ReactionDto = this.comment().myReaction == reaction ? null : reaction;

@@ -1,4 +1,4 @@
-import {Component, inject} from '@angular/core';
+import {Component, computed, inject, signal} from '@angular/core';
 import {
   MAT_DIALOG_DATA,
   MatDialogActions,
@@ -32,15 +32,18 @@ export class FiltersDialogComponent {
   readonly dialogRef = inject(MatDialogRef<FiltersDialogComponent>);
   readonly existingFilters: FeedFilterModel = inject<FeedFilterModel>(MAT_DIALOG_DATA);
   readonly MAX_AGE: number = 80;
-  newFilters: FeedFilterModel;
 
-  constructor() {
-    this.newFilters = {
-      startAge: this.existingFilters.startAge,
-      endAge: this.existingFilters.endAge,
-      distanceKm: this.existingFilters.distanceKm
-    };
-  }
+  // We use separate signals for each property due to two-way bindings with input components
+  newStartAge = signal<number | null>(this.existingFilters.startAge);
+  newEndAge = signal<number | null>(this.existingFilters.endAge);
+  newDistanceKm = signal<number | null>(this.existingFilters.distanceKm);
+  newFilters = computed(() => {
+    return {
+      startAge: this.newStartAge(),
+      endAge: this.newEndAge(),
+      distanceKm: this.newDistanceKm()
+    } as FeedFilterModel;
+  });
 
   closeDialog(): void {
     this.dialogRef.close();

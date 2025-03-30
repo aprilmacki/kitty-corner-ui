@@ -7,14 +7,14 @@
   <span class="title">Comments</span>
 </app-top-bar>
 
-@if (this.initialLoadingStatus === 'success') {
+@if (this.initialLoadingStatus() === 'success') {
   <div class="post">
-    <app-post [post]="this.post!" [showCommentButton]="false">
+    <app-post [post]="this.post()!" [showCommentButton]="false">
     </app-post>
   </div>
 
   <form>
-    <mat-form-field subscriptSizing="dynamic" appearance="fill" (focusin)="this.leaveCommentActive = true">
+    <mat-form-field subscriptSizing="dynamic" appearance="fill" (focusin)="this.leaveCommentActive.set(true)">
       <mat-label>Leave a comment</mat-label>
       <textarea matInput
                 cdkTextareaAutosize
@@ -22,25 +22,25 @@
                 cdkAutosizeMaxRows="8"
                 [formControl]="draftComment"
       ></textarea>
-      @if (this.leaveCommentActive) {
+      @if (this.leaveCommentActive()) {
         <div class="comment-button">
-          <button click-stop-propagation mat-button [disabled]="!this.leaveCommentActive" (click)="this.leaveCommentActive = false; draftComment.setValue(null)">Cancel</button>
-          <button click-stop-propagation mat-flat-button [disabled]="!this.leaveCommentActive || draftComment.value == null || draftComment.value == ''" (click)="postComment()">Post</button>
+          <button click-stop-propagation mat-button [disabled]="!this.leaveCommentActive()" (click)="this.leaveCommentActive.set(false); draftComment.setValue(null)">Cancel</button>
+          <button click-stop-propagation mat-flat-button [disabled]="!this.leaveCommentActive() || draftComment.value == null || draftComment.value == ''" (click)="postComment()">Post</button>
         </div>
       }
     </mat-form-field>
   </form>
 
   <div class="comments">
-    <app-comment *ngFor="let comment of sortedComments" [comment]="comment"></app-comment>
+    <app-comment *ngFor="let comment of sortedComments()" [comment]="comment"></app-comment>
   </div>
 
   <div class="more-button">
-    @if (this.noMoreComments) {
+    @if (this.noMoreComments()) {
       No more comments
-    } @else if (this.moreLoadingStatus == 'success') {
+    } @else if (this.moreLoadingStatus() === 'success') {
       <button mat-stroked-button (click)="fetchNextPageOfComments()">More</button>
-    } @else if (this.moreLoadingStatus == 'loading') {
+    } @else if (this.moreLoadingStatus() === 'loading') {
       <mat-spinner [diameter]=40></mat-spinner>
     }
   </div>

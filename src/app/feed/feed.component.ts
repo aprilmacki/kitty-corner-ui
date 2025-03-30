@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, signal} from '@angular/core';
 import {MatIcon} from '@angular/material/icon';
 import {MatButton, MatIconButton} from '@angular/material/button';
 import {PostPageConfigModel, PostModel} from '../services/kitty-corner-api/models/post.model';
@@ -33,10 +33,10 @@ export class FeedComponent implements OnInit {
   private readonly POST_LIMIT = 10;
   private nextCursor: number = 0;
 
-  posts: PostModel[] = [];
-  initialLoadingStatus: LoadingStatus = 'loading';
-  moreLoadingStatus: LoadingStatus = 'success';
-  noMorePosts: boolean = false;
+  posts = signal<PostModel[]>([]);
+  initialLoadingStatus = signal<LoadingStatus>('loading');
+  moreLoadingStatus = signal<LoadingStatus>('success');
+  noMorePosts = signal<boolean>(false);
 
   currentFilter: FeedFilterModel = {
     startAge: 18,
@@ -76,8 +76,9 @@ export class FeedComponent implements OnInit {
     dialogRef.afterClosed().subscribe((result: Observable<PostModel>) => {
       result.subscribe({
         next: (post: PostModel) => {
-          console.log(`new post: ${JSON.stringify(post)}`);
-          this.posts.unshift(post);
+          this.posts.update(posts => {
+            return [post, ...posts];
+          });
         },
         error: (error: HttpErrorResponse) => {
           console.error(error);
@@ -87,9 +88,9 @@ export class FeedComponent implements OnInit {
   }
 
   refreshPosts() {
-    this.initialLoadingStatus = 'loading';
-    this.noMorePosts = false;
-    this.moreLoadingStatus = 'success';
+    this.initialLoadingStatus.set('loading');
+    this.noMorePosts.set(false);
+    this.moreLoadingStatus.set('success');
     const pageConfig = {
       startAge: this.currentFilter.startAge,
       endAge: this.currentFilter.endAge,
@@ -100,19 +101,19 @@ export class FeedComponent implements OnInit {
     this.kittyCornerApiService.getPosts(pageConfig).subscribe(
       {
         next: (page: PageModel<PostModel>) => {
-          this.posts = page.items;
+          this.posts.set(page.items);
           this.nextCursor = page.nextCursor;
-          this.initialLoadingStatus = 'success';
+          this.initialLoadingStatus.set('success');
         },
         error: (err) => {
           console.log(err);
-          this.initialLoadingStatus = 'error';
+          this.initialLoadingStatus.set('error');
         }
       });
   }
 
   fetchNextPage() {
-    this.moreLoadingStatus = 'loading';
+    this.moreLoadingStatus.set('loading');
     const pageConfig = {
       startAge: this.currentFilter.startAge,
       endAge: this.currentFilter.endAge,
@@ -124,15 +125,17 @@ export class FeedComponent implements OnInit {
       {
         next: (page: PageModel<PostModel>) => {
           if (page.items.length == 0) {
-            this.noMorePosts = true;
+            this.noMorePosts.set(true);
           }
-          this.posts.push(...page.items);
+          this.posts.update(posts => {
+            return [...posts, ...page.items];
+          });
           this.nextCursor = page.nextCursor;
-          this.moreLoadingStatus = 'success';
+          this.moreLoadingStatus.set('success');
         },
         error: (err) => {
           console.log(err);
-          this.moreLoadingStatus = 'error';
+          this.moreLoadingStatus.set('error');
         }
       });
   }

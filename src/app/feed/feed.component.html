@@ -16,26 +16,26 @@
   </div>
 </app-top-bar>
 
-@if (this.initialLoadingStatus == 'success') {
-  <div class="post" *ngFor="let post of posts">
+@if (this.initialLoadingStatus() == 'success') {
+  <div class="post" *ngFor="let post of posts()">
     <app-post [post]="post"></app-post>
   </div>
   <div class="more-button">
-    @if (this.moreLoadingStatus == 'success') {
+    @if (this.moreLoadingStatus() == 'success') {
       <div class="vertical">
-        <button mat-stroked-button [disabled]="this.noMorePosts" (click)="fetchNextPage()">More</button>
-        @if (this.noMorePosts) {
+        <button mat-stroked-button [disabled]="this.noMorePosts()" (click)="fetchNextPage()">More</button>
+        @if (this.noMorePosts()) {
           No older posts
         }
       </div>
-    } @else if (this.moreLoadingStatus == 'loading') {
+    } @else if (this.moreLoadingStatus() == 'loading') {
       <mat-spinner [diameter]=40></mat-spinner>
     }
   </div>
-} @else if (this.initialLoadingStatus == 'loading') {
+} @else if (this.initialLoadingStatus() == 'loading') {
   <div class="spinner">
     <mat-spinner></mat-spinner>
   </div>
-} @else if (this.initialLoadingStatus == 'error') {
+} @else if (this.initialLoadingStatus() == 'error') {
   ERROR!!
 }
