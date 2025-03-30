@@ -111,6 +111,30 @@ router.get('/api/v1/users/:username/profile', (req: express.Request, res: expres
   }, 500);
 });
 
+router.get('/api/v1/users/:username/posts', (req: express.Request, res: express.Response) => {
+  setTimeout(() => {
+    const username: string = req.params['username'];
+    const cursor: number = Number(req.query['cursor'] ?? 0);
+    const limit: number = Number(req.query['limit'] ?? 10);
+
+    const selectedPosts: PostJson[] = [];
+    for (const post of POSTS) {
+      if (selectedPosts.length > limit) {
+        break;
+      }
+      if (post.username === username && (post.postId <= cursor || cursor == 0)) {
+        selectedPosts.push(post);
+      }
+    }
+
+    res.status(200);
+    res.json({
+      posts: selectedPosts.map((post: data.PostJson) => data.toPostDto(post)),
+      nextCursor: selectedPosts.length == 0 ? 0 : selectedPosts[selectedPosts.length-1].postId - 1
+    } as GetPostsDto);
+  }, 1000);
+})
+
 router.get('/api/v1/posts/', (req: express.Request, res: express.Response) => {
   setTimeout(() => {
     const cursor: number = Number(req.query['cursor'] ?? 0);

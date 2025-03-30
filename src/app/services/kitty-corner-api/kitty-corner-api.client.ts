@@ -22,6 +22,14 @@ export class KittyCornerApiClient {
     return this.httpClient.get<PostDto>(`/api/v1/posts/${postId}`);
   }
 
+  getUserPosts(username: string, limit: number, cursor: number): Observable<GetPostsDto> {
+    let params: HttpParams = new HttpParams();
+    params = params.set('limit', limit);
+    params = params.set('cursor', cursor);
+
+    return this.httpClient.get<GetPostsDto>(`/api/v1/users/${username}/posts`, {params: params});
+  }
+
   getPosts(pageConfig: PostPageConfigModel): Observable<GetPostsDto> {
     let params: HttpParams = new HttpParams();
     if (pageConfig.startAge != null) {

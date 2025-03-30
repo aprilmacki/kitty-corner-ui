@@ -8,6 +8,7 @@ import * as util from '../../common/util';
 import {CommentDto, CommentPageConfigModel, GetCommentsDto} from './dtos/comments.dto';
 import {CommentModel} from './models/comment.model';
 import {PageModel} from './models/common.model';
+import {toUserProfileModel, UserProfileModel} from './models/user.model';
 
 @Injectable({
   providedIn: 'root'
@@ -19,6 +20,22 @@ export class KittyCornerApiService {
     return this.apiClient.getPost(postId).pipe(
       concatMap((post: PostDto) => {
         return this.buildPostModel(post);
+      })
+    );
+  }
+
+  public getUserPosts(username: string, limit: number, cursor: number): Observable<PageModel<PostModel>> {
+    // We don't technically need to populate the author data. But it's cached anyway and allows to avoid creating a second
+    // data model.
+    return forkJoin({
+      userProfile: this.apiClient.getUserProfileCached(username),
+      posts: this.apiClient.getUserPosts(username, limit, cursor)
+    }).pipe(
+      map(results => {
+        return {
+          items: results.posts.posts.map(post => toPostModel(post, results.userProfile)),
+          nextCursor: results.posts.nextCursor
+        } as PageModel<PostModel>;
       })
     );
   }
@@ -83,6 +100,12 @@ export class KittyCornerApiService {
       concatMap((commentDto: CommentDto) => {
         return this.buildCommentModel(postId, commentDto);
       })
+    );
+  }
+
+  getUserProfile(username: string): Observable<UserProfileModel> {
+    return this.apiClient.getUserProfileCached(username).pipe(
+      map(profile => toUserProfileModel(profile))
     );
   }
 

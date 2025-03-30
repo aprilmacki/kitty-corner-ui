@@ -1,1 +1,54 @@
-<p>profile works!</p>
+<app-top-bar>
+  <div class="buttons">
+    <button mat-icon-button routerLink="/posts">
+      <mat-icon fontSet="material-symbols-outlined">arrow_back</mat-icon>
+    </button>
+    <button mat-stroked-button>Edit</button>
+  </div>
+  <span class="title">&commat;{{username()}}</span>
+</app-top-bar>
+
+@if (this.initialLoadingStatus() === 'success') {
+  <div class="profile-info">
+    <img ngSrc="{{this.profile()!.photoUrl}}" height="100" width="100" alt="profile photo"/>
+
+    <div class="right">
+      <h2>{{this.profile()!.name}}</h2>
+      <div class="info">
+        <span>{{this.profile()!.pronouns}}</span>
+        <span>&bullet;</span>
+        <span>{{this.profile()!.age}}</span>
+        <span>&bullet;</span>
+        <span>{{this.profile()!.location}}</span>
+      </div>
+      <div class="more-info">
+        <div>
+          <mat-icon fontSet="material-symbols-outlined">event</mat-icon>
+          <span>{{this.profile()!.joinedAt | date:'M/d/yy'}}</span>
+        </div>
+        <div>
+          <mat-icon fontSet="material-symbols-outlined">bar_chart</mat-icon>
+          <span>{{this.profile()!.totalPosts}}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="comments">
+    <app-post *ngFor="let post of this.posts()" [post]="post"></app-post>
+  </div>
+
+  <div class="more-button">
+    @if (this.noMorePosts()) {
+      No more posts
+    } @else if (this.moreLoadingStatus() === 'success') {
+      <button mat-stroked-button (click)="fetchNextPageOfPosts()">More</button>
+    } @else if (this.moreLoadingStatus() === 'loading') {
+      <mat-spinner [diameter]=40></mat-spinner>
+    }
+  </div>
+} @else if (this.initialLoadingStatus() == 'loading') {
+  <div class="spinner">
+    <mat-spinner></mat-spinner>
+  </div>
+}

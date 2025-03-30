@@ -44,4 +44,5 @@ export interface PostPageConfigModel {
   distanceKm: number | null;
   limit: number;
   cursor: number | null;
+  username: string | null;
 }
