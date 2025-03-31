@@ -1,4 +1,4 @@
-import {Component, inject, input, OnInit, signal} from '@angular/core';
+import {Component, computed, inject, input, OnInit, signal} from '@angular/core';
 import {RouterLink} from '@angular/router';
 import {TopBarComponent} from '../../common/top-bar/top-bar.component';
 import {MatIcon} from '@angular/material/icon';
@@ -25,6 +25,7 @@ import {PostModel} from '../../services/kitty-corner-api/models/post.model';
 import {HttpErrorResponse} from '@angular/common/http';
 import {MatDialog} from '@angular/material/dialog';
 import {EditLocationDialogComponent} from '../edit-location-dialog/edit-location-dialog.component';
+import {ReverseGeocodeDto} from '../../services/kitty-corner-api/dtos/utils.dto';
 
 @Component({
   selector: 'app-edit-profile',
@@ -52,12 +53,12 @@ export class EditProfileComponent implements OnInit {
   username = input.required<string>();
   initialLoadingStatus = signal<LoadingStatus>('loading');
 
-  nameField= new FormControl('', [Validators.maxLength(256), Validators.required]);
-  pronounsField= new FormControl('', [Validators.maxLength(256), Validators.required]);
+  nameField = new FormControl('', [Validators.maxLength(256), Validators.required]);
+  pronounsField = new FormControl('', [Validators.maxLength(256), Validators.required]);
   birthdayField = new FormControl(new Date(), [Validators.required]);
   locationField = new FormControl('', [Validators.maxLength(256), Validators.required]);
-  latitude: number = NaN;
-  longitude: number = NaN;
+
+  currentLocation = signal<ReverseGeocodeDto | null>(null);
 
   ngOnInit(): void {
     this.apiService.getUserProfile(this.username()).subscribe({
@@ -65,14 +66,18 @@ export class EditProfileComponent implements OnInit {
         this.nameField.setValue(result.name);
         this.pronounsField.setValue(result.pronouns);
         this.birthdayField.setValue(new Date(result.yourInfo!.birthday));
-        this.locationField.setValue(result.location);
-        this.latitude = result.yourInfo!.latitude;
-        this.longitude = result.yourInfo!.longitude;
+
+        this.currentLocation.set({
+          latitude: result.yourInfo!.latitude,
+          longitude: result.yourInfo!.longitude,
+          location: result.location
+        } as ReverseGeocodeDto);
+        this.locationField.setValue(this.currentLocation()!.location);
 
         this.initialLoadingStatus.set('success');
       },
       error: error => {
-        console.log(error);
+        console.error(error);
         this.initialLoadingStatus.set('error');
       }
     });
@@ -80,12 +85,18 @@ export class EditProfileComponent implements OnInit {
 
   openEditLocationDialog() {
     const dialogRef = this.dialogService.open(EditLocationDialogComponent, {
-      width: '50vw'
+      width: '50vw',
+      data: this.currentLocation()
     });
 
     dialogRef.afterClosed().subscribe({
-      next: (results: {lat: number, lon: number}) => {
+      next: (results: ReverseGeocodeDto) => {
         console.log(results);
+        if (results == null) {
+          return;
+        }
+        this.currentLocation.set(results);
+        this.locationField.setValue(results.location);
       },
       error: (error) => {
         console.error(error);

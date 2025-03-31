@@ -6,6 +6,7 @@ import {PostPageConfigModel} from './models/post.model';
 import {HttpClient, HttpParams} from '@angular/common/http';
 import {DataCache} from '../../common/data-cache';
 import {CommentDto, CommentPageConfigModel, GetCommentsDto} from './dtos/comments.dto';
+import {ReverseGeocodeDto} from './dtos/utils.dto';
 
 @Injectable({
   providedIn: 'root'
@@ -50,7 +51,6 @@ export class KittyCornerApiClient {
   }
 
   createPost(body: string): Observable<PostDto> {
-    // TODO: Add create post, delete post, edit post endpoints
     return this.httpClient.post<PostDto>(`/api/v1/posts`, {
       body: body
     });
@@ -91,6 +91,13 @@ export class KittyCornerApiClient {
   postComment(postId: number, comment: string): Observable<CommentDto> {
     return this.httpClient.post<CommentDto>(`/api/v1/posts/${postId}/comments`, {
       body: comment
+    });
+  }
+
+  reverseGeocode(latitude: number, longitude: number): Observable<ReverseGeocodeDto> {
+    return this.httpClient.post<ReverseGeocodeDto>(`/api/v1/utils/reverse-geocode`, {
+      latitude: latitude,
+      longitude: longitude
     });
   }
 }

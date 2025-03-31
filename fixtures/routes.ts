@@ -4,6 +4,7 @@ import * as data from './data/data';
 import {CommentJson, PostJson, UserProfileJson} from './data/data';
 import {GetCommentsDto} from '../src/app/services/kitty-corner-api/dtos/comments.dto';
 import {computeLikeDislikeChange} from '../src/app/common/util';
+import {ReverseGeocodeDto} from '../src/app/services/kitty-corner-api/dtos/utils.dto';
 
 export const router: express.Router = express.Router();
 
@@ -301,4 +302,15 @@ router.put('/api/v1/posts/:postId/comments/:commentId/my-reactions', (req: expre
     res.status(204);
     res.json({});
   });
+});
+
+router.post('/api/v1/utils/reverse-geocode', (req: express.Request, res: express.Response) => {
+  setTimeout(() => {
+    res.status(200);
+    res.json({
+      latitude: req.body.latitude,
+      longitude: req.body.longitude,
+      location: 'San Francisco, CA',
+    } as ReverseGeocodeDto);
+  }, 400);
 });

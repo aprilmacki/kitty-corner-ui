@@ -28,3 +28,13 @@
     color: var(--mat-sys-primary);
   }
 }
+
+.locationChange {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding-top: 20px;
+}
