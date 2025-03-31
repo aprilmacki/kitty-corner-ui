@@ -1,0 +1,49 @@
+
+:host {
+  width: 100%;
+}
+
+app-top-bar {
+  .title {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    font: var(--may-sys-title-large)
+  }
+
+  .buttons {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 0 5px;
+    width: 100%;
+  }
+}
+
+.spinner {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
+.fields {
+  display: flex;
+  flex-direction: column;
+
+  padding: 20px;
+
+  [matIconSuffix] {
+    padding: 0 10px;
+  }
+
+  button {
+    width: 100%;
+
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+  }
+}

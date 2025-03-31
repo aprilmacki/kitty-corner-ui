@@ -1,4 +1,4 @@
-import {Component, inject, input, OnInit, signal} from '@angular/core';
+import {Component, computed, inject, input, OnInit, signal} from '@angular/core';
 import {RouterLink} from "@angular/router";
 import {TopBarComponent} from "../common/top-bar/top-bar.component";
 import {MatButton, MatIconButton} from '@angular/material/button';
@@ -36,9 +36,9 @@ export class ProfileComponent implements OnInit {
   private nextCursor = 0;
 
   username = input.required<string>();
+  editRouterLink = computed(() => `/users/${this.username()}/profile/edit`);
   profile = signal<UserProfileModel | null>(null);
   posts = signal<PostModel[]>([]);
-
   initialLoadingStatus = signal<LoadingStatus>('loading');
   moreLoadingStatus = signal<LoadingStatus>('success');
   noMorePosts = signal<boolean>(false);

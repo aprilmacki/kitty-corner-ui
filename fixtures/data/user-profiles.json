@@ -7,7 +7,10 @@
     "age": 27,
     "location": "Chicago, IL",
     "joinedAt": "2025-02-01T08:30-06:00",
-    "totalPosts": 1
+    "totalPosts": 1,
+    "birthday": "1997-04-10",
+    "latitude":  41.8308,
+    "longitude": -87.6881
   },
   "minathecat": {
     "username": "minathecat",

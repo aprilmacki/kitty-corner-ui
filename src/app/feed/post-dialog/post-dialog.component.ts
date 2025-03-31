@@ -10,7 +10,7 @@ import {HttpErrorResponse} from '@angular/common/http';
 import {Observable} from 'rxjs';
 
 @Component({
-  selector: 'app-post-modal',
+  selector: 'app-post-dialog',
   imports: [
     MatDialogActions,
     MatDialogContent,

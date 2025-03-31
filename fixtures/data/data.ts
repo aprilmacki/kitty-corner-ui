@@ -75,6 +75,9 @@ export function toUserProfileDto(json: UserProfileJson): UserProfileDto {
     age: json.age,
     location: json.location,
     joinedAtEpochSeconds: new Date(json.joinedAt).getTime() / 1000,
-    totalPosts: json.totalPosts
+    totalPosts: json.totalPosts,
+    birthday: json.birthday,
+    latitude: json.latitude,
+    longitude: json.longitude
   } as UserProfileDto;
 }

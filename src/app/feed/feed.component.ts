@@ -11,7 +11,7 @@ import {MatDialog} from '@angular/material/dialog';
 import {FiltersDialogComponent} from './filters-modal/filters-dialog.component';
 import {TopBarComponent} from '../common/top-bar/top-bar.component';
 import {PageModel} from '../services/kitty-corner-api/models/common.model';
-import {PostDialogComponent} from './post-modal/post-dialog.component';
+import {PostDialogComponent} from './post-dialog/post-dialog.component';
 import {Observable} from 'rxjs';
 import {HttpErrorResponse} from '@angular/common/http';
 

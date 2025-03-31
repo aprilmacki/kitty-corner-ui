@@ -3,7 +3,7 @@
     <button mat-icon-button routerLink="/posts">
       <mat-icon fontSet="material-symbols-outlined">arrow_back</mat-icon>
     </button>
-    <button mat-stroked-button>Edit</button>
+    <button mat-stroked-button [routerLink]="editRouterLink()">Edit</button>
   </div>
   <span class="title">&commat;{{username()}}</span>
 </app-top-bar>
