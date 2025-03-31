@@ -26,7 +26,7 @@
       <mat-label>Location</mat-label>
       <input type="text" matInput [formControl]="locationField" [readonly]="true" style="pointer-events: none;">
       <div matIconSuffix>
-        <button matIconSuffix mat-icon-button (click)="updateLocation()" title="Update location">
+        <button mat-icon-button (click)="openEditLocationDialog()" title="Update location">
           <mat-icon>my_location</mat-icon>
         </button>
       </div>

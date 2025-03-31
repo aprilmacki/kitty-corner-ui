@@ -1,4 +1,4 @@
-import {Component, OnInit, signal} from '@angular/core';
+import {Component, inject, OnInit, signal} from '@angular/core';
 import {MatIcon} from '@angular/material/icon';
 import {MatButton, MatIconButton} from '@angular/material/button';
 import {PostPageConfigModel, PostModel} from '../services/kitty-corner-api/models/post.model';
@@ -32,6 +32,8 @@ import {HttpErrorResponse} from '@angular/common/http';
 export class FeedComponent implements OnInit {
   private readonly POST_LIMIT = 10;
   private nextCursor: number = 0;
+  private dialogService = inject(MatDialog);
+  private apiService = inject(KittyCornerApiService);
 
   posts = signal<PostModel[]>([]);
   initialLoadingStatus = signal<LoadingStatus>('loading');
@@ -42,12 +44,6 @@ export class FeedComponent implements OnInit {
     startAge: 18,
     endAge: 80,
     distanceKm: 5
-  }
-
-  constructor(
-    private kittyCornerApiService: KittyCornerApiService,
-    private dialogService: MatDialog,
-  ) {
   }
 
   ngOnInit() {
@@ -98,7 +94,7 @@ export class FeedComponent implements OnInit {
       limit: this.POST_LIMIT,
       cursor: 0
     } as PostPageConfigModel;
-    this.kittyCornerApiService.getPosts(pageConfig).subscribe(
+    this.apiService.getPosts(pageConfig).subscribe(
       {
         next: (page: PageModel<PostModel>) => {
           this.posts.set(page.items);
@@ -121,7 +117,7 @@ export class FeedComponent implements OnInit {
       limit: this.POST_LIMIT,
       cursor: this.nextCursor
     } as PostPageConfigModel;
-    this.kittyCornerApiService.getPosts(pageConfig).subscribe(
+    this.apiService.getPosts(pageConfig).subscribe(
       {
         next: (page: PageModel<PostModel>) => {
           if (page.items.length == 0) {

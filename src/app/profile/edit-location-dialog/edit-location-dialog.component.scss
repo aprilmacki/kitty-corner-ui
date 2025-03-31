@@ -1,0 +1,30 @@
+.spinner-status {
+  --size: 45px;
+
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+  justify-content: center;
+  height: var(--size);
+
+  .green {
+    color: var(--mat-sys-primary);
+  }
+
+  .red {
+    color: var(--mat-sys-error);
+  }
+
+  mat-icon {
+    font-variation-settings: 'FILL' 1;
+    font-size: var(--size);
+    height: var(--size);
+    width: var(--size);
+  }
+
+  span {
+    font: var(--mat-sys-title-medium);
+    color: var(--mat-sys-primary);
+  }
+}

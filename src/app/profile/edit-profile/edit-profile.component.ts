@@ -19,6 +19,12 @@ import {
 } from '@angular/material/datepicker';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatNativeDateModule} from '@angular/material/core';
+import {PostDialogComponent} from '../../feed/post-dialog/post-dialog.component';
+import {Observable} from 'rxjs';
+import {PostModel} from '../../services/kitty-corner-api/models/post.model';
+import {HttpErrorResponse} from '@angular/common/http';
+import {MatDialog} from '@angular/material/dialog';
+import {EditLocationDialogComponent} from '../edit-location-dialog/edit-location-dialog.component';
 
 @Component({
   selector: 'app-edit-profile',
@@ -41,9 +47,9 @@ import {MatNativeDateModule} from '@angular/material/core';
 })
 export class EditProfileComponent implements OnInit {
   private apiService = inject(KittyCornerApiService);
+  private dialogService = inject(MatDialog);
 
   username = input.required<string>();
-
   initialLoadingStatus = signal<LoadingStatus>('loading');
 
   nameField= new FormControl('', [Validators.maxLength(256), Validators.required]);
@@ -72,26 +78,18 @@ export class EditProfileComponent implements OnInit {
     });
   }
 
-  updateLocation() {
-    if (!navigator.geolocation) {
-      console.error('Geolocation not supported');
-      return;
-    }
+  openEditLocationDialog() {
+    const dialogRef = this.dialogService.open(EditLocationDialogComponent, {
+      width: '50vw'
+    });
 
-    // https://ipinfo.io/64.53.128.124/json
-    // https://api.ipify.org/?format=json
-
-    navigator.geolocation.getCurrentPosition(
-      (position: GeolocationPosition) => {
-        this.latitude = position.coords.latitude;
-        this.longitude = position.coords.longitude;
-
-        console.log(`(lat, lon) = (${this.latitude}, ${this.longitude})`);
+    dialogRef.afterClosed().subscribe({
+      next: (results: {lat: number, lon: number}) => {
+        console.log(results);
       },
-      (error: GeolocationPositionError) => {
-        console.log(`Error fetching geo location: code=${error.code}, message=${error.message}`);
-      },
-      {timeout: 20000, maximumAge: 0, enableHighAccuracy: false}
-    );
+      error: (error) => {
+        console.error(error);
+      }
+    });
   }
 }
