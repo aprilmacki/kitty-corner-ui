@@ -1,11 +1,12 @@
 import * as express from 'express';
 import {GetPostsDto} from '../src/app/services/kitty-corner-api/dtos/posts.dto';
-import * as data from './data/data';
-import {CommentJson, PostJson, UserProfileJson} from './data/data';
+import * as data from './data/data.model';
+import {CommentJson, PostJson, UserProfileJson} from './data/data.model';
 import {GetCommentsDto} from '../src/app/services/kitty-corner-api/dtos/comments.dto';
 import {computeLikeDislikeChange} from '../src/app/common/util';
 import {ReverseGeocodeDto} from '../src/app/services/kitty-corner-api/dtos/utils.dto';
 import moment, {Moment} from 'moment';
+import {Repository} from './data/data';
 
 export const router: express.Router = express.Router();
 
@@ -20,92 +21,16 @@ interface ErrorResponse {
   path: string
 }
 
-function generatePosts() {
-  const posts: PostJson[] = [];
-  const postDate: Date = new Date('2025-02-23T08:30-06:00');
-  for (let i = 0; i < 30; i++) {
-    const postId = 100 - i;
-    postDate.setMinutes(postDate.getSeconds() - 30);
-    const fillerPost: data.PostJson = {
-      postId: postId,
-      username: 'minathecat',
-      body: `meow ${postId}`,
-      distanceKm: 0,
-      totalLikes: 0,
-      totalDislikes: 0,
-      totalComments: 0,
-      createdAt: postDate.toString(),
-      updatedAt: null,
-      myReaction: null
-    };
-    posts.push(fillerPost);
-  }
-  return posts;
-}
-
-let NEXT_POST_ID: number = 200;
-const POSTS: data.PostJson[] = function(){
-  const posts: data.PostJson[] = require('./data/posts.json').posts;
-  generatePosts().forEach(post => posts.push(post));
-  posts.sort((a, b) => new Date(a.createdAt).getUTCSeconds() - new Date(b.createdAt).getUTCSeconds());
-  return posts;
-}();
-
-const POSTS_BY_ID: Map<number, data.PostJson> = function() {
-  const postsById: Map<number, data.PostJson> = new Map();
-  for (const post of POSTS) {
-    postsById.set(post.postId, post);
-  }
-  return postsById;
-}();
-
-const USERS: Map<string, data.UserProfileJson> =  new Map(Object.entries(require('./data/user-profiles.json')));
-
-let NEXT_COMMENT_ID = 0;
-const COMMENTS_BY_POST: Map<number, data.CommentJson[]> = function() {
-  const commentsByPost: Map<number, data.CommentJson[]> = new Map();
-  for (let [postId, post] of POSTS_BY_ID) {
-    const commentsForPost: data.CommentJson[] = [];
-    for (let i = 0; i < post.totalComments; i++) {
-      const commentId = NEXT_COMMENT_ID++;
-      let commentDate: Date = new Date(post.createdAt);
-      commentDate.setMinutes(commentDate.getMinutes() + i)
-      commentsForPost.push({
-        commentId: commentId,
-        username: "minathecat",
-        body: `cool comment ${commentId}`,
-        totalLikes: 0,
-        totalDislikes: 0,
-        createdAt: commentDate.toString(),
-        updatedAt: null,
-        myReaction: null
-      });
-    }
-    commentsForPost.sort((a, b) => new Date(a.createdAt).getUTCSeconds() - new Date(b.createdAt).getUTCSeconds());
-    commentsByPost.set(postId, commentsForPost);
-  }
-  return commentsByPost;
-}();
-
-const COMMENTS_BY_ID: Map<number, data.CommentJson> = function() {
-  const commentsById: Map<number, data.CommentJson> = new Map();
-  for (let [postId, comments] of COMMENTS_BY_POST) {
-    comments.forEach(comment => commentsById.set(comment.commentId, comment));
-  }
-  return commentsById;
-}();
-
-///////
-// Router endpoints
-///////
+const repository: Repository = new Repository();
 
 router.get('/api/v1/users/:username/profile', (req: express.Request, res: express.Response) => {
   setTimeout(() => {
     const testResponses: TestResponses<ErrorResponse> = require('./data/get-user-profile.json');
 
-    if (USERS.has(req.params["username"])) {
+    const user: UserProfileJson | null = repository.getUser(req.params["username"]);
+    if (user != null) {
       res.status(200);
-      res.json(data.toUserProfileDto(USERS.get(req.params["username"])!));
+      res.json(data.toUserProfileDto(user));
     } else {
       res.status(404);
       res.json(testResponses[404]);
@@ -116,10 +41,11 @@ router.get('/api/v1/users/:username/profile', (req: express.Request, res: expres
 router.put('/api/v1/users/:username/profile', (req: express.Request, res: express.Response) => {
   setTimeout(() => {
     const username: string = req.params['username'];
-    if (!USERS.has(username)) {
+    let user: UserProfileJson | null = repository.getUser(username);
+    if (user == null) {
       res.status(404).send('Not found');
+      return;
     }
-    const user: data.UserProfileJson = USERS.get(username)!;
 
     user.name = req.body.name;
     user.pronouns = req.body.pronouns;
@@ -144,11 +70,11 @@ router.get('/api/v1/users/:username/posts', (req: express.Request, res: express.
     const limit: number = Number(req.query['limit'] ?? 10);
 
     const selectedPosts: PostJson[] = [];
-    for (const post of POSTS) {
+    for (const post of repository.getPostsForUser(username)) {
       if (selectedPosts.length > limit) {
         break;
       }
-      if (post.username === username && (post.postId <= cursor || cursor == 0)) {
+      if (post.postId <= cursor || cursor == 0) {
         selectedPosts.push(post);
       }
     }
@@ -170,11 +96,11 @@ router.get('/api/v1/posts/', (req: express.Request, res: express.Response) => {
     const distanceKm: number = Number(req.query['distanceKm']);
 
     const selectedPosts: PostJson[] = [];
-    for (const post of POSTS) {
+    for (const post of repository.getPosts()) {
       if (selectedPosts.length > limit) {
         break;
       }
-      const userProfile: UserProfileJson = USERS.get(post.username)!
+      const userProfile: UserProfileJson = repository.getUser(post.username)!
       if (userProfile.age < startAge) {
         continue;
       }
@@ -200,11 +126,11 @@ router.get('/api/v1/posts/', (req: express.Request, res: express.Response) => {
 router.get('/api/v1/posts/:postId', (req: express.Request, res: express.Response) => {
   setTimeout(() => {
     const postId: number = Number(req.params['postId']);
-    if (!POSTS_BY_ID.has(postId)) {
+    const post: data.PostJson | null = repository.getPost(postId);
+    if (post == null) {
       res.status(404).send('Not Found');
       return;
     }
-    const post: data.PostJson = POSTS_BY_ID.get(postId)!;
 
     res.status(200);
     res.json(data.toPostDto(post));
@@ -214,7 +140,7 @@ router.get('/api/v1/posts/:postId', (req: express.Request, res: express.Response
 router.post('/api/v1/posts', (req: express.Request, res: express.Response) => {
   setTimeout(() => {
     const newPost: PostJson = {
-      postId: NEXT_POST_ID++,
+      postId: 0,
       username: 'aprilmack',
       body: req.body.body,
       distanceKm: 0,
@@ -226,9 +152,7 @@ router.post('/api/v1/posts', (req: express.Request, res: express.Response) => {
       myReaction: null
     };
 
-    POSTS_BY_ID.set(newPost.postId, newPost);
-    POSTS.unshift(newPost);
-    COMMENTS_BY_POST.set(newPost.postId, []);
+    repository.createPost(newPost);
 
     res.status(200);
     res.json(data.toPostDto(newPost));
@@ -239,18 +163,18 @@ router.post('/api/v1/posts', (req: express.Request, res: express.Response) => {
 router.put('/api/v1/posts/:postId/my-reactions', (req: express.Request, res: express.Response) => {
   setTimeout(() => {
     const postId: number = Number(req.params['postId']);
-    if (POSTS_BY_ID.has(postId)) {
-      const post: PostJson = POSTS_BY_ID.get(Number(req.params["postId"]))!;
-      const reactionChanges = computeLikeDislikeChange(post.myReaction, req.body.type);
-      post.totalLikes += reactionChanges.likeChange;
-      post.totalDislikes += reactionChanges.dislikeChange;
-      post.myReaction = req.body.type;
-      res.status(204);
-      res.json({});
+
+    const post: data.PostJson | null = repository.getPost(postId);
+    if (post == null) {
+      res.status(404).send('Not Found');
       return;
     }
 
-    res.status(404);
+    const reactionChanges = computeLikeDislikeChange(post.myReaction, req.body.type);
+    post.totalLikes += reactionChanges.likeChange;
+    post.totalDislikes += reactionChanges.dislikeChange;
+    post.myReaction = req.body.type;
+    res.status(204);
     res.json({});
   }, 50)
 });
@@ -261,13 +185,13 @@ router.get('/api/v1/posts/:postId/comments', (req: express.Request, res: express
     const cursor: number = Number(req.query['cursor'] ?? 0);
     const limit: number = Number(req.query['limit'] ?? 10);
 
-    if (!COMMENTS_BY_POST.has(postId)) {
+    if (repository.getPost(postId) == null) {
       res.status(404).send('Not Found');
       return;
     }
 
     const selectedComments: CommentJson[] = [];
-    for (const comment of COMMENTS_BY_POST.get(postId)!) {
+    for (const comment of repository.getComments(postId)!) {
       if (selectedComments.length > limit) {
         break;
       }
@@ -288,7 +212,7 @@ router.post('/api/v1/posts/:postId/comments', (req: express.Request, res: expres
   setTimeout(() => {
     const postId: number = Number(req.params['postId']);
     const comment: CommentJson = {
-      commentId: NEXT_COMMENT_ID++,
+      commentId: 0,
       username: 'aprilmack',
       body: req.body.body,
       totalLikes: 0,
@@ -298,12 +222,7 @@ router.post('/api/v1/posts/:postId/comments', (req: express.Request, res: expres
       myReaction: null
     };
 
-    const commentsForPost = COMMENTS_BY_POST.get(postId)!;
-    commentsForPost.push(comment);
-    COMMENTS_BY_ID.set(comment.commentId, comment);
-
-    const post = POSTS_BY_ID.get(postId)!;
-    post.totalComments++;
+    repository.createComment(postId, comment);
 
     res.status(200);
     res.json(data.toCommentDto(comment));
@@ -314,16 +233,17 @@ router.put('/api/v1/posts/:postId/comments/:commentId/my-reactions', (req: expre
   setTimeout(() => {
     const commentId: number = Number(req.params['commentId']);
 
-    if (!COMMENTS_BY_ID.has(commentId)) {
+    const comment: CommentJson | null = repository.getComment(commentId);
+    if (comment == null) {
       res.status(404).send('Not Found');
       return;
     }
 
-    const comment: CommentJson = COMMENTS_BY_ID.get(commentId)!;
     const reactionChanges = computeLikeDislikeChange(comment.myReaction, req.body.type);
     comment.totalLikes += reactionChanges.likeChange;
     comment.totalDislikes += reactionChanges.dislikeChange;
     comment.myReaction = req.body.type;
+
     res.status(204);
     res.json({});
   });
