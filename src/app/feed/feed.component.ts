@@ -8,7 +8,7 @@ import {KittyCornerApiService} from '../services/kitty-corner-api/kitty-corner-a
 import {FeedFilterModel, LoadingStatus} from '../common/types';
 import {MatProgressSpinner} from '@angular/material/progress-spinner';
 import {MatDialog} from '@angular/material/dialog';
-import {FiltersDialogComponent} from './filters-modal/filters-dialog.component';
+import {FiltersDialogComponent} from './filters-dialog/filters-dialog.component';
 import {TopBarComponent} from '../common/top-bar/top-bar.component';
 import {PageModel} from '../services/kitty-corner-api/models/common.model';
 import {PostDialogComponent} from './post-dialog/post-dialog.component';
@@ -70,6 +70,9 @@ export class FeedComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe((result: Observable<PostModel>) => {
+      if (result == null) {
+        return;
+      }
       result.subscribe({
         next: (post: PostModel) => {
           this.posts.update(posts => {

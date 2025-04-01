@@ -12,7 +12,7 @@ import {MatSlider, MatSliderRangeThumb, MatSliderThumb} from '@angular/material/
 import {FeedFilterModel} from '../../common/types';
 
 @Component({
-  selector: 'app-filters-modal',
+  selector: 'app-filters-dialog',
   imports: [
     MatDialogTitle,
     MatDialogContent,
