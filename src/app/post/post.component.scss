@@ -10,11 +10,18 @@
   flex-direction: row;
   padding: 10px;
 
-  img {
-    border-radius: 50%;
-    object-fit: cover;
-    width: 50px;
-    height: 50px;
+  .profilePhoto {
+
+    :hover {
+      cursor: pointer;
+    }
+
+    img {
+      border-radius: 50%;
+      object-fit: cover;
+      width: 50px;
+      height: 50px;
+    }
   }
 
   .content {
@@ -25,6 +32,12 @@
       flex-direction: row;
       gap: 0.5rem;
       font: var(--mat-sys-title-medium);
+
+      .profileName:hover {
+        cursor: pointer;
+        text-decoration: underline;
+      }
+
       .userName {
         font-weight: normal;
         color: var(--mat-sys-outline);

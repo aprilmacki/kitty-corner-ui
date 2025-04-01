@@ -1,12 +1,12 @@
 <div class="top">
   @if (this.showPhoto()) {
-    <div>
+    <div class="profilePhoto" [routerLink]="profileRouterLink()">
       <img ngSrc="{{this.post().author.profilePhotoUrl}}" height="50" width="50" alt="profile photo"/>
     </div>
   }
   <div class="content">
     <div class="user">
-      <span class="profileName">{{this.post().author.profileName}}</span>
+      <span [routerLink]="profileRouterLink()" class="profileName">{{this.post().author.profileName}}</span>
       <span class="userName">&#64;{{this.post().author.username}}</span>
     </div>
     <div class="body">
@@ -35,7 +35,7 @@
   </div>
   <div class="with-count">
     @if (this.showCommentButton()) {
-      <button mat-icon-button [routerLink]="getCommentsLink()">
+      <button mat-icon-button [routerLink]="commentsRouterLink()">
         <mat-icon fontSet="material-symbols-outlined">forum</mat-icon>
       </button>
     } @else {

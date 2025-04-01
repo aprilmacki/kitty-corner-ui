@@ -1,4 +1,4 @@
-import {booleanAttribute, Component, input, Input} from '@angular/core';
+import {booleanAttribute, Component, computed, input, Input} from '@angular/core';
 import {PostModel} from '../services/kitty-corner-api/models/post.model';
 import {DatePipe, DecimalPipe, NgOptimizedImage} from '@angular/common';
 import {MatIcon} from '@angular/material/icon';
@@ -26,6 +26,9 @@ export class PostComponent {
   showCommentButton = input<boolean>(true);
   showPhoto = input<boolean>(true);
 
+  profileRouterLink = computed<string>(() => `/users/${this.post().author.username}/profile`);
+  commentsRouterLink = computed<string>(() => `/posts/${this.post().postId}/comments`);
+
   constructor(private kittyCornerClient: KittyCornerApiClient) {
   }
 
@@ -42,9 +45,5 @@ export class PostComponent {
         console.log(error);
       }
     });
-  }
-
-  public getCommentsLink(): string {
-    return `/posts/${this.post().postId}/comments`;
   }
 }
