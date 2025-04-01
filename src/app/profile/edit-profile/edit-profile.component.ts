@@ -1,4 +1,4 @@
-import {Component, computed, inject, input, OnInit, signal} from '@angular/core';
+import {Component, inject, input, OnInit, signal} from '@angular/core';
 import {TopBarComponent} from '../../common/top-bar/top-bar.component';
 import {MatIcon} from '@angular/material/icon';
 import {MatButtonModule} from '@angular/material/button';
@@ -20,7 +20,7 @@ import {ReverseGeocodeDto} from '../../services/kitty-corner-api/dtos/utils.dto'
 import {KittyCornerApiClient} from '../../services/kitty-corner-api/kitty-corner-api.client';
 import {UpdateUserProfileDto, UserProfileDto} from '../../services/kitty-corner-api/dtos/user.dto';
 import {DatePipe} from '@angular/common';
-import {Router, RouterLink} from '@angular/router';
+import {ActivatedRoute, Router, RouterLink} from '@angular/router';
 
 @Component({
   selector: 'app-edit-profile',
@@ -47,10 +47,10 @@ export class EditProfileComponent implements OnInit {
   private readonly apiClient = inject(KittyCornerApiClient);
   private readonly dialogService = inject(MatDialog);
   private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
   private readonly datePipe: DatePipe = new DatePipe('en-US')
 
   username = input.required<string>();
-  profileRouterLink = computed(() => `/users/${this.username()}/profile`);
   initialLoadingStatus = signal<LoadingStatus>('loading');
   oldProfile = signal<UserProfileModel | null>(null);
   location = signal<ReverseGeocodeDto | null>(null);
@@ -142,7 +142,7 @@ export class EditProfileComponent implements OnInit {
     ).subscribe({
       next: (results: UserProfileModel) => {
         this.oldProfile.set(results);
-        this.router.navigate([this.profileRouterLink(), {'username': this.username()}]);
+        this.router.navigate(['../'], {relativeTo: this.route});
       },
       error: (error) => {
         console.error(error);

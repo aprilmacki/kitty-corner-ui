@@ -1,6 +1,6 @@
 <app-top-bar>
   <div class="buttons">
-    <button mat-button [routerLink]="profileRouterLink()">Cancel</button>
+    <button mat-button routerLink="../">Cancel</button>
     <button mat-stroked-button (click)="updateProfile()" [disabled]="!hasChanged()">Save</button>
   </div>
   <span class="title">&commat;{{this.username()}}</span>

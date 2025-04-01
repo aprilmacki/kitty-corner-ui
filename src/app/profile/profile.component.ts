@@ -36,7 +36,7 @@ export class ProfileComponent implements OnInit {
   private nextCursor = 0;
 
   username = input.required<string>();
-  editRouterLink = computed(() => `/users/${this.username()}/profile/edit`);
+  editRouterLink = computed(() => `./edit`);
   profile = signal<UserProfileModel | null>(null);
   posts = signal<PostModel[]>([]);
   initialLoadingStatus = signal<LoadingStatus>('loading');
