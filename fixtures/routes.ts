@@ -5,6 +5,7 @@ import {CommentJson, PostJson, UserProfileJson} from './data/data';
 import {GetCommentsDto} from '../src/app/services/kitty-corner-api/dtos/comments.dto';
 import {computeLikeDislikeChange} from '../src/app/common/util';
 import {ReverseGeocodeDto} from '../src/app/services/kitty-corner-api/dtos/utils.dto';
+import moment, {Moment} from 'moment';
 
 export const router: express.Router = express.Router();
 
@@ -111,6 +112,30 @@ router.get('/api/v1/users/:username/profile', (req: express.Request, res: expres
     }
   }, 500);
 });
+
+router.put('/api/v1/users/:username/profile', (req: express.Request, res: express.Response) => {
+  setTimeout(() => {
+    const username: string = req.params['username'];
+    if (!USERS.has(username)) {
+      res.status(404).send('Not found');
+    }
+    const user: data.UserProfileJson = USERS.get(username)!;
+
+    user.name = req.body.name;
+    user.pronouns = req.body.pronouns;
+    user.birthday = req.body.birthday;
+    const newBirthday: Moment = moment(req.body.birthday, "YYYY-MM-DD");
+    user.age = newBirthday.diff(moment(), 'years');
+    if (user.latitude !== req.body.latitude || user.longitude !== req.body.longitude) {
+      user.location = 'San Francisco, CA';
+    }
+    user.latitude = req.body.latitude;
+    user.longitude = req.body.longitude;
+
+    res.status(200);
+    res.json(data.toUserProfileDto(user));
+  }, 500);
+})
 
 router.get('/api/v1/users/:username/posts', (req: express.Request, res: express.Response) => {
   setTimeout(() => {

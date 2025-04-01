@@ -3,7 +3,7 @@ import {KittyCornerApiClient} from './kitty-corner-api.client';
 import {PostPageConfigModel, PostModel, toPostModel} from './models/post.model';
 import {concatMap, forkJoin, map, Observable, of} from 'rxjs';
 import {GetPostsDto, PostDto} from './dtos/posts.dto';
-import {UserProfileDto} from './dtos/user.dto';
+import {UpdateUserProfileDto, UserProfileDto} from './dtos/user.dto';
 import * as util from '../../common/util';
 import {CommentDto, CommentPageConfigModel, GetCommentsDto} from './dtos/comments.dto';
 import {CommentModel} from './models/comment.model';

@@ -1,37 +1,37 @@
 <app-top-bar>
   <div class="buttons">
     <button mat-button>Cancel</button>
-    <button mat-stroked-button>Save</button>
+    <button mat-stroked-button (click)="updateProfile()" [disabled]="!hasChanged()">Save</button>
   </div>
   <span class="title">&commat;{{this.username()}}</span>
 </app-top-bar>
 
 @if (this.initialLoadingStatus() === 'success') {
-  <div class="fields">
+  <form [formGroup]="formGroup">
     <mat-form-field [hideRequiredMarker]="true">
       <mat-label>Name</mat-label>
-      <input matInput [formControl]="nameField">
+      <input matInput formControlName="nameField">
     </mat-form-field>
     <mat-form-field [hideRequiredMarker]="true">
       <mat-label>Pronouns</mat-label>
-      <input matInput [formControl]="pronounsField">
+      <input matInput formControlName="pronounsField">
     </mat-form-field>
     <mat-form-field [hideRequiredMarker]="true">
       <mat-label>Birthday</mat-label>
-      <input matInput [matDatepicker]="picker" [formControl]="birthdayField">
+      <input matInput [matDatepicker]="picker" formControlName="birthdayField">
       <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
       <mat-datepicker #picker></mat-datepicker>
     </mat-form-field>
     <mat-form-field [hideRequiredMarker]="true">
       <mat-label>Location</mat-label>
-      <input type="text" matInput [formControl]="locationField" [readonly]="true" style="pointer-events: none;">
+      <input type="text" matInput formControlName="locationField" [readonly]="true" style="pointer-events: none;">
       <div matIconSuffix>
         <button mat-icon-button (click)="openEditLocationDialog()" title="Update location">
           <mat-icon>my_location</mat-icon>
         </button>
       </div>
     </mat-form-field>
-  </div>
+  </form>
 } @else if (this.initialLoadingStatus() === 'loading') {
   <div class="spinner">
     <mat-spinner></mat-spinner>

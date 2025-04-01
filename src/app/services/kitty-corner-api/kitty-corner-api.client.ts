@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import {firstValueFrom, Observable, of,} from 'rxjs';
 import {GetPostsDto, PostDto, ReactionDto} from './dtos/posts.dto';
-import {UserProfileDto} from './dtos/user.dto';
+import {UpdateUserProfileDto, UserProfileDto} from './dtos/user.dto';
 import {PostPageConfigModel} from './models/post.model';
 import {HttpClient, HttpParams} from '@angular/common/http';
 import {DataCache} from '../../common/data-cache';
@@ -62,6 +62,10 @@ export class KittyCornerApiClient {
 
   getUserProfile(username: string): Observable<UserProfileDto> {
     return this.httpClient.get<UserProfileDto>(`/api/v1/users/${username}/profile`);
+  }
+
+  updateUserProfile(username: string, profile: UpdateUserProfileDto): Observable<UserProfileDto> {
+    return this.httpClient.put<UserProfileDto>(`/api/v1/users/${username}/profile`, profile);
   }
 
   setPostReaction(postId: number, reaction: ReactionDto): Observable<any> {

@@ -12,3 +12,11 @@ export interface UserProfileDto {
   joinedAtEpochSeconds: number;
   totalPosts: number;
 }
+
+export interface UpdateUserProfileDto {
+  name: string;
+  pronouns: string;
+  birthday?: string
+  latitude?: number;
+  longitude?: number;
+}
