@@ -1,4 +1,4 @@
-import {Component, inject, input, OnInit, signal} from '@angular/core';
+import {Component, computed, inject, input, OnInit, signal} from '@angular/core';
 import {TopBarComponent} from '../../common/top-bar/top-bar.component';
 import {MatIcon} from '@angular/material/icon';
 import {MatButtonModule} from '@angular/material/button';
@@ -20,6 +20,7 @@ import {ReverseGeocodeDto} from '../../services/kitty-corner-api/dtos/utils.dto'
 import {KittyCornerApiClient} from '../../services/kitty-corner-api/kitty-corner-api.client';
 import {UpdateUserProfileDto, UserProfileDto} from '../../services/kitty-corner-api/dtos/user.dto';
 import {DatePipe} from '@angular/common';
+import {Router, RouterLink} from '@angular/router';
 
 @Component({
   selector: 'app-edit-profile',
@@ -32,7 +33,8 @@ import {DatePipe} from '@angular/common';
     MatNativeDateModule,
     MatProgressSpinnerModule,
     MatButtonModule,
-    MatIcon
+    MatIcon,
+    RouterLink
   ],
   providers: [
     MatDatepickerModule
@@ -41,13 +43,14 @@ import {DatePipe} from '@angular/common';
   styleUrl: './edit-profile.component.scss'
 })
 export class EditProfileComponent implements OnInit {
-  readonly datePipe: DatePipe = new DatePipe('en-US')
-
-  private apiService = inject(KittyCornerApiService);
-  private apiClient = inject(KittyCornerApiClient);
-  private dialogService = inject(MatDialog);
+  private readonly apiService = inject(KittyCornerApiService);
+  private readonly apiClient = inject(KittyCornerApiClient);
+  private readonly dialogService = inject(MatDialog);
+  private readonly router = inject(Router);
+  private readonly datePipe: DatePipe = new DatePipe('en-US')
 
   username = input.required<string>();
+  profileRouterLink = computed(() => `/users/${this.username()}/profile`);
   initialLoadingStatus = signal<LoadingStatus>('loading');
   oldProfile = signal<UserProfileModel | null>(null);
   location = signal<ReverseGeocodeDto | null>(null);
@@ -139,9 +142,10 @@ export class EditProfileComponent implements OnInit {
     ).subscribe({
       next: (results: UserProfileModel) => {
         this.oldProfile.set(results);
+        this.router.navigate([this.profileRouterLink(), {'username': this.username()}]);
       },
       error: (error) => {
-        console.error(error)
+        console.error(error);
       }
     })
   }
