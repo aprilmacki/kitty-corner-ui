@@ -125,7 +125,7 @@ router.put('/api/v1/users/:username/profile', (req: express.Request, res: expres
     user.pronouns = req.body.pronouns;
     user.birthday = req.body.birthday;
     const newBirthday: Moment = moment(req.body.birthday, "YYYY-MM-DD");
-    user.age = newBirthday.diff(moment(), 'years');
+    user.age = moment().diff(newBirthday, 'years');
     if (user.latitude !== req.body.latitude || user.longitude !== req.body.longitude) {
       user.location = 'San Francisco, CA';
     }

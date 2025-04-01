@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import {firstValueFrom, Observable, of,} from 'rxjs';
+import {firstValueFrom, map, Observable, of,} from 'rxjs';
 import {GetPostsDto, PostDto, ReactionDto} from './dtos/posts.dto';
 import {UpdateUserProfileDto, UserProfileDto} from './dtos/user.dto';
 import {PostPageConfigModel} from './models/post.model';
@@ -65,7 +65,12 @@ export class KittyCornerApiClient {
   }
 
   updateUserProfile(username: string, profile: UpdateUserProfileDto): Observable<UserProfileDto> {
-    return this.httpClient.put<UserProfileDto>(`/api/v1/users/${username}/profile`, profile);
+    return this.httpClient.put<UserProfileDto>(`/api/v1/users/${username}/profile`, profile).pipe(
+      map((result: UserProfileDto) => {
+        this.userProfileCache.invalidate(result.username);
+        return result;
+      })
+    );
   }
 
   setPostReaction(postId: number, reaction: ReactionDto): Observable<any> {

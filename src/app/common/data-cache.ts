@@ -19,4 +19,8 @@ export class DataCache<IdType, DataType> {
     this.cache.set(id, promise);
     return from(promise);
   }
+
+  invalidate(id: IdType) {
+    this.cache.delete(id);
+  }
 }
