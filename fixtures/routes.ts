@@ -1,14 +1,22 @@
 import * as express from 'express';
 import {GetPostsDto} from '../src/app/services/kitty-corner-api/dtos/posts.dto';
 import * as data from './data/data.model';
-import {CommentJson, PostJson, UserProfileJson} from './data/data.model';
+import {CommentJson, PostJson, TokenChainModel, UserProfileJson} from './data/data.model';
 import {GetCommentsDto} from '../src/app/services/kitty-corner-api/dtos/comments.dto';
 import {computeLikeDislikeChange} from '../src/app/common/util';
 import {ReverseGeocodeDto} from '../src/app/services/kitty-corner-api/dtos/utils.dto';
 import moment, {Moment} from 'moment';
-import {Repository} from './data/data';
+import {Repository} from './data/repository';
+import * as jwt from 'jsonwebtoken';
+import * as fs from 'node:fs';
+import { v4 as uuidv4 } from 'uuid';
+import {SignInDto} from '../src/app/services/kitty-corner-api/dtos/auth.dto';
+import {JwtPayload} from 'jsonwebtoken';
 
 export const router: express.Router = express.Router();
+
+const JWT_PRIVATE_KEY = fs.readFileSync('./auth/private.key');
+const JWT_PUBLIC_KEY = fs.readFileSync('./auth/public.key');
 
 interface TestResponses<Dto> {
   [status: number]: Dto | ErrorResponse
@@ -22,6 +30,65 @@ interface ErrorResponse {
 }
 
 const repository: Repository = new Repository();
+
+router.post('/api/v1/auth/signin', (req: express.Request, res: express.Response) => {
+  setTimeout(() => {
+    const username: string = req.body.username;
+    const password: string = req.body.password;
+
+    const user: UserProfileJson | null = repository.getUser(username);
+    if (user == null || user.password !== password) {
+      res.status(403).send({});
+      return;
+    }
+
+    const accessToken = jwt.sign({}, JWT_PRIVATE_KEY, {
+      algorithm: 'RS256',
+      expiresIn: 120,
+      subject: username,
+    });
+
+    const tokenInfo: TokenChainModel = repository.createTokenChain(username);
+    tokenInfo.chainId++;
+    tokenInfo.refreshTokenId = uuidv4();
+
+    const refreshToken = jwt.sign({
+      chain_id: tokenInfo.chainId,
+      refresh_id: tokenInfo.refreshTokenId
+    }, JWT_PRIVATE_KEY, {
+      algorithm: 'RS256',
+      expiresIn: 240,
+      subject: username,
+    });
+
+    res.status(200);
+    res.json({
+      accessToken: accessToken,
+      refreshToken: refreshToken
+    } as SignInDto);
+  }, 500);
+});
+
+router.post('/api/v1/auth/signout', (req: express.Request, res: express.Response) => {
+  setTimeout(() => {
+    const authHeader = req.header('Authorization')!;
+    const jwtTokenEncoded = authHeader.substring(authHeader.search(': ') + 2);
+
+    const jwtToken: JwtPayload = <JwtPayload>jwt.verify(jwtTokenEncoded, JWT_PRIVATE_KEY);
+    const chainId = Number(jwtToken['chain_id']);
+    const username = jwtToken.sub!;
+
+    const tokenChain = repository.getTokenChain(chainId)!;
+    if (tokenChain.username !== username) {
+      res.status(403).send({});
+      return;
+    }
+
+    repository.invalidateTokenChain(chainId);
+
+    res.status(204).send();
+  }, 500);
+});
 
 router.get('/api/v1/users/:username/profile', (req: express.Request, res: express.Response) => {
   setTimeout(() => {

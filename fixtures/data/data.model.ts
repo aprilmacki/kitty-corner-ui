@@ -2,6 +2,12 @@ import {PostDto, ReactionDto} from '../../src/app/services/kitty-corner-api/dtos
 import {UserProfileDto} from '../../src/app/services/kitty-corner-api/dtos/user.dto';
 import {CommentDto} from '../../src/app/services/kitty-corner-api/dtos/comments.dto';
 
+export type TokenChainModel = {
+  username: string;
+  chainId: number;
+  refreshTokenId: string;
+}
+
 export interface CommentJson {
   commentId: number;
   username: string;
@@ -65,6 +71,7 @@ export interface UserProfileJson {
   longitude?: number;
   joinedAt: string;
   totalPosts: number;
+  password: string;
 }
 
 export function toUserProfileDto(json: UserProfileJson): UserProfileDto {

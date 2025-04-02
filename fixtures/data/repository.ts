@@ -1,20 +1,24 @@
-import {CommentJson, PostJson, UserProfileJson} from './data.model';
+import {CommentJson, PostJson, TokenChainModel, UserProfileJson} from './data.model';
 import * as data from './data.model';
+import {randomUUID} from 'node:crypto';
 
 export class Repository {
   private NEXT_POST_ID: number = 200;
   private readonly POSTS: PostJson[];
   private readonly POSTS_BY_ID: Map<number, PostJson>;
+
+  private NEXT_CHAIN_ID: number = 100;
   private readonly USERS: Map<string, data.UserProfileJson>;
+  private readonly TOKEN_CHAINS_BY_ID: Map<number, TokenChainModel> = new Map();
+
   private NEXT_COMMENT_ID = 0;
   private readonly COMMENTS_BY_POST: Map<number, data.CommentJson[]>;
-
   private COMMENTS_BY_ID: Map<number, data.CommentJson>;
 
   constructor() {
     this.POSTS = Repository.createPosts();
     this.POSTS_BY_ID = new Map<number, PostJson>(this.POSTS.map((post) => [post.postId, post]));
-    this.USERS = new Map(Object.entries(require('./user-profiles.json')));
+    this.USERS = new Map(Object.entries(require('./users.json')));
     this.COMMENTS_BY_POST = this.createComments();
     this.COMMENTS_BY_ID = new Map();
     for (let comments of this.COMMENTS_BY_POST.values()) {
@@ -24,6 +28,24 @@ export class Repository {
 
   public getUser(username: string): UserProfileJson | null {
     return this.USERS.get(username) ?? null;
+  }
+
+  public createTokenChain(username: string): TokenChainModel {
+    const tokenChain = {
+      username: username,
+      chainId: this.NEXT_CHAIN_ID++,
+      refreshTokenId: randomUUID().toString(),
+    } as TokenChainModel;
+    this.TOKEN_CHAINS_BY_ID.set(tokenChain.chainId, tokenChain);
+    return tokenChain;
+  }
+
+  public getTokenChain(chainId: number): TokenChainModel | null {
+    return this.TOKEN_CHAINS_BY_ID.get(chainId) ?? null;
+  }
+
+  public invalidateTokenChain(chainId: number) {
+    this.TOKEN_CHAINS_BY_ID.delete(chainId);
   }
 
   public getPostsForUser(username: string): PostJson[] {
