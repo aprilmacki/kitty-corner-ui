@@ -1,0 +1,134 @@
+<div class="center">
+
+  @if (welcomeState() === 'welcome') {
+    <div class="welcome">
+      <h1>Kitty Corner</h1>
+      <button mat-flat-button (click)="welcomeState.set('signup1')">Sign up</button>
+      <button mat-stroked-button (click)="welcomeState.set('signin')">Sign in</button>
+    </div>
+  }
+
+  @else if (welcomeState() === 'signin') {
+    <div class="signin">
+      <h2>Sign in</h2>
+      <form [formGroup]="signinForm">
+        <mat-form-field>
+          <mat-label>Username</mat-label>
+          <input matInput formControlName="username">
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label>Password</mat-label>
+          <input matInput [type]="hideSigninPassword() ? 'password' : 'text'" formControlName="password"/>
+          @if (signinForm.controls['password'].hasError('required')) {
+            <mat-error>Required</mat-error>
+          } @else if (signinForm.controls['password'].hasError('maxlength')) {
+            <mat-error>Must be no more than {{PASSWORD_MAX_LENGTH}} characters</mat-error>
+          } @else if (signinForm.controls['password'].hasError('minlength')) {
+            <mat-error>Must be at least {{PASSWORD_MIN_LENGTH}} characters</mat-error>
+          }
+          <div matIconSuffix>
+            <button
+              mat-icon-button
+              (click)="hideSigninPassword.set(!hideSigninPassword()); $event.stopPropagation();">
+              <mat-icon>{{hideSigninPassword() ? 'visibility_off' : 'visibility'}}</mat-icon>
+            </button>
+          </div>
+        </mat-form-field>
+      </form>
+      <div class="buttons">
+        <button mat-button (click)="welcomeState.set('welcome'); signinForm.reset();">Back</button>
+        <button mat-flat-button [disabled]="!signinForm.valid" routerLink="">Next</button>
+      </div>
+    </div>
+  }
+
+  @else if (welcomeState() === 'signup1') {
+    <div class="signup">
+      <h2>Sign up</h2>
+      <form [formGroup]="signupForm">
+        <mat-form-field hideRequiredMarker="true">
+          <mat-label>Email</mat-label>
+          <input type="email" matInput formControlName="email">
+          @if (signupForm.controls['email'].hasError('email')) {
+            <mat-error>Please enter a valid email</mat-error>
+          } @else if (signupForm.controls['email'].hasError('required')) {
+            <mat-error>Required</mat-error>
+          }
+        </mat-form-field>
+        <mat-form-field hideRequiredMarker="true">
+          <mat-label>Username</mat-label>
+          <input matInput formControlName="username">
+          @if (signupForm.controls['username'].hasError('required')) {
+            <mat-error>Required</mat-error>
+          } @else if (signupForm.controls['username'].hasError('maxlength')) {
+            <mat-error>Must be no more than {{USERNAME_MAX_LENGTH}} characters</mat-error>
+          } @else if (signupForm.controls['username'].hasError('minlength')) {
+            <mat-error>Must be at least {{USERNAME_MIN_LENGTH}} characters</mat-error>
+          }
+        </mat-form-field>
+        <mat-form-field hideRequiredMarker="true">
+          <mat-label>Password</mat-label>
+          <input matInput [type]="hideSignupPassword() ? 'password' : 'text'" formControlName="password"/>
+          @if (signupForm.controls['password'].hasError('required')) {
+            <mat-error>Required</mat-error>
+          } @else if (signupForm.controls['password'].hasError('maxlength')) {
+            <mat-error>Must be no more than {{PASSWORD_MAX_LENGTH}} characters</mat-error>
+          } @else if (signupForm.controls['password'].hasError('minlength')) {
+            <mat-error>Must be at least {{PASSWORD_MIN_LENGTH}} characters</mat-error>
+          }
+          <div matIconSuffix>
+            <button
+              mat-icon-button
+              (click)="hideSignupPassword.set(!hideSignupPassword()); $event.stopPropagation();">
+              <mat-icon>{{hideSignupPassword() ? 'visibility_off' : 'visibility'}}</mat-icon>
+            </button>
+          </div>
+        </mat-form-field>
+        <mat-form-field hideRequiredMarker="true">
+          <mat-label>Confirm password</mat-label>
+          <input matInput [type]="hideSignupConfirmPassword() ? 'password' : 'text'" formControlName="confirmPassword"/>
+          @if (signupForm.controls['confirmPassword'].hasError('required')) {
+            <mat-error>Required</mat-error>
+          } @else if (signupForm.controls['confirmPassword'].hasError('passwordMismatch')) {
+            <mat-error>Passwords must match</mat-error>
+          } @else if (signupForm.controls['confirmPassword'].hasError('maxlength')) {
+            <mat-error>Must be no more than {{PASSWORD_MAX_LENGTH}} characters</mat-error>
+          } @else if (signupForm.controls['confirmPassword'].hasError('minlength')) {
+            <mat-error>Must be at least {{PASSWORD_MIN_LENGTH}} characters</mat-error>
+          }
+          <div matIconSuffix>
+            <button
+              mat-icon-button
+              (click)="hideSignupConfirmPassword.set(!hideSignupConfirmPassword()); $event.stopPropagation();">
+              <mat-icon>{{hideSignupConfirmPassword() ? 'visibility_off' : 'visibility'}}</mat-icon>
+            </button>
+          </div>
+        </mat-form-field>
+      </form>
+      <div class="buttons">
+        <button mat-button (click)="welcomeState.set('welcome'); signupForm.reset();">Back</button>
+        <button mat-flat-button [disabled]="!signupForm.valid" (click)="welcomeState.set('signup2')">Next</button>
+      </div>
+    </div>
+  }
+
+  @if (welcomeState() === 'signup2') {
+    <div class="signup">
+      <h2>Sign up</h2>
+      <form [formGroup]="signup2Form">
+        <mat-form-field hideRequiredMarker="true">
+          <mat-label>Profile name</mat-label>
+          <input matInput formControlName="profileName">
+          @if (signup2Form.controls['profileName'].hasError('required')) {
+            <mat-error>Required</mat-error>
+          }
+        </mat-form-field>
+      </form>
+      <div class="buttons">
+        <button mat-button (click)="welcomeState.set('signup1'); signup2Form.reset();">Back</button>
+        <button mat-flat-button [disabled]="!signup2Form.valid" routerLink="/">Next</button>
+      </div>
+    </div>
+  }
+</div>
+

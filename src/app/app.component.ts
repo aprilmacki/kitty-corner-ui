@@ -8,11 +8,7 @@ import {MatButton} from '@angular/material/button';
   selector: 'app-root',
   templateUrl: './app.component.html',
   imports: [
-    RouterLink,
-    RouterOutlet,
-    RouterLinkActive,
-    MatIcon,
-    ProfileBadgeComponent,
+    RouterOutlet
   ],
   styleUrl: './app.component.scss'
 })

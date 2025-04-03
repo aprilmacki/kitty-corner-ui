@@ -15,8 +15,8 @@ import {JwtPayload} from 'jsonwebtoken';
 
 export const router: express.Router = express.Router();
 
-const JWT_PRIVATE_KEY = fs.readFileSync('./auth/private.key');
-const JWT_PUBLIC_KEY = fs.readFileSync('./auth/public.key');
+const JWT_PRIVATE_KEY = fs.readFileSync('./fixtures/data/auth/private.key');
+const JWT_PUBLIC_KEY = fs.readFileSync('./fixtures/data/auth/public.key');
 
 interface TestResponses<Dto> {
   [status: number]: Dto | ErrorResponse

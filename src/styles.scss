@@ -7,6 +7,7 @@ html {
     typography: Roboto,
     density: 0
   ));
+  background-color: var(--mat-sys-surface);
 }
 
 button[mat-icon-button] {

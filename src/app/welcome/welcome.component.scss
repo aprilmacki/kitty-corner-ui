@@ -1,0 +1,65 @@
+:host {
+  width: 100%;
+}
+
+.center {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 80vh;
+
+  h1 {
+    text-align: center;
+  }
+
+  .welcome {
+    display: flex;
+    flex-direction: column;
+    align-content: center;
+    gap: 10px;
+
+  }
+
+  .signin {
+    width: 30%;
+    min-width: 400px;
+
+    form {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+
+      mat-form-field {
+        width: 100%;
+      }
+    }
+  }
+
+  .signup {
+    width: 30%;
+    min-width: 400px;
+
+    form {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+
+      mat-form-field {
+        width: 100%;
+      }
+    }
+  }
+}
+
+form {
+  [matIconSuffix] {
+    padding: 0 10px;
+  }
+}
+
+.buttons {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}

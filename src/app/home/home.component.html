@@ -1,0 +1,33 @@
+<nav class="left">
+  <div class="sticky">
+    <div>
+      <app-profile-badge routerLink="/users/aprilmack/profile"></app-profile-badge>
+    </div>
+    <div class="links">
+      <a class="link" routerLink="/posts" routerLinkActive="active">
+        <mat-icon fontIcon="home"></mat-icon>
+        <div>Home</div>
+      </a>
+      <a class="link" routerLink="/users/aprilmack/profile" routerLinkActive="active">
+        <mat-icon fontIcon="person"></mat-icon>
+        <div>Profile</div>
+      </a>
+      <a class="link" routerLink="/settings" routerLinkActive="active">
+        <mat-icon fontIcon="settings"></mat-icon>
+        <div>Settings</div>
+      </a>
+      <a class="link" routerLink="/welcome">
+        <mat-icon fontIcon="logout"></mat-icon>
+        <div>Sign out</div>
+      </a>
+    </div>
+  </div>
+</nav>
+
+<main class="middle">
+  <router-outlet />
+</main>
+
+<div class="right">
+</div>
+
