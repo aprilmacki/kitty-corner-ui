@@ -1,5 +1,5 @@
-import {UserProfileDto} from '../dtos/user.dto';
-import * as util from '../../../common/util';
+import {UserProfileDto} from '../../services/kitty-corner-api/dtos/user.dto';
+import * as util from '../util';
 
 export type UserProfileModel = {
   username: string;

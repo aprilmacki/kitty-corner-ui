@@ -1,7 +1,7 @@
 import {Component, inject, OnInit, signal} from '@angular/core';
 import {MatIcon} from '@angular/material/icon';
 import {MatButton, MatIconButton} from '@angular/material/button';
-import {PostPageConfigModel, PostModel} from '../services/kitty-corner-api/models/post.model';
+import {PostPageConfigModel, PostModel} from '../common/models/post.model';
 import {PostComponent} from '../post/post.component';
 import {NgForOf} from '@angular/common';
 import {KittyCornerApiService} from '../services/kitty-corner-api/kitty-corner-api.service';
@@ -10,7 +10,7 @@ import {MatProgressSpinner} from '@angular/material/progress-spinner';
 import {MatDialog} from '@angular/material/dialog';
 import {FiltersDialogComponent} from './filters-dialog/filters-dialog.component';
 import {TopBarComponent} from '../common/top-bar/top-bar.component';
-import {PageModel} from '../services/kitty-corner-api/models/common.model';
+import {PageModel} from '../common/models/common.model';
 import {PostDialogComponent} from './post-dialog/post-dialog.component';
 import {Observable} from 'rxjs';
 import {HttpErrorResponse} from '@angular/common/http';

@@ -2,12 +2,12 @@
 
 html {
   color-scheme: light dark;
+  background-color: var(--mat-sys-surface) !important;
   @include mat.theme((
     color: mat.$green-palette,
     typography: Roboto,
     density: 0
   ));
-  background-color: var(--mat-sys-surface);
 }
 
 button[mat-icon-button] {

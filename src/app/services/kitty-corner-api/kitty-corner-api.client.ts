@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import {firstValueFrom, map, Observable, of,} from 'rxjs';
 import {GetPostsDto, PostDto, ReactionDto} from './dtos/posts.dto';
 import {UpdateUserProfileDto, UserProfileDto} from './dtos/user.dto';
-import {PostPageConfigModel} from './models/post.model';
+import {PostPageConfigModel} from '../../common/models/post.model';
 import {HttpClient, HttpParams} from '@angular/common/http';
 import {DataCache} from '../../common/data-cache';
 import {CommentDto, CommentPageConfigModel, GetCommentsDto} from './dtos/comments.dto';

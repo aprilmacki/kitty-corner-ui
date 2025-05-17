@@ -10,7 +10,7 @@ import {Repository} from './data/repository';
 import * as jwt from 'jsonwebtoken';
 import * as fs from 'node:fs';
 import { v4 as uuidv4 } from 'uuid';
-import {SignInDto} from '../src/app/services/kitty-corner-api/dtos/auth.dto';
+import {TokenPairDto} from '../src/app/services/auth/dtos/auth.dto';
 import {JwtPayload} from 'jsonwebtoken';
 
 export const router: express.Router = express.Router();
@@ -65,7 +65,62 @@ router.post('/api/v1/auth/signin', (req: express.Request, res: express.Response)
     res.json({
       accessToken: accessToken,
       refreshToken: refreshToken
-    } as SignInDto);
+    } as TokenPairDto);
+  }, 500);
+});
+
+router.post('/api/v1/auth/signup', (req: express.Request, res: express.Response) => {
+  setTimeout(() => {
+    const email: string = req.body.email;
+    const username: string = req.body.username;
+    const password: string = req.body.password;
+    const profileName: string = req.body.profileName;
+
+    const existingUser: UserProfileJson | null = repository.getUser(username);
+    if (existingUser != null) {
+      res.status(409).send({});
+    }
+
+    const newUser: UserProfileJson = {
+      email: email,
+      username: username,
+      name: profileName,
+      pronouns: 'she/her', // TODO
+      age: 30, // TODO: Store all UserProfileJson as just birthday, and compute age on fetch
+      birthday: '1997-05-11', // TODO
+      location: '',
+      latitude: undefined, // TODO
+      longitude: undefined, // TODO
+      joinedAt: new Date().toDateString(), // TODO: Format correctly
+      totalPosts: 0,
+      password: password
+    };
+    repository.createUser(newUser);
+
+    // TODO: remove duplication
+    const accessToken = jwt.sign({}, JWT_PRIVATE_KEY, {
+      algorithm: 'RS256',
+      expiresIn: 120,
+      subject: username,
+    });
+
+    const tokenInfo: TokenChainModel = repository.createTokenChain(username);
+    tokenInfo.chainId++;
+    tokenInfo.refreshTokenId = uuidv4();
+
+    const refreshToken = jwt.sign({
+      chain_id: tokenInfo.chainId,
+      refresh_id: tokenInfo.refreshTokenId
+    }, JWT_PRIVATE_KEY, {
+      algorithm: 'RS256',
+      expiresIn: 240,
+      subject: username,
+    });
+
+    res.json({
+      accessToken: accessToken,
+      refreshToken: refreshToken
+    } as TokenPairDto);
   }, 500);
 });
 

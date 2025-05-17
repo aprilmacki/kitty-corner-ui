@@ -2,7 +2,7 @@ import {Component, inject, input, OnInit, signal} from '@angular/core';
 import {TopBarComponent} from '../../common/top-bar/top-bar.component';
 import {MatIcon} from '@angular/material/icon';
 import {MatButtonModule} from '@angular/material/button';
-import {toUserProfileModel, UserProfileModel} from '../../services/kitty-corner-api/models/user.model';
+import {toUserProfileModel, UserProfileModel} from '../../common/models/user.model';
 import {FormControl, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 import {MatInputModule} from '@angular/material/input';
 import {KittyCornerApiService} from '../../services/kitty-corner-api/kitty-corner-api.service';

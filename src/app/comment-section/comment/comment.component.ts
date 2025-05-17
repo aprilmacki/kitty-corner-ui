@@ -1,5 +1,5 @@
 import {Component, inject, input, Input} from '@angular/core';
-import {CommentModel} from '../../services/kitty-corner-api/models/comment.model';
+import {CommentModel} from '../../common/models/comment.model';
 import {DatePipe, DecimalPipe, NgOptimizedImage} from '@angular/common';
 import {MatIconButton} from '@angular/material/button';
 import {MatIcon} from '@angular/material/icon';

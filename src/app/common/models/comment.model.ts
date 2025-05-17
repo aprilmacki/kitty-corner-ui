@@ -1,4 +1,4 @@
-import {ReactionDto} from '../dtos/posts.dto';
+import {ReactionDto} from '../../services/kitty-corner-api/dtos/posts.dto';
 
 export type CommentModel = {
   postId: number,

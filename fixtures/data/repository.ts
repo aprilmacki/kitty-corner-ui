@@ -30,6 +30,10 @@ export class Repository {
     return this.USERS.get(username) ?? null;
   }
 
+  public createUser(user: UserProfileJson) {
+    this.USERS.set(user.username, user);
+  }
+
   public createTokenChain(username: string): TokenChainModel {
     const tokenChain = {
       username: username,

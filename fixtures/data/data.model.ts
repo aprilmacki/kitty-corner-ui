@@ -61,6 +61,7 @@ export function toPostDto(json: PostJson): PostDto {
 }
 
 export interface UserProfileJson {
+  email: string,
   username: string;
   name: string;
   pronouns: string;

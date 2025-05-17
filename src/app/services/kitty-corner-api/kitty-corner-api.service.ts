@@ -1,14 +1,14 @@
 import { Injectable } from '@angular/core';
 import {KittyCornerApiClient} from './kitty-corner-api.client';
-import {PostPageConfigModel, PostModel, toPostModel} from './models/post.model';
+import {PostPageConfigModel, PostModel, toPostModel} from '../../common/models/post.model';
 import {concatMap, forkJoin, map, Observable, of} from 'rxjs';
 import {GetPostsDto, PostDto} from './dtos/posts.dto';
 import {UpdateUserProfileDto, UserProfileDto} from './dtos/user.dto';
 import * as util from '../../common/util';
 import {CommentDto, CommentPageConfigModel, GetCommentsDto} from './dtos/comments.dto';
-import {CommentModel} from './models/comment.model';
-import {PageModel} from './models/common.model';
-import {toUserProfileModel, UserProfileModel} from './models/user.model';
+import {CommentModel} from '../../common/models/comment.model';
+import {PageModel} from '../../common/models/common.model';
+import {toUserProfileModel, UserProfileModel} from '../../common/models/user.model';
 
 @Injectable({
   providedIn: 'root'

@@ -37,7 +37,7 @@
       </form>
       <div class="buttons">
         <button mat-button (click)="welcomeState.set('welcome'); signinForm.reset();">Back</button>
-        <button mat-flat-button [disabled]="!signinForm.valid" routerLink="">Next</button>
+        <button mat-flat-button [disabled]="!signinForm.valid" (click)="signIn()">Next</button>
       </div>
     </div>
   }
@@ -126,7 +126,7 @@
       </form>
       <div class="buttons">
         <button mat-button (click)="welcomeState.set('signup1'); signup2Form.reset();">Back</button>
-        <button mat-flat-button [disabled]="!signup2Form.valid" routerLink="/">Next</button>
+        <button mat-flat-button [disabled]="!signup2Form.valid" (click)="signUp()">Sign up</button>
       </div>
     </div>
   }

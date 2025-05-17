@@ -5,7 +5,7 @@ import {CdkTextareaAutosize} from '@angular/cdk/text-field';
 import {FormControl, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
 import {MatError, MatFormField, MatHint, MatInput, MatLabel} from '@angular/material/input';
 import {KittyCornerApiService} from '../../services/kitty-corner-api/kitty-corner-api.service';
-import {PostModel} from '../../services/kitty-corner-api/models/post.model';
+import {PostModel} from '../../common/models/post.model';
 import {HttpErrorResponse} from '@angular/common/http';
 import {Observable} from 'rxjs';
 

@@ -1,6 +1,6 @@
-import {PostDto, ReactionDto} from '../dtos/posts.dto';
-import * as util from '../../../common/util';
-import {UserProfileDto} from '../dtos/user.dto';
+import {PostDto, ReactionDto} from '../../services/kitty-corner-api/dtos/posts.dto';
+import * as util from '../util';
+import {UserProfileDto} from '../../services/kitty-corner-api/dtos/user.dto';
 
 export type PostModel = {
   postId: number;
