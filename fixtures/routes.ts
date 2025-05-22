@@ -75,29 +75,31 @@ router.post('/api/v1/auth/signup', (req: express.Request, res: express.Response)
     const username: string = req.body.username;
     const password: string = req.body.password;
     const profileName: string = req.body.profileName;
+    const pronouns: string = req.body.pronouns;
+    const birthday: string = req.body.birthday;
 
     const existingUser: UserProfileJson | null = repository.getUser(username);
     if (existingUser != null) {
       res.status(409).send({});
+      return;
     }
+
+    const newBirthday: Moment = moment(req.body.birthday, "YYYY-MM-DD");
+    const age = moment().diff(newBirthday, 'years');
 
     const newUser: UserProfileJson = {
       email: email,
       username: username,
       name: profileName,
-      pronouns: 'she/her', // TODO
-      age: 30, // TODO: Store all UserProfileJson as just birthday, and compute age on fetch
-      birthday: '1997-05-11', // TODO
-      location: '',
-      latitude: undefined, // TODO
-      longitude: undefined, // TODO
-      joinedAt: new Date().toDateString(), // TODO: Format correctly
+      pronouns: pronouns,
+      age: age,
+      birthday: birthday,
+      joinedAt: new Date().toDateString(),
       totalPosts: 0,
       password: password
     };
     repository.createUser(newUser);
 
-    // TODO: remove duplication
     const accessToken = jwt.sign({}, JWT_PRIVATE_KEY, {
       algorithm: 'RS256',
       expiresIn: 120,
@@ -172,13 +174,9 @@ router.put('/api/v1/users/:username/profile', (req: express.Request, res: expres
     user.name = req.body.name;
     user.pronouns = req.body.pronouns;
     user.birthday = req.body.birthday;
+
     const newBirthday: Moment = moment(req.body.birthday, "YYYY-MM-DD");
     user.age = moment().diff(newBirthday, 'years');
-    if (user.latitude !== req.body.latitude || user.longitude !== req.body.longitude) {
-      user.location = 'San Francisco, CA';
-    }
-    user.latitude = req.body.latitude;
-    user.longitude = req.body.longitude;
 
     res.status(200);
     res.json(data.toUserProfileDto(user));

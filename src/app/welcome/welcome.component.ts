@@ -13,10 +13,18 @@ import {MatInput, MatLabel, MatSuffix} from '@angular/material/input';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatIconModule} from '@angular/material/icon';
 import {MatButton, MatIconButton} from '@angular/material/button';
-import {Router, RouterLink} from '@angular/router';
+import {Router} from '@angular/router';
 import {AuthService} from '../services/auth/auth.service';
 import {LoadingStatus} from '../common/types';
 import {SignUpModel} from '../common/models/signup.model';
+import {
+  MatDatepicker,
+  MatDatepickerInput,
+  MatDatepickerModule,
+  MatDatepickerToggle
+} from '@angular/material/datepicker';
+import {MatNativeDateModule} from '@angular/material/core';
+import moment from 'moment';
 
 export type WelcomeState = 'welcome' | 'signin' | 'signup1' | 'signup2';
 
@@ -32,6 +40,14 @@ export type WelcomeState = 'welcome' | 'signin' | 'signup1' | 'signup2';
     ReactiveFormsModule,
     MatIconButton,
     MatButton,
+    MatDatepicker,
+    MatDatepickerInput,
+    MatDatepickerToggle,
+    MatDatepickerModule,
+    MatNativeDateModule
+  ],
+  providers: [
+    MatDatepickerModule
   ],
   templateUrl: './welcome.component.html',
   styleUrl: './welcome.component.scss'
@@ -57,8 +73,11 @@ export class WelcomeComponent {
     password: new FormControl('', [Validators.maxLength(this.PASSWORD_MAX_LENGTH), Validators.minLength(this.PASSWORD_MIN_LENGTH), Validators.required]),
     confirmPassword: new FormControl('', [Validators.maxLength(128), Validators.required]),
   });
+  birthdayMax: Date = moment().subtract(18, 'years').toDate();
   signup2Form: FormGroup = new FormGroup({
     profileName: new FormControl('', [Validators.maxLength(128), Validators.required]),
+    pronouns: new FormControl('', [Validators.maxLength(64)]),
+    birthday: new FormControl(null, [Validators.required]),
   });
   signUpProcessing: LoadingStatus = 'success';
   hideSignupPassword = signal<boolean>(true);
@@ -79,6 +98,8 @@ export class WelcomeComponent {
       username: this.signupForm.controls['username'].value,
       password: this.signupForm.controls['password'].value,
       profileName: this.signup2Form.controls['profileName'].value,
+      pronouns: this.signup2Form.controls['pronouns'].value,
+      birthday: this.signup2Form.controls['birthday'].value,
     } as SignUpModel;
     this.authService.signUp(signUpData).subscribe({
       next: res => {

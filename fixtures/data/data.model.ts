@@ -67,9 +67,6 @@ export interface UserProfileJson {
   pronouns: string;
   age: number;
   birthday?: string
-  location: string;
-  latitude?: number;
-  longitude?: number;
   joinedAt: string;
   totalPosts: number;
   password: string;
@@ -81,11 +78,8 @@ export function toUserProfileDto(json: UserProfileJson): UserProfileDto {
     name: json.name,
     pronouns: json.pronouns,
     age: json.age,
-    location: json.location,
     joinedAtEpochSeconds: new Date(json.joinedAt).getTime() / 1000,
     totalPosts: json.totalPosts,
-    birthday: json.birthday,
-    latitude: json.latitude,
-    longitude: json.longitude
+    birthday: json.birthday
   } as UserProfileDto;
 }

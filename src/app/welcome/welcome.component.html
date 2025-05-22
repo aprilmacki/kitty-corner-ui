@@ -123,6 +123,16 @@
             <mat-error>Required</mat-error>
           }
         </mat-form-field>
+        <mat-form-field hideRequiredMarker="true">
+          <mat-label>Pronouns</mat-label>
+          <input matInput formControlName="pronouns">
+        </mat-form-field>
+        <mat-form-field [hideRequiredMarker]="true">
+          <mat-label>Birthday</mat-label>
+          <input matInput [matDatepicker]="picker" [max]="birthdayMax" formControlName="birthday">
+          <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
       </form>
       <div class="buttons">
         <button mat-button (click)="welcomeState.set('signup1'); signup2Form.reset();">Back</button>
