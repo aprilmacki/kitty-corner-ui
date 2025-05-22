@@ -59,6 +59,7 @@ export class WelcomeComponent {
   });
   signup2Form: FormGroup = new FormGroup({
     profileName: new FormControl('', [Validators.maxLength(128), Validators.required]),
+    pronouns: new FormControl('', [Validators.maxLength(64)]),
   });
   signUpProcessing: LoadingStatus = 'success';
   hideSignupPassword = signal<boolean>(true);

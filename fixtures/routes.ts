@@ -79,6 +79,7 @@ router.post('/api/v1/auth/signup', (req: express.Request, res: express.Response)
     const existingUser: UserProfileJson | null = repository.getUser(username);
     if (existingUser != null) {
       res.status(409).send({});
+      return;
     }
 
     const newUser: UserProfileJson = {
