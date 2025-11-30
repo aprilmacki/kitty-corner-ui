@@ -18,7 +18,7 @@ export class Repository {
   constructor() {
     this.POSTS = Repository.createPosts();
     this.POSTS_BY_ID = new Map<number, PostJson>(this.POSTS.map((post) => [post.postId, post]));
-    this.USERS = new Map(Object.entries(require('./users.json')));
+    this.USERS = new Map(Object.entries(require('./data/users.json')));
     this.COMMENTS_BY_POST = this.createComments();
     this.COMMENTS_BY_ID = new Map();
     for (let comments of this.COMMENTS_BY_POST.values()) {
@@ -88,7 +88,7 @@ export class Repository {
   }
 
   private static createPosts() {
-    const posts: data.PostJson[] = require('./posts.json').posts;
+    const posts: data.PostJson[] = require('./data/posts.json').posts;
     Repository.createFakePost().forEach(post => posts.push(post));
     posts.sort((a, b) => new Date(a.createdAt).getUTCSeconds() - new Date(b.createdAt).getUTCSeconds());
     return posts;

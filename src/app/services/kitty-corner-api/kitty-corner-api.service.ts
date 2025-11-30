@@ -25,8 +25,8 @@ export class KittyCornerApiService {
   }
 
   public getUserPosts(username: string, limit: number, cursor: number): Observable<PageModel<PostModel>> {
-    // We don't technically need to populate the author data. But it's cached anyway and allows to avoid creating a second
-    // data model.
+    // We don't technically need to populate the author repos. But it's cached anyway and allows to avoid creating a second
+    // repos model.
     return forkJoin({
       userProfile: this.apiClient.getUserProfileCached(username),
       posts: this.apiClient.getUserPosts(username, limit, cursor)

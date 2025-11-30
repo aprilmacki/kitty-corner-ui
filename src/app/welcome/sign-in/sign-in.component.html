@@ -8,12 +8,14 @@
     <mat-form-field>
       <mat-label>Password</mat-label>
       <input matInput [type]="hideSigninPassword() ? 'password' : 'text'" formControlName="password"/>
-      @if (signinForm.controls['password'].hasError('required')) {
-        <mat-error>Required</mat-error>
+      @if (signInProcessing() === '403' || signInProcessing() === 'error') {
+        <mat-error>Incorrect username or password</mat-error>
       } @else if (signinForm.controls['password'].hasError('maxlength')) {
         <mat-error>Must be no more than {{Constraints.PASSWORD_MAX_LENGTH}} characters</mat-error>
       } @else if (signinForm.controls['password'].hasError('minlength')) {
         <mat-error>Must be at least {{Constraints.PASSWORD_MIN_LENGTH}} characters</mat-error>
+      } @else if (signinForm.controls['password'].hasError('required')) {
+        <mat-error>Required</mat-error>
       }
       <div matIconSuffix>
         <button

@@ -1,12 +1,12 @@
 import * as express from 'express';
 import {GetPostsDto} from '../src/app/services/kitty-corner-api/dtos/posts.dto';
-import * as data from './data/data.model';
-import {CommentJson, PostJson, TokenChainModel, UserProfileJson} from './data/data.model';
+import * as data from './repos/data.model';
+import {CommentJson, PostJson, TokenChainModel, UserProfileJson} from './repos/data.model';
 import {GetCommentsDto} from '../src/app/services/kitty-corner-api/dtos/comments.dto';
 import {computeLikeDislikeChange} from '../src/app/common/util';
 import {ReverseGeocodeDto} from '../src/app/services/kitty-corner-api/dtos/utils.dto';
 import moment, {Moment} from 'moment';
-import {Repository} from './data/repository';
+import {Repository} from './repos/repository';
 import * as jwt from 'jsonwebtoken';
 import * as fs from 'node:fs';
 import { v4 as uuidv4 } from 'uuid';
@@ -15,8 +15,8 @@ import {JwtPayload} from 'jsonwebtoken';
 
 export const router: express.Router = express.Router();
 
-const JWT_PRIVATE_KEY = fs.readFileSync('./fixtures/data/auth/private.key');
-const JWT_PUBLIC_KEY = fs.readFileSync('./fixtures/data/auth/public.key');
+const JWT_PRIVATE_KEY = fs.readFileSync('./fixtures/repos/auth/private.key');
+const JWT_PUBLIC_KEY = fs.readFileSync('./fixtures/repos/auth/public.key');
 
 interface TestResponses<Dto> {
   [status: number]: Dto | ErrorResponse
@@ -149,7 +149,7 @@ router.post('/api/v1/auth/signout', (req: express.Request, res: express.Response
 
 router.get('/api/v1/users/:username/profile', (req: express.Request, res: express.Response) => {
   setTimeout(() => {
-    const testResponses: TestResponses<ErrorResponse> = require('./data/get-user-profile.json');
+    const testResponses: TestResponses<ErrorResponse> = require('./repos/data/get-user-profile.json');
 
     const user: UserProfileJson | null = repository.getUser(req.params["username"]);
     if (user != null) {
