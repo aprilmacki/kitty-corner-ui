@@ -1,0 +1,31 @@
+<div class="signin">
+  <h2>Sign in</h2>
+  <form [formGroup]="signinForm">
+    <mat-form-field>
+      <mat-label>Username</mat-label>
+      <input matInput formControlName="username">
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Password</mat-label>
+      <input matInput [type]="hideSigninPassword() ? 'password' : 'text'" formControlName="password"/>
+      @if (signinForm.controls['password'].hasError('required')) {
+        <mat-error>Required</mat-error>
+      } @else if (signinForm.controls['password'].hasError('maxlength')) {
+        <mat-error>Must be no more than {{Constraints.PASSWORD_MAX_LENGTH}} characters</mat-error>
+      } @else if (signinForm.controls['password'].hasError('minlength')) {
+        <mat-error>Must be at least {{Constraints.PASSWORD_MIN_LENGTH}} characters</mat-error>
+      }
+      <div matIconSuffix>
+        <button
+          mat-icon-button
+          (click)="hideSigninPassword.set(!hideSigninPassword()); $event.stopPropagation();">
+          <mat-icon>{{hideSigninPassword() ? 'visibility_off' : 'visibility'}}</mat-icon>
+        </button>
+      </div>
+    </mat-form-field>
+  </form>
+  <div class="buttons">
+    <button mat-button (click)="signinForm.reset(); backEvent.emit();">Back</button>
+    <button mat-flat-button [disabled]="!signinForm.valid" (click)="this.signIn()">Next</button>
+  </div>
+</div>

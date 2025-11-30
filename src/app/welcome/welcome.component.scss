@@ -18,43 +18,6 @@
     flex-direction: column;
     align-content: center;
     gap: 10px;
-
-  }
-
-  .signin {
-    width: 30%;
-    min-width: 400px;
-
-    form {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-
-      mat-form-field {
-        width: 100%;
-      }
-    }
-  }
-
-  .signup {
-    width: 30%;
-    min-width: 400px;
-
-    form {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-
-      mat-form-field {
-        width: 100%;
-      }
-    }
-  }
-}
-
-form {
-  [matIconSuffix] {
-    padding: 0 10px;
   }
 }
 
