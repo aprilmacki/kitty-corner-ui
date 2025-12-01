@@ -1,6 +1,7 @@
 import {CommentJson, PostJson, TokenChainModel, UserProfileJson} from './data.model';
 import * as data from './data.model';
 import {randomUUID} from 'node:crypto';
+import {ReactionDto} from '../../src/app/services/kitty-corner-api/dtos/posts.dto';
 
 export class Repository {
   private NEXT_POST_ID: number = 200;
@@ -88,7 +89,15 @@ export class Repository {
   }
 
   private static createPosts() {
-    const posts: data.PostJson[] = require('./data/posts.json').posts;
+    const posts: PostJson[] = [];
+    require('./data/posts.json').posts.forEach((post: any) => {
+      const reactions: Map<string, ReactionDto> = new Map();
+      Object.entries(post.reactionsByUsername).forEach(([key, value])=> {
+        reactions.set(key, value as ReactionDto);
+      });
+      post.reactionsByUsername = reactions;
+      posts.push(post);
+    });
     Repository.createFakePost().forEach(post => posts.push(post));
     posts.sort((a, b) => new Date(a.createdAt).getUTCSeconds() - new Date(b.createdAt).getUTCSeconds());
     return posts;
@@ -111,7 +120,7 @@ export class Repository {
           totalDislikes: 0,
           createdAt: commentDate.toString(),
           updatedAt: null,
-          myReaction: null
+          reactionsByUsername: new Map<string, ReactionDto>()
         });
       }
       commentsForPost.sort((a, b) => new Date(a.createdAt).getUTCSeconds() - new Date(b.createdAt).getUTCSeconds());
@@ -136,7 +145,7 @@ export class Repository {
         totalComments: 0,
         createdAt: postDate.toString(),
         updatedAt: null,
-        myReaction: null
+        reactionsByUsername: new Map<string, ReactionDto>()
       };
       posts.push(fillerPost);
     }

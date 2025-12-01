@@ -6,7 +6,8 @@ import {
 } from '@angular/router';
 
 import { routes } from './app.routes';
-import {provideHttpClient, withInterceptorsFromDi} from '@angular/common/http';
+import {provideHttpClient, withInterceptors} from '@angular/common/http';
+import {authInterceptor} from './services/auth/auth.interceptor';
 import {CustomRouteReuseStrategy} from './route-reuse';
 
 export const appConfig: ApplicationConfig = {
@@ -17,6 +18,6 @@ export const appConfig: ApplicationConfig = {
     },
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes, withComponentInputBinding()),
-    provideHttpClient(withInterceptorsFromDi())
+    provideHttpClient(withInterceptors([authInterceptor]))
   ]
 };

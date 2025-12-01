@@ -6,7 +6,7 @@ export function fromEpochSeconds(seconds: number) {
   return date;
 }
 
-export function computeLikeDislikeChange(existingReaction: ReactionDto, newReaction: ReactionDto): {likeChange: number, dislikeChange: number} {
+export function computeLikeDislikeChange(existingReaction: ReactionDto | null, newReaction: ReactionDto): {likeChange: number, dislikeChange: number} {
   const reactionChanges = {
     likeChange: 0,
     dislikeChange: 0

@@ -1,5 +1,5 @@
 import * as express from 'express';
-import {GetPostsDto} from '../src/app/services/kitty-corner-api/dtos/posts.dto';
+import {GetPostsDto, ReactionDto} from '../src/app/services/kitty-corner-api/dtos/posts.dto';
 import * as data from './repos/data.model';
 import {CommentJson, PostJson, TokenChainModel, UserProfileJson} from './repos/data.model';
 import {GetCommentsDto} from '../src/app/services/kitty-corner-api/dtos/comments.dto';
@@ -8,10 +8,10 @@ import {ReverseGeocodeDto} from '../src/app/services/kitty-corner-api/dtos/utils
 import moment, {Moment} from 'moment';
 import {Repository} from './repos/repository';
 import * as jwt from 'jsonwebtoken';
+import {JwtPayload, TokenExpiredError} from 'jsonwebtoken';
 import * as fs from 'node:fs';
-import { v4 as uuidv4 } from 'uuid';
+import {v4 as uuidv4} from 'uuid';
 import {TokenPairDto} from '../src/app/services/auth/dtos/auth.dto';
-import {JwtPayload} from 'jsonwebtoken';
 
 export const router: express.Router = express.Router();
 
@@ -27,6 +27,63 @@ interface ErrorResponse {
   status: number,
   detail: string,
   path: string
+}
+
+interface SessionInfo {
+  username: string
+}
+
+function validateAccessToken(req: express.Request): string | null{
+  const authHeader = req.header('Authorization');
+  if (!authHeader) {
+    console.error(`Auth header not found`);
+    return null;
+  }
+
+  const jwtTokenIndex: number = authHeader.search(' ');
+  if (jwtTokenIndex < 0) {
+    console.error(`JWT token not found in auth header. ${authHeader}`);
+    return null;
+  }
+
+  const jwtTokenEncoded = authHeader.substring(jwtTokenIndex + 1);
+
+  let jwtToken;
+  try {
+    jwtToken = <JwtPayload>jwt.verify(jwtTokenEncoded, JWT_PRIVATE_KEY);
+  } catch (error) {
+    console.error(`JWT token verification failed. ${error}`);
+    return null;
+  }
+
+  return jwtToken.sub!
+}
+
+function getTokenChain(req: express.Request): TokenChainModel | null {
+  const authHeader = req.header('Authorization');
+  if (!authHeader) {
+    console.error(`Auth header not found`);
+    return null;
+  }
+
+  const refreshTokenIndex: number = authHeader.search(' ');
+  if (refreshTokenIndex < 0) {
+    console.error(`JWT token not found in auth header. ${authHeader}`);
+    return null;
+  }
+
+  const refreshTokenEncoded = authHeader.substring(refreshTokenIndex + 1);
+
+  let refreshToken;
+  try {
+    refreshToken = <JwtPayload>jwt.verify(refreshTokenEncoded, JWT_PRIVATE_KEY);
+  } catch (error) {
+    console.error(`JWT token verification failed. ${error}`);
+    return null;
+  }
+
+  const chainId = Number(refreshToken['chain_id']);
+  return repository.getTokenChain(chainId);
 }
 
 const repository: Repository = new Repository();
@@ -126,23 +183,16 @@ router.post('/api/v1/auth/signup', (req: express.Request, res: express.Response)
   }, 500);
 });
 
+
 router.post('/api/v1/auth/signout', (req: express.Request, res: express.Response) => {
   setTimeout(() => {
-    const authHeader = req.header('Authorization')!;
-    const jwtTokenEncoded = authHeader.substring(authHeader.search(': ') + 2);
-
-    const jwtToken: JwtPayload = <JwtPayload>jwt.verify(jwtTokenEncoded, JWT_PRIVATE_KEY);
-    const chainId = Number(jwtToken['chain_id']);
-    const username = jwtToken.sub!;
-
-    const tokenChain = repository.getTokenChain(chainId)!;
-    if (tokenChain.username !== username) {
-      res.status(403).send({});
+    const tokenChain: TokenChainModel | null = getTokenChain(req);
+    if (!tokenChain) {
+      res.status(401).send({});
       return;
     }
 
-    repository.invalidateTokenChain(chainId);
-
+    repository.invalidateTokenChain(tokenChain.chainId);
     res.status(204).send();
   }, 500);
 });
@@ -164,7 +214,18 @@ router.get('/api/v1/users/:username/profile', (req: express.Request, res: expres
 
 router.put('/api/v1/users/:username/profile', (req: express.Request, res: express.Response) => {
   setTimeout(() => {
+    const myUsername: string | null = validateAccessToken(req);
+    if (!myUsername) {
+      res.status(401).send({});
+      return;
+    }
+
     const username: string = req.params['username'];
+    if (myUsername !== username) {
+      res.status(403).send({});
+      return;
+    }
+
     let user: UserProfileJson | null = repository.getUser(username);
     if (user == null) {
       res.status(404).send('Not found');
@@ -185,12 +246,18 @@ router.put('/api/v1/users/:username/profile', (req: express.Request, res: expres
 
 router.get('/api/v1/users/:username/posts', (req: express.Request, res: express.Response) => {
   setTimeout(() => {
-    const username: string = req.params['username'];
+    const myUsername: string | null = validateAccessToken(req);
+    if (!myUsername) {
+      res.status(401).send({});
+      return;
+    }
+
+    const requestedUsername: string = req.params['username'];
     const cursor: number = Number(req.query['cursor'] ?? 0);
     const limit: number = Number(req.query['limit'] ?? 10);
 
     const selectedPosts: PostJson[] = [];
-    for (const post of repository.getPostsForUser(username)) {
+    for (const post of repository.getPostsForUser(requestedUsername)) {
       if (selectedPosts.length > limit) {
         break;
       }
@@ -201,7 +268,7 @@ router.get('/api/v1/users/:username/posts', (req: express.Request, res: express.
 
     res.status(200);
     res.json({
-      posts: selectedPosts.map((post: data.PostJson) => data.toPostDto(post)),
+      posts: selectedPosts.map((post: data.PostJson) => data.toPostDto(myUsername, post)),
       nextCursor: selectedPosts.length == 0 ? 0 : selectedPosts[selectedPosts.length-1].postId - 1
     } as GetPostsDto);
   }, 1000);
@@ -209,6 +276,12 @@ router.get('/api/v1/users/:username/posts', (req: express.Request, res: express.
 
 router.get('/api/v1/posts/', (req: express.Request, res: express.Response) => {
   setTimeout(() => {
+    const myUsername: string | null = validateAccessToken(req);
+    if (!myUsername) {
+      res.status(401).send({});
+      return;
+    }
+
     const cursor: number = Number(req.query['cursor'] ?? 0);
     const limit: number = Number(req.query['limit'] ?? 10);
     const startAge: number = Number(req.query['startAge'] ?? 18);
@@ -237,7 +310,7 @@ router.get('/api/v1/posts/', (req: express.Request, res: express.Response) => {
 
     res.status(200);
     res.json({
-      posts: selectedPosts.map((post: data.PostJson) => data.toPostDto(post)),
+      posts: selectedPosts.map((post: data.PostJson) => data.toPostDto(myUsername, post)),
       nextCursor: selectedPosts.length == 0 ? 0 : selectedPosts[selectedPosts.length-1].postId - 1
     } as GetPostsDto)
   }, 1000);
@@ -245,6 +318,12 @@ router.get('/api/v1/posts/', (req: express.Request, res: express.Response) => {
 
 router.get('/api/v1/posts/:postId', (req: express.Request, res: express.Response) => {
   setTimeout(() => {
+    const myUsername: string | null = validateAccessToken(req);
+    if (!myUsername) {
+      res.status(401).send({});
+      return;
+    }
+
     const postId: number = Number(req.params['postId']);
     const post: data.PostJson | null = repository.getPost(postId);
     if (post == null) {
@@ -253,15 +332,21 @@ router.get('/api/v1/posts/:postId', (req: express.Request, res: express.Response
     }
 
     res.status(200);
-    res.json(data.toPostDto(post));
+    res.json(data.toPostDto(myUsername, post));
   }, 500);
 });
 
 router.post('/api/v1/posts', (req: express.Request, res: express.Response) => {
   setTimeout(() => {
+    const myUsername: string | null = validateAccessToken(req);
+    if (!myUsername) {
+      res.status(401).send({});
+      return;
+    }
+
     const newPost: PostJson = {
       postId: 0,
-      username: 'aprilmack',
+      username: myUsername,
       body: req.body.body,
       distanceKm: 0,
       totalLikes: 0,
@@ -269,19 +354,25 @@ router.post('/api/v1/posts', (req: express.Request, res: express.Response) => {
       totalComments: 0,
       createdAt: new Date().toString(),
       updatedAt: null,
-      myReaction: null
+      reactionsByUsername: new Map<string, ReactionDto>()
     };
 
     repository.createPost(newPost);
 
     res.status(200);
-    res.json(data.toPostDto(newPost));
+    res.json(data.toPostDto(myUsername, newPost));
   }, 500);
 });
 
 
 router.put('/api/v1/posts/:postId/my-reactions', (req: express.Request, res: express.Response) => {
   setTimeout(() => {
+    const myUsername: string | null = validateAccessToken(req);
+    if (!myUsername) {
+      res.status(401).send({});
+      return;
+    }
+
     const postId: number = Number(req.params['postId']);
 
     const post: data.PostJson | null = repository.getPost(postId);
@@ -290,10 +381,12 @@ router.put('/api/v1/posts/:postId/my-reactions', (req: express.Request, res: exp
       return;
     }
 
-    const reactionChanges = computeLikeDislikeChange(post.myReaction, req.body.type);
+    // TODO: Change PostJson to show reactions by username.
+
+    const reactionChanges = computeLikeDislikeChange(post.reactionsByUsername.get(myUsername) ?? null, req.body.type);
     post.totalLikes += reactionChanges.likeChange;
     post.totalDislikes += reactionChanges.dislikeChange;
-    post.myReaction = req.body.type;
+    post.reactionsByUsername.set(myUsername, req.body.type)
     res.status(204);
     res.json({});
   }, 50)
@@ -301,6 +394,12 @@ router.put('/api/v1/posts/:postId/my-reactions', (req: express.Request, res: exp
 
 router.get('/api/v1/posts/:postId/comments', (req: express.Request, res: express.Response) => {
   setTimeout(() => {
+    const myUsername: string | null = validateAccessToken(req);
+    if (!myUsername) {
+      res.status(401).send({});
+      return;
+    }
+
     const postId: number = Number(req.params['postId']);
     const cursor: number = Number(req.query['cursor'] ?? 0);
     const limit: number = Number(req.query['limit'] ?? 10);
@@ -322,7 +421,7 @@ router.get('/api/v1/posts/:postId/comments', (req: express.Request, res: express
 
     res.status(200);
     res.json({
-      comments: selectedComments.map(comment => data.toCommentDto(comment)),
+      comments: selectedComments.map(comment => data.toCommentDto(myUsername, comment)),
       nextCursor: selectedComments.length == 0 ? 0 : selectedComments[selectedComments.length - 1].commentId + 1,
     } as GetCommentsDto);
   }, 500);
@@ -330,39 +429,51 @@ router.get('/api/v1/posts/:postId/comments', (req: express.Request, res: express
 
 router.post('/api/v1/posts/:postId/comments', (req: express.Request, res: express.Response) => {
   setTimeout(() => {
+    const myUsername: string | null = validateAccessToken(req);
+    if (!myUsername) {
+      res.status(401).send({});
+      return;
+    }
+
     const postId: number = Number(req.params['postId']);
+
     const comment: CommentJson = {
       commentId: 0,
-      username: 'aprilmack',
+      username: myUsername,
       body: req.body.body,
       totalLikes: 0,
       totalDislikes: 0,
       createdAt: new Date().toString(),
       updatedAt: null,
-      myReaction: null
+      reactionsByUsername: new Map<string, ReactionDto>()
     };
 
     repository.createComment(postId, comment);
 
     res.status(200);
-    res.json(data.toCommentDto(comment));
+    res.json(data.toCommentDto(myUsername, comment));
   }, 500);
 });
 
 router.put('/api/v1/posts/:postId/comments/:commentId/my-reactions', (req: express.Request, res: express.Response) => {
   setTimeout(() => {
-    const commentId: number = Number(req.params['commentId']);
+    const myUsername: string | null = validateAccessToken(req);
+    if (!myUsername) {
+      res.status(401).send({});
+      return;
+    }
 
+    const commentId: number = Number(req.params['commentId']);
     const comment: CommentJson | null = repository.getComment(commentId);
     if (comment == null) {
       res.status(404).send('Not Found');
       return;
     }
 
-    const reactionChanges = computeLikeDislikeChange(comment.myReaction, req.body.type);
+    const reactionChanges = computeLikeDislikeChange(comment.reactionsByUsername.get(myUsername) ?? null, req.body.type);
     comment.totalLikes += reactionChanges.likeChange;
     comment.totalDislikes += reactionChanges.dislikeChange;
-    comment.myReaction = req.body.type;
+    comment.reactionsByUsername.set(myUsername, req.body.type);
 
     res.status(204);
     res.json({});

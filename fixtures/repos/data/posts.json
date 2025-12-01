@@ -10,7 +10,9 @@
       "totalComments": 3,
       "createdAt": "2025-02-28T14:12-06:00",
       "updatedAt": null,
-      "myReaction": "like"
+      "reactionsByUsername": {
+        "aprilmack": "like"
+      }
     },
     {
       "postId": 123,
@@ -22,7 +24,9 @@
       "totalComments": 45,
       "createdAt": "2025-02-28T14:11-06:00",
       "updatedAt": null,
-      "myReaction": "like"
+      "reactionsByUsername": {
+        "aprilmack": "like"
+      }
     },
     {
       "postId": 111,
@@ -34,7 +38,9 @@
       "totalComments": 1,
       "createdAt": "2025-02-28T13:45-06:00",
       "updatedAt": null,
-      "myReaction": "dislike"
+      "reactionsByUsername": {
+        "aprilmack": "dislike"
+      }
     },
     {
       "postId": 107,
@@ -46,7 +52,7 @@
       "totalComments": 2,
       "createdAt": "2025-02-28T13:38-06:00",
       "updatedAt": null,
-      "myReaction": null
+      "reactionsByUsername": {}
     },
     {
       "postId": 105,
@@ -58,7 +64,7 @@
       "totalComments": 0,
       "createdAt": "2025-02-28T13:33-06:00",
       "updatedAt": null,
-      "myReaction": null
+      "reactionsByUsername": {}
     }
   ]
 }

@@ -16,10 +16,10 @@ export interface CommentJson {
   totalDislikes: number;
   createdAt: string;
   updatedAt: string | null;
-  myReaction: ReactionDto | null;
+  reactionsByUsername: Map<string, ReactionDto>;
 }
 
-export function toCommentDto(json: CommentJson): CommentDto {
+export function toCommentDto(username: string, json: CommentJson): CommentDto {
   return {
     commentId: json.commentId,
     username: json.username,
@@ -28,7 +28,7 @@ export function toCommentDto(json: CommentJson): CommentDto {
     totalDislikes: json.totalDislikes,
     createdAtEpochSeconds: new Date(json.createdAt).getTime() / 1000,
     updatedAtEpochSeconds: json.updatedAt == null ? null : new Date(json.updatedAt).getTime() / 1000,
-    myReaction: json.myReaction
+    myReaction: json.reactionsByUsername.get(username) ?? null,
   } as CommentDto;
 }
 
@@ -42,10 +42,10 @@ export interface PostJson {
   totalComments: number;
   createdAt: string;
   updatedAt: string | null;
-  myReaction: ReactionDto | null;
+  reactionsByUsername: Map<string, ReactionDto>;
 }
 
-export function toPostDto(json: PostJson): PostDto {
+export function toPostDto(username: string, json: PostJson): PostDto {
   return {
     postId: json.postId,
     username: json.username,
@@ -56,7 +56,7 @@ export function toPostDto(json: PostJson): PostDto {
     totalComments: json.totalComments,
     createdAtEpochSeconds: new Date(json.createdAt).getTime() / 1000,
     updatedAtEpochSeconds: null,
-    myReaction: json.myReaction
+    myReaction: json.reactionsByUsername.get(username) ?? null
   } as PostDto;
 }
 

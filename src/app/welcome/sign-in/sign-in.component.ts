@@ -53,10 +53,10 @@ export class SignInComponent {
     this.authService.signIn(this.signinForm.controls['username'].value, this.signinForm.controls['password'].value).subscribe({
       next: result => {
         this.signInProcessing.set('success');
-        this.router.navigate(['']);
+        this.router.navigate(['posts']).then(_ => {});
       },
       error: error => {
-        console.log(JSON.stringify(error));
+        console.error(JSON.stringify(error));
         if (error.status === 403) {
           this.signInProcessing.set('403');
         } else {
