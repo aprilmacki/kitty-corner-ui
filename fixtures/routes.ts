@@ -8,10 +8,10 @@ import {ReverseGeocodeDto} from '../src/app/services/kitty-corner-api/dtos/utils
 import moment, {Moment} from 'moment';
 import {Repository} from './repos/repository';
 import * as jwt from 'jsonwebtoken';
-import * as fs from 'node:fs';
-import { v4 as uuidv4 } from 'uuid';
-import {TokenPairDto} from '../src/app/services/auth/dtos/auth.dto';
 import {JwtPayload} from 'jsonwebtoken';
+import * as fs from 'node:fs';
+import {v4 as uuidv4} from 'uuid';
+import {TokenPairDto} from '../src/app/services/auth/dtos/auth.dto';
 
 export const router: express.Router = express.Router();
 
@@ -27,6 +27,25 @@ interface ErrorResponse {
   status: number,
   detail: string,
   path: string
+}
+
+interface SessionInfo {
+  tokenChain?: TokenChainModel,
+  username: string
+}
+
+function getSessionInfo(req: express.Request): SessionInfo {
+  const authHeader = req.header('Authorization')!;
+  const jwtTokenEncoded = authHeader.substring(authHeader.search(': ') + 2);
+
+  const jwtToken: JwtPayload = <JwtPayload>jwt.verify(jwtTokenEncoded, JWT_PRIVATE_KEY);
+  const chainId = Number(jwtToken['chain_id']);
+  const tokenChain = repository.getTokenChain(chainId);
+
+  return {
+    tokenChain: tokenChain,
+    username: jwtToken.sub!
+  } as SessionInfo;
 }
 
 const repository: Repository = new Repository();
@@ -126,23 +145,16 @@ router.post('/api/v1/auth/signup', (req: express.Request, res: express.Response)
   }, 500);
 });
 
+
 router.post('/api/v1/auth/signout', (req: express.Request, res: express.Response) => {
   setTimeout(() => {
-    const authHeader = req.header('Authorization')!;
-    const jwtTokenEncoded = authHeader.substring(authHeader.search(': ') + 2);
-
-    const jwtToken: JwtPayload = <JwtPayload>jwt.verify(jwtTokenEncoded, JWT_PRIVATE_KEY);
-    const chainId = Number(jwtToken['chain_id']);
-    const username = jwtToken.sub!;
-
-    const tokenChain = repository.getTokenChain(chainId)!;
-    if (tokenChain.username !== username) {
-      res.status(403).send({});
+    const sessionInfo: SessionInfo = getSessionInfo(req);
+    if (sessionInfo.tokenChain == null || sessionInfo.tokenChain.username !== sessionInfo.username) {
+      res.status(401).send({});
       return;
     }
 
-    repository.invalidateTokenChain(chainId);
-
+    repository.invalidateTokenChain(sessionInfo.tokenChain.chainId);
     res.status(204).send();
   }, 500);
 });
@@ -164,7 +176,18 @@ router.get('/api/v1/users/:username/profile', (req: express.Request, res: expres
 
 router.put('/api/v1/users/:username/profile', (req: express.Request, res: express.Response) => {
   setTimeout(() => {
+    const sessionInfo: SessionInfo = getSessionInfo(req);
+    if (sessionInfo.tokenChain == null || sessionInfo.tokenChain.username !== sessionInfo.username) {
+      res.status(401).send({});
+      return;
+    }
+
     const username: string = req.params['username'];
+    if (sessionInfo.username !== username) {
+      res.status(403).send({});
+      return;
+    }
+
     let user: UserProfileJson | null = repository.getUser(username);
     if (user == null) {
       res.status(404).send('Not found');
@@ -259,9 +282,15 @@ router.get('/api/v1/posts/:postId', (req: express.Request, res: express.Response
 
 router.post('/api/v1/posts', (req: express.Request, res: express.Response) => {
   setTimeout(() => {
+    const sessionInfo: SessionInfo = getSessionInfo(req);
+    if (sessionInfo.tokenChain == null || sessionInfo.tokenChain.username !== sessionInfo.username) {
+      res.status(401).send({});
+      return;
+    }
+
     const newPost: PostJson = {
       postId: 0,
-      username: 'aprilmack',
+      username: sessionInfo.username,
       body: req.body.body,
       distanceKm: 0,
       totalLikes: 0,
@@ -282,6 +311,12 @@ router.post('/api/v1/posts', (req: express.Request, res: express.Response) => {
 
 router.put('/api/v1/posts/:postId/my-reactions', (req: express.Request, res: express.Response) => {
   setTimeout(() => {
+    const sessionInfo: SessionInfo = getSessionInfo(req);
+    if (sessionInfo.tokenChain == null || sessionInfo.tokenChain.username !== sessionInfo.username) {
+      res.status(401).send({});
+      return;
+    }
+
     const postId: number = Number(req.params['postId']);
 
     const post: data.PostJson | null = repository.getPost(postId);
@@ -289,6 +324,8 @@ router.put('/api/v1/posts/:postId/my-reactions', (req: express.Request, res: exp
       res.status(404).send('Not Found');
       return;
     }
+
+    // TODO: Change PostJson to show reactions by username.
 
     const reactionChanges = computeLikeDislikeChange(post.myReaction, req.body.type);
     post.totalLikes += reactionChanges.likeChange;
