@@ -84,7 +84,7 @@ export class SignUpComponent {
     this.authService.signUp(signUpData).subscribe({
       next: res => {
         this.signUpProcessing= 'success';
-        this.router.navigate(['']);
+        this.router.navigate(['posts']);
       },
       error: err => {
         this.signUpProcessing = 'error';

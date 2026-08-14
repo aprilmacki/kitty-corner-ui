@@ -13,8 +13,9 @@ import {Constraints} from '../constraints';
 import {LoadingStatus} from '../../common/types';
 import {MatIcon} from '@angular/material/icon';
 import {MatButton, MatIconButton} from '@angular/material/button';
-import {Router} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {AuthService} from '../../services/auth/auth.service';
+import {RETURN_URL_PARAM, sanitizeReturnUrl} from '../../services/auth/return-url';
 
 export type SignInState = 'loading' | 'success' | '403' | 'error';
 
@@ -46,6 +47,7 @@ export class SignInComponent {
   backEvent = output<void>();
 
   private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
   private readonly authService = inject(AuthService);
 
   public signIn() {
@@ -53,7 +55,13 @@ export class SignInComponent {
     this.authService.signIn(this.signinForm.controls['username'].value, this.signinForm.controls['password'].value).subscribe({
       next: result => {
         this.signInProcessing.set('success');
-        this.router.navigate(['posts']).then(_ => {});
+        // Return to whatever page bounced the user here, when there was one and it's ours.
+        const returnUrl = sanitizeReturnUrl(this.route.snapshot.queryParamMap.get(RETURN_URL_PARAM));
+        if (returnUrl != null) {
+          this.router.navigateByUrl(returnUrl).then(_ => {});
+        } else {
+          this.router.navigate(['posts']).then(_ => {});
+        }
       },
       error: error => {
         console.error(JSON.stringify(error));

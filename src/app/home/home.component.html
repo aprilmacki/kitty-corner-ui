@@ -1,17 +1,25 @@
 <nav class="left">
   <div class="sticky">
     <div>
-      <app-profile-badge routerLink="/users/aprilmack/profile"></app-profile-badge>
+      @if (profile(); as myProfile) {
+        <app-profile-badge
+          [username]="myProfile.username"
+          [name]="myProfile.name"
+          [photoUrl]="myProfile.photoUrl"
+          [routerLink]="['/users', myProfile.username, 'profile']"></app-profile-badge>
+      }
     </div>
     <div class="links">
       <a class="link" routerLink="/posts" routerLinkActive="active">
         <mat-icon fontIcon="home"></mat-icon>
         <div>Home</div>
       </a>
-      <a class="link" routerLink="/users/aprilmack/profile" routerLinkActive="active">
-        <mat-icon fontIcon="person"></mat-icon>
-        <div>Profile</div>
-      </a>
+      @if (username(); as myUsername) {
+        <a class="link" [routerLink]="['/users', myUsername, 'profile']" routerLinkActive="active">
+          <mat-icon fontIcon="person"></mat-icon>
+          <div>Profile</div>
+        </a>
+      }
       <a class="link" routerLink="/settings" routerLinkActive="active">
         <mat-icon fontIcon="settings"></mat-icon>
         <div>Settings</div>
@@ -30,4 +38,3 @@
 
 <div class="right">
 </div>
-

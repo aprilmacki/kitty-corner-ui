@@ -7,7 +7,7 @@ import {EditProfileComponent} from './profile/edit-profile/edit-profile.componen
 import {WelcomeComponent} from './welcome/welcome.component';
 import {HomeComponent} from './home/home.component';
 import {UnauthenticatedComponent} from './unauthenticated/unauthenticated.component';
-import {authGuard, signedOutGuard} from './services/auth/auth.guard';
+import {authGuard, ownProfileGuard, signedOutGuard} from './services/auth/auth.guard';
 
 export const routes: Routes = [
   {
@@ -18,6 +18,8 @@ export const routes: Routes = [
   {
     path: 'unauthenticated',
     component: UnauthenticatedComponent,
+    // Safe because the interceptor clears the session before navigating here.
+    canActivate: [signedOutGuard],
   },
   {
     path: '',
@@ -28,6 +30,7 @@ export const routes: Routes = [
       {
         path: 'users/:username/profile/edit',
         component: EditProfileComponent,
+        canActivate: [ownProfileGuard],
       },
       {
         path: 'users/:username/profile',

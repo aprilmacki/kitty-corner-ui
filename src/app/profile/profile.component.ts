@@ -12,6 +12,7 @@ import {LoadingStatus} from '../common/types';
 import {CommentComponent} from '../comment-section/comment/comment.component';
 import {PostComponent} from '../post/post.component';
 import {MatProgressSpinner} from '@angular/material/progress-spinner';
+import {AuthService} from '../services/auth/auth.service';
 
 @Component({
   selector: 'app-profile',
@@ -33,9 +34,11 @@ import {MatProgressSpinner} from '@angular/material/progress-spinner';
 export class ProfileComponent implements OnInit {
   private readonly POST_LIMIT: number = 10;
   private apiService = inject(KittyCornerApiService);
+  private authService = inject(AuthService);
   private nextCursor = 0;
 
   username = input.required<string>();
+  isMyProfile = computed(() => this.username() === this.authService.getCurrentUsername());
   profile = signal<UserProfileModel | null>(null);
   posts = signal<PostModel[]>([]);
   initialLoadingStatus = signal<LoadingStatus>('loading');

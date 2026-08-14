@@ -3,6 +3,6 @@
     <mat-icon fontIcon="lock"></mat-icon>
     <h1>You&rsquo;re not signed in</h1>
     <p>Sign in to Kitty Corner to see this page.</p>
-    <button mat-flat-button routerLink="/welcome">Go to sign in</button>
+    <button mat-flat-button routerLink="/welcome" [queryParams]="welcomeQueryParams()">Go to sign in</button>
   </div>
 </div>

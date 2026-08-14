@@ -1,6 +1,7 @@
 import { FixtureServer } from './server'
 
-const port = 3001;
+// Overridable so a second instance can run alongside one that's already holding 3001.
+const port = Number(process.env['FIXTURE_PORT'] ?? 3001);
 
 const server = new FixtureServer();
 

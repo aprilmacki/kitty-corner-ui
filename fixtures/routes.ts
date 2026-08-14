@@ -59,7 +59,7 @@ function validateAccessToken(req: express.Request): string | null{
   return jwtToken.sub!
 }
 
-function getTokenChain(req: express.Request): TokenChainModel | null {
+function readRefreshTokenClaims(req: express.Request): JwtPayload | null {
   const authHeader = req.header('Authorization');
   if (!authHeader) {
     console.error(`Auth header not found`);
@@ -74,16 +74,54 @@ function getTokenChain(req: express.Request): TokenChainModel | null {
 
   const refreshTokenEncoded = authHeader.substring(refreshTokenIndex + 1);
 
-  let refreshToken;
   try {
-    refreshToken = <JwtPayload>jwt.verify(refreshTokenEncoded, JWT_PRIVATE_KEY);
+    return <JwtPayload>jwt.verify(refreshTokenEncoded, JWT_PRIVATE_KEY);
   } catch (error) {
     console.error(`JWT token verification failed. ${error}`);
+    return null;
+  }
+}
+
+function getTokenChain(req: express.Request): TokenChainModel | null {
+  const refreshToken = readRefreshTokenClaims(req);
+  if (!refreshToken) {
     return null;
   }
 
   const chainId = Number(refreshToken['chain_id']);
   return repository.getTokenChain(chainId);
+}
+
+function readRefreshTokenId(req: express.Request): string | null {
+  const refreshToken = readRefreshTokenClaims(req);
+  return refreshToken != null ? String(refreshToken['refresh_id']) : null;
+}
+
+// Long enough that a local dev session isn't constantly re-authenticating. A real backend
+// would use a much shorter access token TTL.
+const ACCESS_TOKEN_TTL_SECONDS = 300;
+const REFRESH_TOKEN_TTL_SECONDS = 86400;
+
+function issueTokenPair(username: string, tokenChain: TokenChainModel): TokenPairDto {
+  const accessToken = jwt.sign({}, JWT_PRIVATE_KEY, {
+    algorithm: 'RS256',
+    expiresIn: ACCESS_TOKEN_TTL_SECONDS,
+    subject: username,
+  });
+
+  const refreshToken = jwt.sign({
+    chain_id: tokenChain.chainId,
+    refresh_id: tokenChain.refreshTokenId
+  }, JWT_PRIVATE_KEY, {
+    algorithm: 'RS256',
+    expiresIn: REFRESH_TOKEN_TTL_SECONDS,
+    subject: username,
+  });
+
+  return {
+    accessToken: accessToken,
+    refreshToken: refreshToken
+  } as TokenPairDto;
 }
 
 const repository: Repository = new Repository();
@@ -99,30 +137,10 @@ router.post('/api/v1/auth/signin', (req: express.Request, res: express.Response)
       return;
     }
 
-    const accessToken = jwt.sign({}, JWT_PRIVATE_KEY, {
-      algorithm: 'RS256',
-      expiresIn: 120,
-      subject: username,
-    });
-
     const tokenInfo: TokenChainModel = repository.createTokenChain(username);
-    tokenInfo.chainId++;
-    tokenInfo.refreshTokenId = uuidv4();
-
-    const refreshToken = jwt.sign({
-      chain_id: tokenInfo.chainId,
-      refresh_id: tokenInfo.refreshTokenId
-    }, JWT_PRIVATE_KEY, {
-      algorithm: 'RS256',
-      expiresIn: 240,
-      subject: username,
-    });
 
     res.status(200);
-    res.json({
-      accessToken: accessToken,
-      refreshToken: refreshToken
-    } as TokenPairDto);
+    res.json(issueTokenPair(username, tokenInfo));
   }, 500);
 });
 
@@ -157,32 +175,34 @@ router.post('/api/v1/auth/signup', (req: express.Request, res: express.Response)
     };
     repository.createUser(newUser);
 
-    const accessToken = jwt.sign({}, JWT_PRIVATE_KEY, {
-      algorithm: 'RS256',
-      expiresIn: 120,
-      subject: username,
-    });
-
     const tokenInfo: TokenChainModel = repository.createTokenChain(username);
-    tokenInfo.chainId++;
-    tokenInfo.refreshTokenId = uuidv4();
 
-    const refreshToken = jwt.sign({
-      chain_id: tokenInfo.chainId,
-      refresh_id: tokenInfo.refreshTokenId
-    }, JWT_PRIVATE_KEY, {
-      algorithm: 'RS256',
-      expiresIn: 240,
-      subject: username,
-    });
-
-    res.json({
-      accessToken: accessToken,
-      refreshToken: refreshToken
-    } as TokenPairDto);
+    res.json(issueTokenPair(username, tokenInfo));
   }, 500);
 });
 
+
+router.post('/api/v1/auth/refresh', (req: express.Request, res: express.Response) => {
+  setTimeout(() => {
+    const tokenChain: TokenChainModel | null = getTokenChain(req);
+    if (!tokenChain) {
+      res.status(401).send({});
+      return;
+    }
+
+    // Each refresh token is single-use. Seeing an already-rotated one means the token leaked
+    // and is being replayed, so the whole chain is burned rather than refreshed.
+    const presentedRefreshId = readRefreshTokenId(req);
+    if (presentedRefreshId !== tokenChain.refreshTokenId) {
+      repository.invalidateTokenChain(tokenChain.chainId);
+      res.status(401).send({});
+      return;
+    }
+
+    tokenChain.refreshTokenId = uuidv4();
+    res.json(issueTokenPair(tokenChain.username, tokenChain));
+  }, 500);
+});
 
 router.post('/api/v1/auth/signout', (req: express.Request, res: express.Response) => {
   setTimeout(() => {

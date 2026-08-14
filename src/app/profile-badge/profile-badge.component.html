@@ -1,8 +1,8 @@
 
 <div class="badge">
-  <img ngSrc="/assets/aprilmack.png" height="400" width="300"/>
+  <img [ngSrc]="photoUrl()" height="400" width="300" alt="profile photo"/>
   <div class="info">
-    <div class="name">April</div>
-    <div class="username">&#64;aprilmack</div>
+    <div class="name">{{name()}}</div>
+    <div class="username">&#64;{{username()}}</div>
   </div>
 </div>

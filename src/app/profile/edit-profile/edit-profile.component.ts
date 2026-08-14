@@ -54,6 +54,9 @@ export class EditProfileComponent implements OnInit {
   initialLoadingStatus = signal<LoadingStatus>('loading');
   oldProfile = signal<UserProfileModel | null>(null);
   location = signal<ReverseGeocodeDto | null>(null);
+  // The guard should keep other people's profiles unreachable, so a 403 here means the
+  // server disagrees with the client's idea of who is signed in. Say so specifically.
+  forbidden = signal<boolean>(false);
 
   formGroup: FormGroup = new FormGroup({
     nameField: new FormControl('', [Validators.maxLength(128), Validators.required]),
@@ -82,6 +85,7 @@ export class EditProfileComponent implements OnInit {
       },
       error: error => {
         console.error(error);
+        this.forbidden.set(error.status === 403);
         this.initialLoadingStatus.set('error');
       }
     });
@@ -146,6 +150,8 @@ export class EditProfileComponent implements OnInit {
       },
       error: (error) => {
         console.error(error);
+        this.forbidden.set(error.status === 403);
+        this.initialLoadingStatus.set('error');
       }
     })
   }

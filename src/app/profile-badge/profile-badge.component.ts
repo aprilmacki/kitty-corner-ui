@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import {Component, input} from '@angular/core';
 import {NgOptimizedImage} from '@angular/common';
 
 @Component({
@@ -10,5 +10,7 @@ import {NgOptimizedImage} from '@angular/common';
   styleUrl: './profile-badge.component.scss'
 })
 export class ProfileBadgeComponent {
-
+  username = input.required<string>();
+  name = input.required<string>();
+  photoUrl = input.required<string>();
 }

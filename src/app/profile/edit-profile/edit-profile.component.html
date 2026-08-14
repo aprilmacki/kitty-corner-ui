@@ -37,5 +37,9 @@
     <mat-spinner></mat-spinner>
   </div>
 } @else if (this.initialLoadingStatus() === 'error') {
-  ERROR!
+  @if (this.forbidden()) {
+    You can only edit your own profile.
+  } @else {
+    ERROR!
+  }
 }
