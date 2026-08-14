@@ -1,0 +1,35 @@
+:host {
+  width: 100%;
+}
+
+.center {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 80vh;
+
+  .unauthenticated {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    text-align: center;
+
+    mat-icon {
+      height: 48px;
+      width: 48px;
+      font-size: 48px;
+      color: var(--mat-sys-on-surface-variant);
+    }
+
+    h1 {
+      margin: 0;
+    }
+
+    p {
+      margin: 10px 0 0 0;
+      color: var(--mat-sys-on-surface-variant);
+    }
+  }
+}

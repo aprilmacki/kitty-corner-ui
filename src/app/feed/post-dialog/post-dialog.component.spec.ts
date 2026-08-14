@@ -1,14 +1,22 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {MatDialogRef} from '@angular/material/dialog';
+import {provideHttpClient} from '@angular/common/http';
+import {provideHttpClientTesting} from '@angular/common/http/testing';
 
 import { PostDialogComponent } from './post-dialog.component';
 
-describe('PostModalComponent', () => {
+describe('PostDialogComponent', () => {
   let component: PostDialogComponent;
   let fixture: ComponentFixture<PostDialogComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [PostDialogComponent]
+      imports: [PostDialogComponent],
+      providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        {provide: MatDialogRef, useValue: {close: () => {}}}
+      ]
     })
     .compileComponents();
 

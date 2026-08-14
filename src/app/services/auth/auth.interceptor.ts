@@ -1,5 +1,8 @@
-import {HttpEvent, HttpHandlerFn, HttpInterceptorFn, HttpRequest} from '@angular/common/http';
-import {Observable} from 'rxjs';
+import {HttpErrorResponse, HttpEvent, HttpHandlerFn, HttpInterceptorFn, HttpRequest} from '@angular/common/http';
+import {catchError, Observable, throwError} from 'rxjs';
+import {inject} from '@angular/core';
+import {Router} from '@angular/router';
+import {AuthService} from './auth.service';
 
 const publicEndpoints: string[] = [
   '/api/v1/auth/signin',
@@ -11,12 +14,20 @@ const refreshTokenEndpoints: string[] = [
   '/api/v1/auth/refresh',
 ];
 
+const selfHandledEndpoints: string[] = [
+  '/api/v1/auth/signout',
+];
+
 function isPublicEndpoint(url: string): boolean {
   return publicEndpoints.some(pattern => url.match(pattern));
 }
 
 function isRefreshTokenEndpoint(url: string): boolean {
   return refreshTokenEndpoints.some(pattern => url.match(pattern));
+}
+
+function isSelfHandledEndpoint(url: string): boolean {
+  return selfHandledEndpoints.some(pattern => url.match(pattern));
 }
 
 function withToken(request: HttpRequest<unknown>, next: HttpHandlerFn, token: string): Observable<HttpEvent<unknown>> {
@@ -26,22 +37,32 @@ function withToken(request: HttpRequest<unknown>, next: HttpHandlerFn, token: st
 }
 
 export const authInterceptor: HttpInterceptorFn = (request, next) => {
-  console.log(`auth interceptor called`);
   if (!request.url.startsWith('/api/v1')) {
     return next(request);
   }
   if (isPublicEndpoint(request.url)) {
     return next(request);
   }
-  if (isRefreshTokenEndpoint(request.url)) {
-    const refreshToken = localStorage.getItem('refreshToken');
-    return refreshToken ? withToken(request, next, refreshToken) : next(request);
-  }
+
+  const authService = inject(AuthService);
+  const router = inject(Router);
 
   // TODO: Refresh tokens if necessary
 
-  const accessToken = localStorage.getItem('accessToken');
-  console.log(`access token: ${accessToken}`);
-  return accessToken ? withToken(request, next, accessToken) : next(request);
-};
+  const token = isRefreshTokenEndpoint(request.url) ? authService.getRefreshToken() : authService.getAccessToken();
+  const response = token ? withToken(request, next, token) : next(request);
 
+  if (isSelfHandledEndpoint(request.url)) {
+    return response;
+  }
+
+  return response.pipe(
+    catchError((error: unknown) => {
+      if (error instanceof HttpErrorResponse && error.status === 401) {
+        authService.clearSession();
+        router.navigate(['/unauthenticated']).then(_ => {});
+      }
+      return throwError(() => error);
+    })
+  );
+};

@@ -6,6 +6,8 @@ import {CommentSectionComponent} from './comment-section/comment-section.compone
 import {EditProfileComponent} from './profile/edit-profile/edit-profile.component';
 import {WelcomeComponent} from './welcome/welcome.component';
 import {HomeComponent} from './home/home.component';
+import {UnauthenticatedComponent} from './unauthenticated/unauthenticated.component';
+import {authGuard} from './services/auth/auth.guard';
 
 export const routes: Routes = [
   {
@@ -13,8 +15,14 @@ export const routes: Routes = [
     component: WelcomeComponent,
   },
   {
+    path: 'unauthenticated',
+    component: UnauthenticatedComponent,
+  },
+  {
     path: '',
     component: HomeComponent,
+    canActivate: [authGuard],
+    canActivateChild: [authGuard],
     children: [
       {
         path: 'users/:username/profile/edit',
@@ -40,6 +48,10 @@ export const routes: Routes = [
         path: '',
         redirectTo: '/welcome',
         pathMatch: 'full'
+      },
+      {
+        path: '**',
+        redirectTo: '/posts'
       }
     ]
   },

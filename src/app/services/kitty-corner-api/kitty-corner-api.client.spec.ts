@@ -1,12 +1,16 @@
 import { TestBed } from '@angular/core/testing';
+import {provideHttpClient} from '@angular/common/http';
+import {provideHttpClientTesting} from '@angular/common/http/testing';
 
 import { KittyCornerApiClient } from './kitty-corner-api.client';
 
-describe('KittyCornerApiService', () => {
+describe('KittyCornerApiClient', () => {
   let service: KittyCornerApiClient;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({});
+    TestBed.configureTestingModule({
+      providers: [provideHttpClient(), provideHttpClientTesting()]
+    });
     service = TestBed.inject(KittyCornerApiClient);
   });
 
