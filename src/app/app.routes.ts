@@ -7,12 +7,13 @@ import {EditProfileComponent} from './profile/edit-profile/edit-profile.componen
 import {WelcomeComponent} from './welcome/welcome.component';
 import {HomeComponent} from './home/home.component';
 import {UnauthenticatedComponent} from './unauthenticated/unauthenticated.component';
-import {authGuard} from './services/auth/auth.guard';
+import {authGuard, signedOutGuard} from './services/auth/auth.guard';
 
 export const routes: Routes = [
   {
     path: 'welcome',
     component: WelcomeComponent,
+    canActivate: [signedOutGuard],
   },
   {
     path: 'unauthenticated',
